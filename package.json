@@ -1,0 +1,43 @@
+{
+  "name": "venobo-app",
+  "productName": "Venobo Application",
+  "version": "0.0.4",
+  "description": "Your own free personal streaming application",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron .",
+    "watch": "watchify app.js -t babelify -o public/js/bundle.js --debug --verbose",
+    "test": "cross-env NODE_ENV=test electron ."
+  },
+  "dependencies": {
+    "arch": "^2.1.0",
+    "auto-launch": "^5.0.1",
+    "axios": "*",
+    "classnames": "^2.2.5",
+    "cp-file": "^4.1.1",
+    "crypto-js": "*",
+    "debounce": "^1.0.0",
+    "get-folder-size": "^1.0.0",
+    "jquery": "*",
+    "local-storage-es6": "^1.0.8",
+    "node-notifier": "^5.1.2",
+    "parse-torrent": "^5.8.3",
+    "potato-detection": "*",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2",
+    "react-router-dom": "^4.1.0",
+    "run-parallel": "^1.1.6",
+    "vlc-command": "^1.1.1"
+  },
+  "devDependencies": {
+    "babel-cli": "*",
+    "babel-core": "*",
+    "babel-preset-es2015": "*",
+    "babel-preset-react": "*",
+    "babel-preset-stage-0": "^6.24.1",
+    "babel-register": "*",
+    "cross-env": "^4.0.0",
+    "electron": "^1.6.6",
+    "electron-reload": "*"
+  }
+}
