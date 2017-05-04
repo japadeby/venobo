@@ -4,12 +4,10 @@
  * @author Marcus S. Abildskov
  */
 
-const config = require('./config')
-
-if (!config.IS.PRODUCTION) {
-  require('babel-register')
+if (process.env.NODE_ENV === 'test') {
   require('electron-reload')(__dirname + '/src')
-  require('./main')
+  require('babel-register')
+  require('./src/main')
 } else {
   require('./dist/main')
 }
