@@ -3,11 +3,11 @@
   "productName": "Venobo Application",
   "version": "0.0.4",
   "description": "Your own free personal streaming application",
-  "main": "index.js",
+  "main": "./dist/main/index",
   "scripts": {
-    "start": "electron .",
+    "start": "cross-env NODE_ENV=production electron .",
     "watch": "watchify app.js -t babelify -o public/js/bundle.js --debug --verbose",
-    "test": "cross-env NODE_ENV=test electron ."
+    "test": "cross-env NODE_ENV=test electron ./src/main"
   },
   "dependencies": {
     "arch": "^2.1.0",
