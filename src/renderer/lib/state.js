@@ -53,15 +53,6 @@ function getDefaultState () {
     errors: [], /* user-facing errors */
     nextTorrentKey: 1, /* identify torrents for IPC between the main and webtorrent windows */
 
-    /* Languages and ISO */
-    language: 'EN',
-    iso: 'en-US',
-
-    /*
-     * Default state for the last page the user was on to load
-     */
-     lastLocation: 'home',
-
     /*
      * Saved state is read from and written to a file every time the app runs.
      * It should be simple and minimal and must be JSON.
@@ -118,15 +109,20 @@ function getDefaultPlayState () {
 function setupStateSaved (callback) {
   const saved = {
     prefs: {
-      downloadPath: config.DEFAULT_DOWNLOAD_PATH,
+      downloadPath: config.PATH.DOWNLOAD,
       isFileHandler: false,
       openExternalPlayer: false,
       externalPlayerPath: null,
-      startup: false
+      startup: false,
+      language: 'EN',
+      iso: 'en-US'
     },
+    lastLocation: 'home',
     torrentsToResume: [],
-    version: config.APP_VERSION /* make sure we can upgrade gracefully later */
+    version: config.APP.VERSION /* make sure we can upgrade gracefully later */
   }
+
+  callback(null, saved)
 }
 
 function getPlayingTorrentSummary () {

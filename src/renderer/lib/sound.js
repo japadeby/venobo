@@ -43,7 +43,7 @@ const sounds = {
   }
 }
 
-export default function (name) {
+export default function (name: String) {
   let audio = cache[name]
   if (!audio) {
     const sound = sounds[name]
