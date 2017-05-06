@@ -9,7 +9,7 @@ import crashReporter from '../crash-reporter'
 import {log} from './log'
 
 import Menu from './menu'
-// import State from '../renderer/lib/state'
+import State from '../renderer/lib/state'
 import {Main, WebTorrent} from './windows'
 import squirrelWin32 from './squirrel-win32'
 import announcement from './announcement'
@@ -58,21 +58,6 @@ function init () {
     app.setPath('userData', config.PATH.PORTABLE)
     // Put Electron crash files, etc. into the "Venobo\Temp" folder
     app.setPath('temp', path.join(config.PATH.PORTABLE, 'Temp'))
-
-    fs.stat(config.PATH.DOWNLOAD, (err) => {
-      if (err) mkdirp(config.PATH.DOWNLOAD, console.log)
-    })
-  }
-
-  Preferences.setup({
-    iso: 'en-US',
-    downloadPath: config.PATH.DOWNLOAD,
-    subtitleLanguage: 'EN',
-    language: 'EN'
-  })
-
-  if (config.IS.TEST) {
-    Preferences.setDefault()
   }
 
   let isReady = false // app ready, windows can be created
@@ -80,8 +65,9 @@ function init () {
   app.isQuitting = false
 
   parallel({
-    appReady: (cb) => app.on('ready', () => cb(null))
-  }, onReady) /*, state: (cb) => State.load(cb) */
+    appReady: (cb) => app.on('ready', () => cb(null)),
+    state: (cb) => State.load(cb))
+  }, onReady)
 
   function onReady (err, results) {
     if (err) throw err

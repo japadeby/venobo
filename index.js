@@ -9,5 +9,5 @@ if (process.env.NODE_ENV === 'test') {
   require('babel-register')
   require('./src/main')
 } else {
-  require('./dist/main')
+  require('./build/main')
 }

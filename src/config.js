@@ -8,14 +8,14 @@ const {
   productName,
   version,
   description
-} = require('./package.json')
+} = require('../package.json')
 const path = require('path')
 const electron = require('electron')
 const arch = require('arch')
 const fs = require('fs')
 
 const APP_TEAM = productName + ' Dev'
-const STATIC_PATH = path.join(__dirname, 'static')
+const STATIC_PATH = path.join(__dirname, '..', 'static')
 const IS_TEST = isTest()
 const PORTABLE_PATH = IS_TEST
         ? path.join(process.platform === 'win32' ? 'C:\\Windows\\Temp' : '/tmp', productName)
@@ -34,7 +34,7 @@ module.exports = {
     VERSION: version,
     SECRET_KEY: '56dc6f8e86f739bbce37281a8ad47641',
     DESC: description,
-    API: 'http://localhost:3001/api',
+    API: 'https://venobo.herokuapp.com/api',
     URL: 'http://localhost:3001',
     ANNOUNCEMENT: 'http://localhost:3001/desktop/announcement',
     CRASH_REPORTER: 'https://electron-crash-reporter.appspot.com/5674134847619072/create/',
@@ -51,7 +51,8 @@ module.exports = {
   },
   TMDB: {
     API: 'https://api.themoviedb.org/3',
-    KEY: '56dc6f8e86f739bbce37281a8ad47641'
+    KEY: '56dc6f8e86f739bbce37281a8ad47641',
+    POSTER: 'https://image.tmdb.org/t/p/w300_and_h450_bestv2'
   },
   GITHUB: {
     URL: 'https://github.com/marcus-sa/Venobo',

@@ -46,7 +46,7 @@ export default class HTTP {
   static parse(url: String, err: String, callback: Function) {
     HttpCache.existsThenRead(url)
       .then(callback)
-      .catch(() => console.warn(err))
+      .catch(console.warn)
   }
 
 }

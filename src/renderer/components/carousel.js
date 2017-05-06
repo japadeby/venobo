@@ -3,7 +3,6 @@ import { NavLink } from 'react-router-dom'
 import classNames from 'classnames'
 import md5 from 'crypto-js/md5'
 
-import { withTranslate } from '../react-multilingual'
 import Poster from './poster'
 import {
   Scaffold,
@@ -12,7 +11,7 @@ import {
   HeaderButton
 } from './items'
 
-class Carousel extends React.Component {
+export default class Carousel extends React.Component {
 
     constructor(props) {
       super(props)
@@ -143,5 +142,3 @@ class Carousel extends React.Component {
     }
 
 }
-
-export default withTranslate(Carousel)
