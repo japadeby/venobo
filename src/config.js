@@ -60,8 +60,8 @@ module.exports = {
   },
   WINDOW: {
     INDEX: {
-      MAIN: path.join('file://' + STATIC_PATH, 'index.html'),
-      WEBTORRENT: path.join('file://' + STATIC_PATH, 'webtorrent.html')
+      MAIN: path.join(`file://${STATIC_PATH}`, 'index.html'),
+      WEBTORRENT: path.join(`file://${STATIC_PATH}`, 'webtorrent.html')
     },
     MIN: {
       WIDTH: 1075,
