@@ -10,6 +10,10 @@ import { IntlProvider, withTranslate } from '../utils/react-multilingual'
 import Home from './home'
 import Preferences from './preferences'
 import Starred from './starred'
+import Watched from './watched'
+import Movies from './movies'
+import Series from './series'
+
 import Footer from '../components/footer'
 import Header from '../components/header'
 
@@ -18,7 +22,10 @@ export default class App extends React.Component {
   static views: Object = {
     home: Home,
     preferences: Preferences,
-    starred: Starred
+    starred: Starred,
+    watched: Watched,
+    series: Series,
+    movies: Movies
   }
 
   render() {

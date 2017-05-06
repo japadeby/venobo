@@ -14,13 +14,11 @@
 	<script type="text/javascript">
     window.$ = require('jquery')
 
-		if (process.env.NODE_ENV === 'test') {
-		  require('babel-register')
-		  require('../src/renderer/main.js')
-		} else {
-    	require('../build/renderer/main.js')
-		}
+		const {NODE_ENV} = process.env
+
+		if (NODE_ENV === 'test') require('babel-register')
+		require(`../${NODE_ENV === 'test' ? 'src' : 'build'}/renderer/main.js`)()
 	</script>
-	
+
 </body>
 </html>

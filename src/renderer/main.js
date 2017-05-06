@@ -16,7 +16,7 @@ import TorrentPlayer from './lib/torrent-player'
 import dispatcher from './lib/dispatcher'
 import getTranslations from './lib/translations'
 
-class Main {
+export default class Main {
 
   controllers: Object
   cast: Object
@@ -50,38 +50,40 @@ class Main {
     // Create controllers and lazyload them
     this.controllers = {
       preferences: createGetter(() => {
-        const PrefsController = require('./controllers/preferences')
-        return new PrefsController(state, config)
+        return require('./controllers/preferences')(state, config)
+      }),
+      watched: createGetter(() => {
+        return require('./controllers/watched')(state, config)
+      }),
+      starred: createGetter(() => {
+        return require('./controllers/starred')(state, config)
       }),
       update: createGetter(() => {
-        const UpdateController = require('./controllers/update')
-        return new UpdateController(state, config)
+        return require('./controllers/update')(state, config)
       }),
       media: createGetter(() => {
-        const MediaController = require('./controllers/media')
-        return new MediaController(state)
+        return require('./controllers/media')(state)
       }),
       torrent: createGetter(() => {
-        const TorrentController = require('./controllers/torrent')
-        return new TorrentController(state)
+        return require('./controllers/torrent')(state)
       }),
       playback: createGetter(() => {
-        const PlaybackController = require('./controllers/playback')
-        return new PlaybackController(state, config, update)
+        return require('./controllers/playback')(state, config, this.update)
       }),
       subtitles: createGetter(() => {
-        const SubtitlesController = require('./controllers/subtitles')
-        return new SubtitlesController(state)
+        return require('./controllers/subtitles')(state)
       }),
       movies: createGetter(() => {
-        const MoviesController = require('./controllers/movies')
-        return new MoviesController(state, config)
+        return require('./controllers/movies')(state, config)
+      }),
+      series: createGetter(() => {
+        return require('./controllers/series')(state, config)
       })
     }
 
     // Add last page to location history
     state.location.go({
-      url: state.lastLocation,
+      url: state.saved.prefs.lastLocation,
       setup: (callback) => {
         state.window.title = `Welcome back to ${config.APP.NAME}`
         callback(null)
@@ -89,10 +91,10 @@ class Main {
     })
 
     // Restart everything we were torrenting last time the app ran
-    this.resumeTorrents()
+    //this.resumeTorrents()
 
     // Initialize ReactDOM with translations
-    getTranslations(state.language, (translation, locale) => {
+    getTranslations(state.saved.prefs.language, (translation, locale) => {
       this.app = ReactDOM.render(
         <App state={state} translation={translation} locale={locale} />,
         document.querySelector('#content-wrapper')
@@ -377,5 +379,3 @@ class Main {
   }
 
 }
-
-export default new Main()
