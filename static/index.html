@@ -1,0 +1,32 @@
+<!--
+ - Venobo App
+ -
+ - @author Marcus S. Abildskov
+ -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<link rel="stylesheet" href="./css/app.css" />
+	<link rel="stylesheet" href="./css/facelift.css" />
+	<link rel="stylesheet" href="./css/loader.css" />
+</head>
+<body>
+
+  <div id="content-wrapper">
+
+  </div>
+
+	<script type="text/javascript">
+    window.$ = require('jquery')
+		window.config = require('../config')
+
+		if (!config.IS.PRODUCTION) {
+		  require('babel-register')
+		  require('../renderer')
+		} else {
+		  require('../dist/renderer')
+		}
+	</script>
+</body>
+</html>

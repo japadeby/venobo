@@ -1,9 +1,7 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 
-import { withTranslate } from '../react-multilingual'
-
-class Header extends React.Component {
+export default class Header extends React.Component {
 
   userHover = () => {
     $(this.refs.user).children('.details.authenticated').addClass('active-hover')
@@ -57,7 +55,7 @@ class Header extends React.Component {
       <div className="block page-header">
         <div className="scaffold">
           <div className="logo">
-            <NavLink to={'/'}>
+            <NavLink to={'/home'}>
               <img src={config.APP.LARGE_LOGO} width="144" height="35" />
             </NavLink>
           </div>
@@ -138,5 +136,3 @@ class Header extends React.Component {
   }
 
 }
-
-export default withTranslate(Header)
