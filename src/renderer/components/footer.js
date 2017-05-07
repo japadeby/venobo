@@ -1,5 +1,7 @@
 import React from 'react'
 
+import config from '../../config'
+
 export default class Footer extends React.Component {
 
   componentWillMount() {

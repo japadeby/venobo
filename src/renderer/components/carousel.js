@@ -1,7 +1,9 @@
 import React from 'react'
-import { NavLink } from 'react-router-dom'
 import classNames from 'classnames'
 import md5 from 'crypto-js/md5'
+
+import {withTranslate} from '../utils/react-multilingual'
+import {dispatch} from '../lib/dispatcher'
 
 import Poster from './poster'
 import {
@@ -11,7 +13,7 @@ import {
   HeaderButton
 } from './items'
 
-export default class Carousel extends React.Component {
+class Carousel extends React.Component {
 
     constructor(props) {
       super(props)
@@ -121,10 +123,10 @@ export default class Carousel extends React.Component {
             <i className={nav.next} onClick={this.handleNext}></i>
             <CollectionHeader>
               {props.route ? (
-                <NavLink to={props.route}>
+                <a href="#" onClick={() => dispatch(props.route)}>
                   <HeaderButton>{this.props.translate('show.more')}</HeaderButton>
                   <h2>{props.title}</h2>
-                </NavLink>
+                </a>
               ) : (
                 <h2>{props.title}</h2>
               )}
@@ -142,3 +144,5 @@ export default class Carousel extends React.Component {
     }
 
 }
+
+export default withTranslate(Carousel)

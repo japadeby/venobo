@@ -1,7 +1,10 @@
 import React from 'react'
-import {dispatch} from '../lib/dispatcher'
 
-export default class Header extends React.Component {
+import {dispatch} from '../lib/dispatcher'
+import config from '../../config'
+import {withTranslate} from '../utils/react-multilingual'
+
+class Header extends React.Component {
 
   userHover = () => {
     $(this.refs.user).children('.details.authenticated').addClass('active-hover')
@@ -55,13 +58,13 @@ export default class Header extends React.Component {
       <div className="block page-header">
         <div className="scaffold">
           <div className="logo">
-            <a href="#" onClick={dispatch('home')}>
+            <a href="#" onClick={() => dispatch('home')}>
               <img src={config.APP.LARGE_LOGO} width="144" height="35" />
             </a>
           </div>
           <nav className="sections">
-            <a href="#" onClick={dispatch('series')}>{translate('nav.series')}</a>
-            <a href="#" onClick={dispatch('movies')}>{translate('nav.movies')}</a>
+            <a href="#" onClick={() => dispatch('series')}>{translate('nav.series')}</a>
+            <a href="#" onClick={() => dispatch('movies')}>{translate('nav.movies')}</a>
           </nav>
           <div className="user" ref="user">
             <div className="details authenticated" onMouseEnter={this.userHover} onMouseLeave={this.userLeave}>
@@ -74,17 +77,17 @@ export default class Header extends React.Component {
                 <div className="box-shadow">
                   <ul>
                     <li>
-                      <a href="#" onClick={dispatch('watched')} className="icon watched">
+                      <a href="#" onClick={() => dispatch('watched')} className="icon watched">
                         {translate('watched')}
                       </a>
                     </li>
                     <li>
-                      <a href="#" onClick={dispatch('starred')} className="icon starred">
+                      <a href="#" onClick={() => dispatch('starred')} className="icon starred">
                         {translate('starred')}
                       </a>
                     </li>
                     <li>
-                      <a href="#" onClick={dispatch('preferences')} className="icon settings">
+                      <a href="#" onClick={() => dispatch('preferences')} className="icon settings">
                         {translate('preferences')}
                       </a>
                     </li>
@@ -134,3 +137,5 @@ export default class Header extends React.Component {
   }
 
 }
+
+export default withTranslate(Header)

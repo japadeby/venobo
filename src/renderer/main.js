@@ -20,6 +20,8 @@ import HTTP from './utils/http'
 // Controllers
 import PreferencesController from './controllers/preferences'
 import HomeController from './controllers/home'
+import TorrentController from './controllers/torrent'
+//import StarredController from './controllers'
 
 export default class Main {
 
@@ -63,34 +65,33 @@ export default class Main {
       preferences: createGetter(() => {
         return new PreferencesController(state, config)
       }),
-      watched: createGetter(() => {
-        return require('./controllers/watched')(state, config)
+      /*watched: createGetter(() => {
+        return new WatchedController(state, config)
       }),
       starred: createGetter(() => {
-        return require('./controllers/starred')(state, config)
-      }),
+        return new StarredController(state, config)
+      }),*/
       update: createGetter(() => {
-        return require('./controllers/update')(state, config)
+        return new UpdateController(state, config)
       }),
       media: createGetter(() => {
         return require('./controllers/media')(state)
       }),
       torrent: createGetter(() => {
-        const TorrentController = require('./controllers/torrent')
         return new TorrentController(state)
       }),
-      playback: createGetter(() => {
-        return require('./controllers/playback')(state, config, this.update)
-      }),
+      /*playback: createGetter(() => {
+        return require('./controllers/playback')(state, config, () => this.update())
+      }),*/
       subtitles: createGetter(() => {
         return require('./controllers/subtitles')(state)
       }),
-      movies: createGetter(() => {
+      /*movies: createGetter(() => {
         return require('./controllers/movies')(state, config)
       }),
       series: createGetter(() => {
         return require('./controllers/series')(state, config)
-      })
+      })*/
     }
 
     // Add last page to location history
@@ -121,8 +122,8 @@ export default class Main {
     }, 1000, true)
 
     // ...focus and blur. Needed to show correct dock icon text ('badge') in OSX
-    window.addEventListener('focus', this.onFocus)
-    window.addEventListener('blur', this.onBlur)
+    //window.addEventListener('focus', (e) => this.onFocus(e))
+    //window.addEventListener('blur', (e) => this.onBlur(e))
 
     if (remote.getCurrentWindow().isVisible()) {
       sound('STARTUP')
@@ -149,19 +150,19 @@ export default class Main {
     this.checkDownloadPath()
 
     // ...window visibility state.
-    document.addEventListener('webkitvisibilitychange', this.onVisibilityChange)
+    document.addEventListener('webkitvisibilitychange', () => this.onVisibilityChange())
     this.onVisibilityChange()
 
     this.lazyLoadCast()
   }
 
   lazyLoadCast() {
-    let Cast = this.cast
-    if (!Cast) {
-      Cast = require('./lib/cast')
-      Cast.init(this.state, this.update)
+    let {cast, update, state} = this
+    if (!cast) {
+      cast = require('./lib/cast')
+      cast.init(state, () => update())
     }
-    return Cast
+    return cast
   }
 
   // React loop:
@@ -170,7 +171,7 @@ export default class Main {
   // 3. dispatch - the event handler calls dispatch(), main.js sends it to a controller
   // 4. controller - the controller handles the event, changing the state object
   update() {
-    this.controllers.playback().showOrHidePlayerControls()
+    //this.controllers.playback().showOrHidePlayerControls()
     this.app.setState(this.state)
     this.updateElectron()
   }
@@ -206,7 +207,7 @@ export default class Main {
 
       // Preferences
       updatePreferences: (key, value) => controllers.preferences().update(key, value),
-      checkDownloadPath: this.checkDownloadPath,
+      checkDownloadPath: () => this.checkDownloadPath(),
       setIso: (iso2, iso4) => this.renderMain(iso2, iso4),
 
       // Updates
@@ -226,7 +227,7 @@ export default class Main {
       // Pages
       preferences: () => controllers.preferences().show(),
       home: () => controllers.home().show(),
-      starred: () => controllers.starred().show(),
+      //starred: () => controllers.starred().show(),
 
       // Everything else
       //uncaughtError: (proc, err) => telemetry.logUncaughtError(proc, err),
@@ -253,8 +254,7 @@ export default class Main {
     }
 
     // Update the virtual DOM, unless it's just a mouse move event
-    if (action !== 'mediaMouseMoved' ||
-      this.controllers.playback().showOrHidePlayerControls()) {
+    if (action !== 'mediaMouseMoved' /*|| this.controllers.playback().showOrHidePlayerControls()*/) {
       this.update()
     }
   }
@@ -267,7 +267,7 @@ export default class Main {
       prefs.iso2 = iso2
       prefs.iso4 = iso4
 
-      State.save(this.state)
+      State.save(state)
     }
 
     const locale = iso2 || prefs.iso2
@@ -290,8 +290,8 @@ export default class Main {
 
     ipc.on('dispatch', (e, ...args) => this.dispatch(...args))
 
-    ipc.on('fullscreenChanged', this.onFullscreenChanged)
-    ipc.on('windowBoundsChanged', this.onWindowBoundsChanged)
+    //ipc.on('fullscreenChanged', (e, ...args) => this.onFullscreenChanged(e, ...args))
+    //ipc.on('windowBoundsChanged', (e, ...args) => this.onWindowBoundsChanged(e, ...args))
 
     const tc = controllers.torrent()
     ipc.on('wt-infohash', (e, ...args) => tc.torrentInfoHash(...args))
@@ -376,7 +376,7 @@ export default class Main {
   }
 
   onFullscreenChanged(e, isFullScreen) {
-    const {state, update} = this
+    const {state} = this
 
     state.window.isFullScreen = isFullScreen
     if (!isFullScreen) {
@@ -384,7 +384,7 @@ export default class Main {
       ipcRenderer.send('setAspectRatio', state.playing.aspectRatio)
     }
 
-    update()
+    this.update()
   }
 
   onWindowBoundsChanged(e, newBounds) {

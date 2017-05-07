@@ -5,6 +5,8 @@
  */
 
 import React from 'react'
+import createGetter from 'fn-getter'
+
 import { IntlProvider, withTranslate } from '../utils/react-multilingual'
 
 import Home from './home'
@@ -17,16 +19,16 @@ import Series from './series'
 import Footer from '../components/footer'
 import Header from '../components/header'
 
-export default class App extends React.Component {
+const Views = {
+  home: createGetter(() => Home),
+  preferences: createGetter(() => Preferences),
+  /*starred: Starred,
+  watched: Watched,
+  series: Series,
+  movies: Movies*/
+}
 
-  views: Object = {
-    home: Home,
-    preferences: Preferences,
-    starred: Starred,
-    watched: Watched,
-    series: Series,
-    movies: Movies
-  }
+export default class App extends React.Component {
 
   render() {
     const {state, locale, translation} = this.props
@@ -61,7 +63,7 @@ export default class App extends React.Component {
 
   getView() {
     const {state} = this.props
-    const View = withTranslate(this.views[state.location.url()])
+    const View = withTranslate(Views[state.location.url()]())
     return (<View state={state} />)
   }
 
