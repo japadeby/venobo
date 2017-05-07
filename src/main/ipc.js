@@ -88,10 +88,10 @@ export default function () {
    * Windows: Main
    */
   ipc.on('setAspectRatio', (e, ...args) => Main.win.setAspectRatio(...args))
-  ipc.on('setProgress', (e, ...args) => Main.win.setProgress(...args))
+  ipc.on('setProgress', (e, ...args) => Main.win.setProgressBar(...args))
   ipc.on('setTitle', (e, ...args) => Main.win.setTitle(...args))
   ipc.on('toggleFullScreen', (e, ...args) => Main.toggleFullScreen(...args))
-  ipc.on('setAllowNav', (e, ...args) => Main.win.setAllowNav(...args))
+  ipc.on('setAllowNav', (e, ...args) => Menu.setAllowNav(...args))
   ipc.on('show', (e, ...args) => Main.win.show())
 
   /**
@@ -109,7 +109,7 @@ export default function () {
     externalPlayer.spawn(...args)
   })
 
-  ipc.on('quitExternalPlayer', externalPlayer.kill)
+  ipc.on('quitExternalPlayer', () => externalPlayer.kill())
 
   /**
    * Message passing

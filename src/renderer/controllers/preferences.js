@@ -21,15 +21,15 @@ export default class PreferencesController {
       setup: function (callback) {
         // initialize preferences
         state.window.title = 'Preferences'
-        state.unsaved = Object.assign(state.unsaved || {}, {
+        /*state.unsaved = Object.assign(state.unsaved || {}, {
           prefs: Object.assign({}, state.saved.prefs)
-        })
+        })*/
         ipcRenderer.send('setAllowNav', false)
-        callback()
+        callback(null)
       },
       destroy: () => {
         ipcRenderer.send('setAllowNav', true)
-        this.save()
+        //this.save()
       }
     })
   }
@@ -51,7 +51,7 @@ export default class PreferencesController {
   }
 
   // All unsaved prefs take effect atomically, and are saved to config.json
-  save () {
+  save() {
     const {unsaved, saved} = this.state
 
     if (unsaved.prefs.isFileHandler !== saved.prefs.isFileHandler) {

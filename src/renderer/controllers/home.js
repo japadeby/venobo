@@ -20,16 +20,16 @@ export default class HomeController {
       url: 'home',
       setup: function (callback) {
         // initialize preferences
-        state.window.title = 'Preferences'
-        state.unsaved = Object.assign(state.unsaved || {}, {
+        state.window.title = 'Home'
+        /*state.unsaved = Object.assign(state.unsaved || {}, {
           prefs: Object.assign({}, state.saved.prefs)
-        })
+        })*/
         ipcRenderer.send('setAllowNav', false)
         callback()
       },
       destroy: () => {
         ipcRenderer.send('setAllowNav', true)
-        this.save()
+        //this.save()
       }
     })
   }
