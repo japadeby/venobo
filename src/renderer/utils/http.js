@@ -4,22 +4,29 @@
  * @author Marcus S. Abildskov
  */
 
-import Axios from 'axios'
+import axios from 'axios'
 import md5 from 'crypto-js/md5'
 import React from 'react'
 import LocalStorage from 'local-storage-es6'
-
-const HttpCache = new LocalStorage(config.PATH.CACHE, config.APP.SECRET_KEY)
+import config from '../../config'
 
 export default class HTTP {
 
+  static Storage: Object
+
+  static setup() {
+    this.Storage = new LocalStorage(config.PATH.CACHE, config.APP.SECRET_KEY)
+  }
+
   static get(url: String, callback: Function) {
-    HttpCache.isNotExpiredThenRead(url, 3 * 60)
+    const {Storage} = this
+
+    Storage.isNotExpiredThenRead(url, 3 * 60)
       .then(callback)
       .catch(() => {
-        Axios.get(url)
+        axios.get(url)
           .then(res => {
-            HttpCache.write(url, res.data, callback)
+            Storage.write(url, res.data, callback)
           })
           .catch(err => {
             this.parse(url, err, callback)
@@ -28,14 +35,16 @@ export default class HTTP {
   }
 
   static post(url: String, params: Object, callback: Function) {
+    const {Storage} = this
+
     // To make sure the caching works with post requests, the params needs to be added as the cache id
     var urlParam = url + md5(JSON.stringify(params))
-    HttpCache.isNotExpiredThenRead(urlParam, 3 * 60)
+    Storage.isNotExpiredThenRead(urlParam, 3 * 60)
       .then(callback)
       .catch(() => {
-        Axios.post(url, params)
+        axios.post(url, params)
           .then(res => {
-            HttpCache.write(urlParam, res.data, callback)
+            Storage.write(urlParam, res.data, callback)
           })
           .catch(err => {
             this.parse(urlParam, err, callback)
@@ -44,7 +53,7 @@ export default class HTTP {
   }
 
   static parse(url: String, err: String, callback: Function) {
-    HttpCache.existsThenRead(url)
+    this.Storage.existsThenRead(url)
       .then(callback)
       .catch(console.warn)
   }

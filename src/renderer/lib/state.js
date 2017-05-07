@@ -1,9 +1,12 @@
 import path from 'path'
-import {EventMitter} from 'events'
+import {EventEmitter} from 'events'
 import LocationHistory from 'location-history'
 import cpFile from 'cp-file'
 import fs from 'fs'
 import debounce from 'debounce'
+import config from '../../config'
+import migrate from './migrations'
+const appConfig = require('application-config')('Venobo')
 
 const SAVE_DEBOUNCE_INTERVAL = 1000
 
@@ -114,10 +117,11 @@ function setupStateSaved (callback) {
       openExternalPlayer: false,
       externalPlayerPath: null,
       startup: false,
-      language: 'EN',
-      iso: 'en-US'
+      iso2: 'EN',
+      iso4: 'en-US'
     },
     lastLocation: 'home',
+    torrents: [],
     torrentsToResume: [],
     version: config.APP.VERSION /* make sure we can upgrade gracefully later */
   }
@@ -153,7 +157,7 @@ function shouldHidePlayerControls () {
 }
 
 function load (callback) {
-  appConfig.read(function (err, saved) {
+  appConfig.read((err, saved) => {
     if (err || !saved.version) {
       console.log('Missing config file: Creating new one')
       setupStateSaved(onSavedState)
@@ -167,10 +171,12 @@ function load (callback) {
     const state = getDefaultState()
     state.saved = saved
 
+    State.save(state)
+
     /*if (process.type === 'renderer') {
       // Perf optimization: Save require() calls in the main process
-      const migrations = require('./migrations')
-      migrations.run(state)
+      //const migrations = require('./migrations')
+      migrate(state)
     }*/
 
     callback(null, state)
@@ -185,7 +191,7 @@ function saveImmediate (state, callback) {
   const copy = Object.assign({}, state.saved)
   // Remove torrents pending addition to the list, where we haven't finished
   // reading the torrent file or file(s) to seed & don't have an infohash
-  copy.torrents = copy.torrents
+  /*copy.torrents = copy.torrents
     .filter((x) => x.infoHash)
     .map(function (x) {
       const torrent = {}
@@ -199,7 +205,7 @@ function saveImmediate (state, callback) {
         torrent[key] = x[key]
       }
       return torrent
-    })
+    })*/
 
   appConfig.write(copy, (err) => {
     if (err) console.error(err)

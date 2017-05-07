@@ -19,7 +19,7 @@ import Header from '../components/header'
 
 export default class App extends React.Component {
 
-  static views: Object = {
+  views: Object = {
     home: Home,
     preferences: Preferences,
     starred: Starred,
@@ -61,7 +61,7 @@ export default class App extends React.Component {
 
   getView() {
     const {state} = this.props
-    const View = withTranslate(this.views[state.location.url()]())
+    const View = withTranslate(this.views[state.location.url()])
     return (<View state={state} />)
   }
 

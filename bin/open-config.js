@@ -2,5 +2,8 @@
 
 const config = require('../src/config')
 const open = require('open')
+const path = require('path')
 
-open(config.PATH.CONFIG)
+console.log(config.PATH.CONFIG)
+
+open(path.join(config.PATH.CONFIG, '.json'))

@@ -6,8 +6,8 @@ import {
   BlockCollection,
   HeaderButton,
   ReactGrid
-} from './items'
-import Poster from './poster'
+} from '../components/items'
+import Poster from '../components/poster'
 
 export default class Starred extends React.Component {
   componentWillMount () {
