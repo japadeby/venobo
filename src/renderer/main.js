@@ -234,6 +234,9 @@ export default class Main {
       error: this.onError,
       stateSave: () => State.save(state),
       stateSaveImmediate: () => State.saveImmediate(state),
+      stateSetLastLocation: () => {
+        state.saved.lastLocation = state.location.url()
+      },
       update: () => {} // No-op, just trigger an update
     }
 
@@ -281,7 +284,7 @@ export default class Main {
   }
 
   setupIpc() {
-    const {controllers, telemetry} = this
+    const {controllers, telemetry, state} = this
 
     const ipc = ipcRenderer
 
