@@ -19,7 +19,6 @@ const PORTABLE_PATH = IS_TEST
         : path.join(path.dirname(process.execPath), pckg.productName)
 const IS_PRODUCTION = isProduction()
 const IS_PORTABLE = isPortable()
-const APP_PATH = path.join(PORTABLE_PATH, 'App')
 const CONFIG_PATH = getConfigPath()
 
 module.exports = {
@@ -39,8 +38,7 @@ module.exports = {
     LARGE_LOGO: path.join(STATIC_PATH, 'img', 'header-logo.png')
   },
   PATH: {
-    APP: APP_PATH,
-    ROOT: __dirname,
+    ROOT: path.join(__dirname, '..'),
     STATIC: STATIC_PATH,
     CACHE: path.join(CONFIG_PATH, 'cache'),
     DOWNLOAD: getDefaultDownloadPath(),
@@ -100,7 +98,7 @@ function getPath (key) {
 
 function getDefaultDownloadPath () {
   if (IS_PORTABLE) {
-    return path.join(CONFIG_PATH, 'downloads')
+    return path.join(CONFIG_PATH, 'Downloads')
   } else {
     return getPath('downloads')
   }
