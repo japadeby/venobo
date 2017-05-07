@@ -113,7 +113,6 @@ function setupStateSaved (callback) {
   const saved = {
     prefs: {
       downloadPath: config.PATH.DOWNLOAD,
-      isFileHandler: false,
       openExternalPlayer: false,
       externalPlayerPath: null,
       startup: false,
