@@ -72,9 +72,9 @@ export default function () {
   /**
    * Shell
    */
-  ipc.on('openItem', shell.openItem)
-  ipc.on('showItemInFolder', shell.showItemInFolder)
-  ipc.on('moveItemToTrash', shell.moveItemToTrash)
+  ipc.on('openItem', (e, ...args) => shell.openItem(...args))
+  ipc.on('showItemInFolder', (e, ...args) => shell.showItemInFolder(...args))
+  ipc.on('moveItemToTrash', (e, ...args) => shell.moveItemToTrash(...args))
 
   /**
    * Auto start on login
@@ -91,7 +91,7 @@ export default function () {
   ipc.on('setProgress', (e, ...args) => Main.win.setProgress(...args))
   ipc.on('setTitle', (e, ...args) => Main.win.setTitle(...args))
   ipc.on('toggleFullScreen', (e, ...args) => Main.toggleFullScreen(...args))
-  ipc.on('setAllowNav', (e, ...args) => Menu.win.setAllowNav(...args))
+  ipc.on('setAllowNav', (e, ...args) => Main.win.setAllowNav(...args))
   ipc.on('show', (e, ...args) => Main.win.show())
 
   /**

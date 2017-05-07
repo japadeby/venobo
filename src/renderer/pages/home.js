@@ -6,7 +6,7 @@
 
 import React from 'react'
 
-import Carousel from './carousel'
+import Carousel from '../components/carousel'
 import HTTP from '../utils/http'
 import config from '../../config'
 

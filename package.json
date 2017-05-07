@@ -12,6 +12,7 @@
     "clean": "node ./bin/clean.js",
     "watch": "watchify app.js -t babelify -o public/js/bundle.js --debug --verbose",
     "test": "cross-env NODE_ENV=test electron .",
+    "open-config": "node ./bin/open-config.js"
   },
   "dependencies": {
     "rimraf": "*",

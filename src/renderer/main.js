@@ -12,9 +12,14 @@ import State from './lib/state'
 import App from './pages/app'
 import sound from './lib/sound'
 import config from '../config'
-import TorrentPlayer from './lib/torrent-player'
-import dispatcher from './lib/dispatcher'
-import getTranslations from './lib/translations'
+//import TorrentPlayer from './lib/torrent-player'
+import {setDispatch} from './lib/dispatcher'
+import HTTP from './utils/http'
+//import Telemetry from './lib/telemetry'
+
+// Controllers
+import PreferencesController from './controllers/preferences'
+import HomeController from './controllers/home'
 
 export default class Main {
 
@@ -22,35 +27,41 @@ export default class Main {
   cast: Object
   state: Object
   app: Object
-  dispatchHandlers: Object
 
   constructor() {
     // Initialize crash reporter
     crashReporter()
     // Load state
-    State.load(this.onState)
+    State.load((err, _state) => {
+      if (err) return this.onError(err)
+      this.onState(_state)
+    })
     // Setup dispatcher
-    dispatcher.setDispatch(this.dispatch)
+    setDispatch((...args) => {
+      this.dispatch(...args)
+    })
+    // Setup HTTP
+    HTTP.setup()
   }
 
-  onState(err, _state) {
-    if (err) return this.onError(err)
-
+  onState(_state) {
     // Make available for easier debugging
-    const state = this.state = = _state
-    window.dispatch = this.dispatch
+    const state = this.state = _state
 
-    telemetry.init(state)
+    //const _telemetry = this.telemetry = new Telemetry(state)
 
     // Log uncaught JS errors
-    window.addEventListener(
-      'error', (e) => telemetry.logUncaughtError('window', e), true /* capture */
-    )
+    /*window.addEventListener(
+      'error', (e) => _telemetry.logUncaughtError('window', e), true
+    )*/
 
     // Create controllers and lazyload them
     this.controllers = {
+      home: createGetter(() => {
+        return new HomeController(state, config)
+      }),
       preferences: createGetter(() => {
-        return require('./controllers/preferences')(state, config)
+        return new PreferencesController(state, config)
       }),
       watched: createGetter(() => {
         return require('./controllers/watched')(state, config)
@@ -65,7 +76,8 @@ export default class Main {
         return require('./controllers/media')(state)
       }),
       torrent: createGetter(() => {
-        return require('./controllers/torrent')(state)
+        const TorrentController = require('./controllers/torrent')
+        return new TorrentController(state)
       }),
       playback: createGetter(() => {
         return require('./controllers/playback')(state, config, this.update)
@@ -83,7 +95,7 @@ export default class Main {
 
     // Add last page to location history
     state.location.go({
-      url: state.saved.prefs.lastLocation,
+      url: state.saved.lastLocation,
       setup: (callback) => {
         state.window.title = `Welcome back to ${config.APP.NAME}`
         callback(null)
@@ -93,18 +105,13 @@ export default class Main {
     // Restart everything we were torrenting last time the app ran
     //this.resumeTorrents()
 
-    // Initialize ReactDOM with translations
-    getTranslations(state.saved.prefs.language, (translation, locale) => {
-      this.app = ReactDOM.render(
-        <App state={state} translation={translation} locale={locale} />,
-        document.querySelector('#content-wrapper')
-      )
-    })
+    // Initialize ReactDOM
+    this.renderMain()
 
     // Calling update() updates the UI given the current state
     // Do this at least once a second to give every file in every torrentSummary
     // a progress bar and to keep the cursor in sync when playing a video
-    setInterval(update, 1000)
+    //setInterval(self.update, 1000)
 
     // Listen for messages from the main process
     this.setupIpc()
@@ -122,7 +129,7 @@ export default class Main {
     }
 
     // To keep app startup fast, some code is delayed.
-    window.setTimeout(this.delayedInit, config.DELAYED_INIT)
+    window.setTimeout(() => this.delayedInit(), config.DELAYED_INIT)
 
     // Done! Ideally we want to get here < 700ms after the user clicks the app
     console.timeEnd('init')
@@ -130,11 +137,13 @@ export default class Main {
 
   // Runs a few seconds after the app loads, to avoid slowing down startup time
   delayedInit() {
-    telemetry.send(this.state)
+    //const {telemetry} = this
 
-    // Send telemetry data every 6 hours, for users who keep the app running
+    //telemetry.send(this.state)
+
+    // Send Telemetry data every 6 hours, for users who keep the app running
     // for extended periods of time
-    setInterval(() => telemetry.send(state), 6 * 3600 * 1000)
+    //setInterval(() => telemetry.send(state), 6 * 3600 * 1000)
 
     // Warn if the download dir is gone, eg b/c an external drive is unplugged
     this.checkDownloadPath()
@@ -186,11 +195,11 @@ export default class Main {
   }
 
   // Setup dispatch handlers
-  setupDispatchHandlers() {
+  dispatchHandlers(action) {
     const {state, controllers} = this
 
-    this.dispatchHandlers = {
-      addTorrent: (id) => controllers.
+    const dispatchHandlers = {
+      //ddTorrent: (id) => controllers.
 
       // Subtitles
       selectSubtitle: (i) => controllers.subtitles().selectSubtitle(i),
@@ -198,6 +207,7 @@ export default class Main {
       // Preferences
       updatePreferences: (key, value) => controllers.preferences().update(key, value),
       checkDownloadPath: this.checkDownloadPath,
+      setIso: (iso2, iso4) => this.renderMain(iso2, iso4),
 
       // Updates
       updateAvailable: (version) => controllers.update().updateAvailable(version),
@@ -216,15 +226,17 @@ export default class Main {
       // Pages
       preferences: () => controllers.preferences().show(),
       home: () => controllers.home().show(),
-      starred: () => controllers.starred().show()
+      starred: () => controllers.starred().show(),
 
       // Everything else
-      uncaughtError: (proc, err) => telemetry.logUncaughtError(proc, err),
+      //uncaughtError: (proc, err) => telemetry.logUncaughtError(proc, err),
       error: this.onError,
       stateSave: () => State.save(state),
       stateSaveImmediate: () => State.saveImmediate(state),
       update: () => {} // No-op, just trigger an update
     }
+
+    return dispatchHandlers[action]
   }
 
   dispatch(action, ...args) {
@@ -233,7 +245,7 @@ export default class Main {
       console.log('dispatch: %s %o', action, args)
     }
 
-    const handler = this.dispatchHandlers[action]
+    const handler = this.dispatchHandlers(action)
     if (handler) {
       handler(...args)
     } else {
@@ -242,12 +254,35 @@ export default class Main {
 
     // Update the virtual DOM, unless it's just a mouse move event
     if (action !== 'mediaMouseMoved' ||
-      controllers.playback().showOrHidePlayerControls()) {
+      this.controllers.playback().showOrHidePlayerControls()) {
       this.update()
     }
   }
 
+  renderMain(iso2, iso4) {
+    const {state} = this
+    const {prefs} = state.saved
+
+    if (typeof iso2 !== 'undefined' && typeof iso4 !== 'undefined') {
+      prefs.iso2 = iso2
+      prefs.iso4 = iso4
+
+      State.save(this.state)
+    }
+
+    const locale = iso2 || prefs.iso2
+
+    HTTP.get(`${config.APP.API}/translation/${locale}`, (translation) => {
+      this.app = ReactDOM.render(
+        <App state={state} translation={translation} locale={locale} />,
+        document.querySelector('#content-wrapper')
+      )
+    })
+  }
+
   setupIpc() {
+    const {controllers, telemetry} = this
+
     const ipc = ipcRenderer
 
     ipc.on('log', (e, ...args) => console.log(...args))
@@ -262,7 +297,7 @@ export default class Main {
     ipc.on('wt-infohash', (e, ...args) => tc.torrentInfoHash(...args))
     ipc.on('wt-metadata', (e, ...args) => tc.torrentMetadata(...args))
     ipc.on('wt-done', (e, ...args) => tc.torrentDone(...args))
-    ipc.on('wt-done', () => this.controllers.torrentList().resumePausedTorrents())
+    ipc.on('wt-done', () => controllers.torrentList().resumePausedTorrents())
     ipc.on('wt-warning', (e, ...args) => tc.torrentWarning(...args))
     ipc.on('wt-error', (e, ...args) => tc.torrentError(...args))
 
@@ -273,7 +308,7 @@ export default class Main {
     ipc.on('wt-audio-metadata', (e, ...args) => tc.torrentAudioMetadata(...args))
     ipc.on('wt-server-running', (e, ...args) => tc.torrentServerRunning(...args))
 
-    ipc.on('wt-uncaught-error', (e, err) => telemetry.logUncaughtError('webtorrent', err))
+    //ipc.on('wt-uncaught-error', (e, err) => telemetry.logUncaughtError('webtorrent', err))
 
     ipc.send('ipcReady')
 

@@ -58,13 +58,13 @@ export default class Main {
       win.setMenuBarVisibility(true)
     })
 
-    win.on('move', debounce(e => {
+    /*win.on('move', debounce(e => {
       win.send('windowBoundsChanged', e.sender.getBounds())
-    }, 1000))
+    }, 1000))*/
 
-    win.on('resize', debounce(e => {
+    /*win.on('resize', debounce(e => {
       win.send('windowBoundsChanged', e.sender.getBounds())
-    }, 1000))
+    }, 1000))*/
 
     win.on('close', (e) => {
       if(process.platform !== 'darwin') {

@@ -17,7 +17,6 @@ import announcement from './announcement'
 import updater from './updater'
 import Tray from './tray'
 import ipc from './ipc'
-import Preferences from '../preferences'
 // import dialog from './dialog'
 
 console.time('init')
@@ -66,7 +65,7 @@ function init () {
 
   parallel({
     appReady: (cb) => app.on('ready', () => cb(null)),
-    state: (cb) => State.load(cb))
+    state: (cb) => State.load(cb)
   }, onReady)
 
   function onReady (err, results) {
@@ -106,12 +105,12 @@ function init () {
     app.isQuitting = true
     e.preventDefault()
     Main.dispatch('stateSaveImmediate') // try to save state on exit
-    ipcMain.once('stateSaved', app.quit)
-    /* setTimeout(() => {
+    ipcMain.once('stateSaved', () => app.quit())
+    setTimeout(() => {
       console.error('Saving state took too long. Quitting.')
       app.quit()
-    }, 4000) // quit after 4 secs, at most */
-    app.quit()
+    }, 4000) // quit after 4 secs, at most
+    //app.quit()
   })
 
   app.on('activate', () => {

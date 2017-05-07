@@ -4,36 +4,34 @@
  * @author Marcus S. Abildskov
  */
 
-const {
-  productName,
-  version,
-  description
-} = require('../package.json')
+const pckg = require('../package.json')
 const path = require('path')
 const electron = require('electron')
 const arch = require('arch')
 const fs = require('fs')
+const appConfig = require('application-config')('Venobo')
 
-const APP_TEAM = productName + ' Dev'
+const APP_TEAM = pckg.productName + ' Dev'
 const STATIC_PATH = path.join(__dirname, '..', 'static')
 const IS_TEST = isTest()
 const PORTABLE_PATH = IS_TEST
-        ? path.join(process.platform === 'win32' ? 'C:\\Windows\\Temp' : '/tmp', productName)
-        : path.join(path.dirname(process.execPath), productName)
+        ? path.join(process.platform === 'win32' ? 'C:\\Windows\\Temp' : '/tmp', pckg.productName)
+        : path.join(path.dirname(process.execPath), pckg.productName)
 const IS_PRODUCTION = isProduction()
 const IS_PORTABLE = isPortable()
 const APP_PATH = path.join(PORTABLE_PATH, 'App')
+const CONFIG_PATH = getConfigPath()
 
 module.exports = {
   OS_SYSARCH: arch() === 'x64' ? 'x64' : 'ia32',
   APP: {
     COPYRIGHT: 'Copyright © 2017 ' + APP_TEAM,
-    ICON: path.join(STATIC_PATH, 'img', productName),
-    NAME: productName,
+    ICON: path.join(STATIC_PATH, 'img', pckg.productName),
+    NAME: pckg.productName,
     TEAM: APP_TEAM,
-    VERSION: version,
+    VERSION: pckg.version,
     SECRET_KEY: '56dc6f8e86f739bbce37281a8ad47641',
-    DESC: description,
+    DESC: pckg.description,
     API: 'https://venobo.herokuapp.com/api',
     URL: 'http://localhost:3001',
     ANNOUNCEMENT: 'http://localhost:3001/desktop/announcement',
@@ -44,9 +42,9 @@ module.exports = {
     APP: APP_PATH,
     ROOT: __dirname,
     STATIC: STATIC_PATH,
-    CACHE: path.join(APP_PATH, 'cache'),
+    CACHE: path.join(CONFIG_PATH, 'cache'),
     DOWNLOAD: getDefaultDownloadPath(),
-    CONFIG: path.join(APP_PATH, 'config'),
+    CONFIG: CONFIG_PATH,
     PORTABLE: PORTABLE_PATH
   },
   TMDB: {
@@ -79,6 +77,14 @@ module.exports = {
   DELAYED_INIT: 3000 /* 3 seconds */
 }
 
+function getConfigPath () {
+  if (IS_PORTABLE) {
+    return PORTABLE_PATH
+  } else {
+    return path.dirname(appConfig.filePath)
+  }
+}
+
 function getPath (key) {
   if (!process.versions.electron) {
     // Node.js process
@@ -94,7 +100,7 @@ function getPath (key) {
 
 function getDefaultDownloadPath () {
   if (IS_PORTABLE) {
-    return path.join(APP_PATH, 'Downloads')
+    return path.join(CONFIG_PATH, 'downloads')
   } else {
     return getPath('downloads')
   }
