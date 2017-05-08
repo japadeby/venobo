@@ -80,6 +80,21 @@ export default class Main {
     })
   }
 
+  static setProgress(progress) {
+    if (!this.win) return
+    this.win.setProgressBar(progress)
+  }
+
+  static setTitle(title) {
+    if (!this.win || title == null) return
+    this.win.setTitle(title)
+  }
+
+  static show() {
+    if (!this.win) return
+    this.win.show()
+  }
+
   static dispatch(...args) {
     this.win.send('dispatch', ...args)
   }
@@ -113,6 +128,11 @@ export default class Main {
     if(flag) win.setAspectRatio(0)
 
     win.setFullScreen(flag)
+  }
+
+  static setAspectRatio(aspectRatio) {
+    if (!this.win) return
+    this.win.setAspectRatio(aspectRatio)
   }
 
   static onWindowBlur() {

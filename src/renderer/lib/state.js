@@ -55,6 +55,7 @@ function getDefaultState () {
       badge: 0,
       progress: 0
     },
+    tooltip: null,
     modal: null, /* modal popover */
     errors: [], /* user-facing errors */
     nextTorrentKey: 1, /* identify torrents for IPC between the main and webtorrent windows */

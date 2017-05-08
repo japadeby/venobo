@@ -1,9 +1,8 @@
 import React from 'react'
 import classNames from 'classnames'
-import md5 from 'crypto-js/md5'
+import { NavLink } from 'react-router-dom'
 
-import {withTranslate} from '../utils/react-multilingual'
-import {dispatch} from '../lib/dispatcher'
+import { withTranslate } from '../utils/react-multilingual'
 
 import Poster from './poster'
 import {
@@ -28,15 +27,15 @@ class Carousel extends React.Component {
     }
 
     updateCarousel = () => {
-      var state = this.state
-      var $reactItems = $(this.refs.items).children().children('.react-item')
-      var maxw = $(this.refs.wrapper).width()
+      const {state} = this
+      const $reactItems = $(this.refs.items).children().children('.react-item')
+      const maxw = $(this.refs.wrapper).width()
 
-      var itemsFitSlide = $reactItems.filter(function() {
+      let itemsFitSlide = $reactItems.filter(function() {
         return $(this).position().left < maxw
       }).length
 
-      var startPoint = parseInt($reactItems.css('margin-left'))
+      const startPoint = parseInt($reactItems.css('margin-left'))
 
       this.setState({
         navPrevDisabled: true,
@@ -56,7 +55,7 @@ class Carousel extends React.Component {
     }
 
     handleNext = (e) => {
-      var state = this.state
+      const {state} = this
 
       var innerWidth = -Math.abs(state.innerWidth - (state.itemWidth * state.itemsFitSlide))
 
@@ -80,7 +79,7 @@ class Carousel extends React.Component {
     }
 
     handlePrev = (e) => {
-      var state = this.state
+      const {state} = this
 
       var innerWidth = state.innerWidth + (state.itemWidth * state.itemsFitSlide)
 
@@ -105,36 +104,36 @@ class Carousel extends React.Component {
     }
 
     render() {
-      var props = this.props
+      const {props, state} = this
 
       var nav = {
         prev: classNames('navigation prev whiteframe', {
-          disabled: this.state.navPrevDisabled
+          disabled: state.navPrevDisabled
         }),
         next: classNames('navigation next whiteframe', {
-          disabled: this.state.navNextDisabled
+          disabled: state.navNextDisabled
         })
       }
 
       return (
-        <BlockCollection classNames={"carousel"}>
+        <BlockCollection classNames="carousel">
           <Scaffold>
             <i className={nav.prev} onClick={this.handlePrev}></i>
             <i className={nav.next} onClick={this.handleNext}></i>
             <CollectionHeader>
               {props.route ? (
-                <a href="#" onClick={() => dispatch(props.route)}>
-                  <HeaderButton>{this.props.translate('show.more')}</HeaderButton>
+                <NavLink to={props.route}>
+                  <HeaderButton>{props.translate('show.more')}</HeaderButton>
                   <h2>{props.title}</h2>
-                </a>
+                </NavLink>
               ) : (
                 <h2>{props.title}</h2>
               )}
             </CollectionHeader>
             <div className="carousel-wrapper" ref="wrapper">
-              <div className="carousel-inner use-transition" style={{transform: `translateX(${this.state.innerWidth}px)`}}>
+              <div className="carousel-inner use-transition" style={{transform: `translateX(${state.innerWidth}px)`}}>
                 <span ref="items">
-                  <Poster items={this.props.items} />
+                  <Poster items={props.items} />
                 </span>
               </div>
             </div>

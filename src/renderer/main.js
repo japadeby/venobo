@@ -83,7 +83,7 @@ export default class Main {
     // Calling update() updates the UI given the current state
     // Do this at least once a second to give every file in every torrentSummary
     // a progress bar and to keep the cursor in sync when playing a video
-    //setInterval(self.update, 1000)
+    setInterval(() => this.update(), 1000)
 
     // Listen for messages from the main process
     this.setupIpc()
@@ -153,7 +153,7 @@ export default class Main {
   updateElectron() {
     const {window, prev, dock} = this.state
 
-    if (window.title !== prev.title) {
+    if (window.title !== prev.title && window.title !== null) {
       prev.title = window.title
       ipcRenderer.send('setTitle', window.title)
     }
@@ -192,17 +192,18 @@ export default class Main {
       forward: () => state.saved.history.goForward(),
 
       // Controlling the window
-      setDimensions: this.setDimensions,
+      //setDimensions: this.setDimensions,
       toggleFullScreen: (setTo) => ipcRenderer.send('toggleFullScreen', setTo),
       setTitle: (title) => { state.window.title = title },
       setHistory : (history) => {
         state.saved.history = Object.assign(history, state.saved.history)
       },
       setLocation: (location) => { state.location = location },
+      setTooltip: (data) => { state.tooltip = data },
 
       // Everything else
       //uncaughtError: (proc, err) => telemetry.logUncaughtError(proc, err),
-      error: this.onError,
+      error: () => this.onError(),
       stateSave: () => State.save(state),
       stateSaveImmediate: () => State.saveImmediate(state),
       update: () => {}, // No-op, just trigger an update

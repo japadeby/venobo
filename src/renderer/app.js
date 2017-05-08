@@ -69,17 +69,20 @@ export default class App extends React.Component {
   }
 
   getLastRoute() {
-    const {pathname} = this.props.state.saved.history.location
     const {controllers} = this.state
 
-    for (let name in controllers) {
-      if (controllers[name][0] === pathname) {
-        return controllers[name][1]
-      }
-    }
+    try {
+      const {pathname} = this.props.state.saved.location
 
-    // No match? Don't worry, just return the default home controller
-    return controllers.home[1]
+      for (let name in controllers) {
+        if (controllers[name][0] === pathname) {
+          return controllers[name][1]
+        }
+      }
+    } catch(e) {
+      // No match? Don't worry, just return the default home controller
+      return controllers.home[1]
+    }
   }
 
   /*getControllers() {

@@ -87,12 +87,12 @@ export default function () {
   /**
    * Windows: Main
    */
-  ipc.on('setAspectRatio', (e, ...args) => Main.win.setAspectRatio(...args))
-  ipc.on('setProgress', (e, ...args) => Main.win.setProgressBar(...args))
-  ipc.on('setTitle', (e, ...args) => Main.win.setTitle(...args))
+  ipc.on('setAspectRatio', (e, ...args) => Main.setAspectRatio(...args))
+  ipc.on('setProgress', (e, ...args) => Main.setProgress(...args))
+  ipc.on('setTitle', (e, ...args) => Main.setTitle(...args))
   ipc.on('toggleFullScreen', (e, ...args) => Main.toggleFullScreen(...args))
   ipc.on('setAllowNav', (e, ...args) => Menu.setAllowNav(...args))
-  ipc.on('show', (e, ...args) => Main.win.show())
+  ipc.on('show', (e, ...args) => Main.show())
 
   /**
    * External Media Player

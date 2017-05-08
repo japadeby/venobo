@@ -3,6 +3,8 @@ import React from 'react'
 import Footer from '../components/footer'
 import Header from '../components/header'
 
+import Tooltip from '../components/tooltip'
+
 export default class View extends React.Component {
 
   render() {
@@ -15,6 +17,7 @@ export default class View extends React.Component {
           <div className="dockable" />
           {props.children}
         </div>
+        <Tooltip media={props.state.tooltip} />
         <Footer state={props.state} />
       </div>
     )
