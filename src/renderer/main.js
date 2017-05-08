@@ -144,26 +144,26 @@ export default class Main {
   update() {
     const {app, state} = this
     //this.controllers.playback().showOrHidePlayerControls()
-    if (app) app.setState(state)
+    //if (app) app.setState(state)
     this.updateElectron()
   }
 
   // Some state changes can't be reflected in the DOM, instead we have to
   // tell the main process to update the window or OS integrations
   updateElectron() {
-    const {state} = this
+    const {window, prev, dock} = this.state
 
-    if (state.window.title !== state.prev.title) {
-      state.prev.title = state.window.title
-      ipcRenderer.send('setTitle', state.window.title)
+    if (window.title !== prev.title) {
+      prev.title = window.title
+      ipcRenderer.send('setTitle', window.title)
     }
-    if (state.dock.progress.toFixed(2) !== state.prev.progress.toFixed(2)) {
-      state.prev.progress = state.dock.progress
-      ipcRenderer.send('setProgress', state.dock.progress)
+    if (dock.progress.toFixed(2) !== prev.progress.toFixed(2)) {
+      prev.progress = dock.progress
+      ipcRenderer.send('setProgress', dock.progress)
     }
-    if (state.dock.badge !== state.prev.badge) {
-      state.prev.badge = state.dock.badge
-      ipcRenderer.send('setBadge', state.dock.badge || 0)
+    if (dock.badge !== prev.badge) {
+      prev.badge = dock.badge
+      ipcRenderer.send('setBadge', dock.badge || 0)
     }
   }
 
@@ -187,29 +187,26 @@ export default class Main {
       skipVersion: (version) => controllers.update().skipVersion(version),
 
       // State locations
-      back: () => state.location.back(),
-      forward: () => state.location.forward(),
-      cancel: () => state.location.cancel(),
+      back: () => state.history.goBack(),
+      forward: () => state.history.goForward(),
 
       // Controlling the window
       setDimensions: this.setDimensions,
       toggleFullScreen: (setTo) => ipcRenderer.send('toggleFullScreen', setTo),
       setTitle: (title) => { state.window.title = title },
-
-      // Pages
-      preferences: () => controllers.preferences().show(),
-      home: () => controllers.home().show(),
-      //starred: () => controllers.starred().show(),
+      setHistory : (history) => { state.history = history },
+      setLocation: (location) => { state.location = location },
 
       // Everything else
       //uncaughtError: (proc, err) => telemetry.logUncaughtError(proc, err),
       error: this.onError,
       stateSave: () => State.save(state),
       stateSaveImmediate: () => State.saveImmediate(state),
-      stateSetLastLocation: () => {
-        state.saved.lastLocation = state.location.url()
+      stateSaveLocation: () => {
+        state.saved.lastLocation = state.location.pathname
       },
-      update: () => {} // No-op, just trigger an update
+      update: () => {}, // No-op, just trigger an update
+      updateElectron: () => this.updateElectron()
     }
 
     return dispatchHandlers[action]
@@ -249,7 +246,7 @@ export default class Main {
 
     HTTP.get(`${config.APP.API}/translation/${locale}`, (translation) => {
       this.app = ReactDOM.render(
-        <App state={state} translation={translation} locale={locale} />,
+        <App state={state} translation={translation} locale={locale} history={state.history} />,
         document.querySelector('#content-wrapper')
       )
     })
@@ -363,7 +360,7 @@ export default class Main {
   onWindowBoundsChanged(e, newBounds) {
     const {state, dispatch} = this
 
-    if (state.location.url() !== 'player') {
+    if (state.history.pathname !== '/player') {
       state.saved.bounds = newBounds
       dispatch('stateSave')
     }

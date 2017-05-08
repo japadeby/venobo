@@ -10,12 +10,12 @@ export default class View extends React.Component {
 
     return (
       <div>
-        <Header />
+        <Header state={props.state} />
         <div id="content" className="section">
           <div className="dockable" />
           {props.children}
         </div>
-        <Footer />
+        <Footer state={props.state} />
       </div>
     )
   }

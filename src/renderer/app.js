@@ -1,14 +1,12 @@
 import React from 'react'
-import { MemoryRouter as Router, Route } from 'react-router-dom'
-
-import createBrowserHistory from 'history/createBrowserHistory'
-const history = createBrowserHistory()
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import View from './pages/view'
 
 import HomeController from './controllers/home'
 import PreferencesController from './controllers/preferences'
 
+import {dispatch} from './lib/dispatcher'
 import { IntlProvider, withTranslate } from './utils/react-multilingual'
 
 /**
@@ -24,6 +22,9 @@ const renderMergedProps = (component, ...rest) => {
 const PropsRoute = ({ component, ...rest }) => {
   return (
     <Route {...rest} render={routeProps => {
+      dispatch('setLocation', routeProps.location)
+      dispatch('setHistory', routeProps.history)
+
       return renderMergedProps(component, routeProps, rest)
     }} />
   )
@@ -45,14 +46,14 @@ export default class App extends React.Component {
 
   render() {
     const {props, state} = this
-    const {translation, locale} = props
+    const {translation, locale, history} = props
     const {controllers} = state
 
     return (
       <IntlProvider translations={translation} locale={locale}>
-        <Router history={history}>
-          <View>
-            <PropsRoute exact path={'/'} component={this.getLastRoute()} state={props.state} />
+        <MemoryRouter>
+          <View state={props.state}>
+            <PropsRoute exact path="/" component={this.getLastRoute()} state={props.state} />
             {Object.keys(controllers).map(name => {
               let path = controllers[name][0]
               let Component = withTranslate(controllers[name][1])
@@ -62,7 +63,7 @@ export default class App extends React.Component {
               </div>)
             })}
           </View>
-        </Router>
+        </MemoryRouter>
       </IntlProvider>
     )
   }

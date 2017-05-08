@@ -104,7 +104,7 @@ function init () {
 
     app.isQuitting = true
     e.preventDefault()
-    Main.dispatch('stateSetLastLocation')
+    Main.dispatch('stateSaveLocation')
     Main.dispatch('stateSaveImmediate') // try to save state on exit
     ipcMain.once('stateSaved', () => app.quit())
     setTimeout(() => {

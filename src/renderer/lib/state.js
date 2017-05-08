@@ -1,11 +1,13 @@
 import path from 'path'
 import {EventEmitter} from 'events'
-import LocationHistory from 'location-history'
 import cpFile from 'cp-file'
 import fs from 'fs'
 import debounce from 'debounce'
+import os from 'os'
+
 import config from '../../config'
 import migrate from './migrations'
+
 const appConfig = require('application-config')('Venobo')
 
 const SAVE_DEBOUNCE_INTERVAL = 1000
@@ -38,13 +40,14 @@ function getDefaultState () {
       progress: -1,
       badge: null
     },
-    location: new LocationHistory(),
     window: {
       bounds: null, /* {x, y, width, height } */
       isFocused: true,
       isFullScreen: false,
       title: config.APP_WINDOW_TITLE
     },
+    location: {},
+    history: {},
     selectedInfoHash: null, /* the torrent we've selected to view details. see state.torrents */
     playing: getDefaultPlayState(), /* the media (audio or video) that we're currently playing */
     devices: {}, /* playback devices like Chromecast and AppleTV */
@@ -119,6 +122,8 @@ function setupStateSaved (callback) {
       iso2: 'EN',
       iso4: 'en-US'
     },
+    starred: [],
+    username: os.hostname(),
     lastLocation: '/home',
     torrents: [],
     torrentsToResume: [],

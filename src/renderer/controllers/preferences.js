@@ -21,12 +21,13 @@ export default class PreferencesController extends React.Component {
     if (state.isMounted) return
 
     // initialize preferences
-    props.state.window.title = 'Preferences'
+    //props.state.window.title = 'Preferences'
     props.state.unsaved = Object.assign(props.state.unsaved || {}, {
       prefs: Object.assign({}, props.state.saved.prefs)
     })
     ipcRenderer.send('setAllowNav', false)
-    callback(null)
+
+    dispatch('setTitle', 'Preferences')
 
     this.setState({
       isMounted: true
@@ -34,9 +35,10 @@ export default class PreferencesController extends React.Component {
   }
 
   componentWillUnmount() {
-    console.log('Preferences controller unmounted')
-    ipcRenderer.send('setAllowNav', true)
-    this.save()
+    if (this.state.isMounted) {
+      ipcRenderer.send('setAllowNav', true)
+      this.save()
+    }
   }
 
   render() {

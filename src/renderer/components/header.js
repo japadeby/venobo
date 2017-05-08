@@ -1,8 +1,8 @@
 import React from 'react'
+import { NavLink } from 'react-router-dom'
 
-import {dispatch} from '../lib/dispatcher'
 import config from '../../config'
-import {withTranslate} from '../utils/react-multilingual'
+import { withTranslate } from '../utils/react-multilingual'
 
 class Header extends React.Component {
 
@@ -52,44 +52,44 @@ class Header extends React.Component {
   }
 
   render() {
-    const {translate} = this.props
+    const {translate, state} = this.props
 
     return (
       <div className="block page-header">
         <div className="scaffold">
           <div className="logo">
-            <a href="#" onClick={() => dispatch('home')}>
+            <NavLink to="/home">
               <img src={config.APP.LARGE_LOGO} width="144" height="35" />
-            </a>
+            </NavLink>
           </div>
           <nav className="sections">
-            <a href="#" onClick={() => dispatch('series')}>{translate('nav.series')}</a>
-            <a href="#" onClick={() => dispatch('movies')}>{translate('nav.movies')}</a>
+            <NavLink to="/series">{translate('nav.series')}</NavLink>
+            <NavLink to="/movies">{translate('nav.movies')}</NavLink>
           </nav>
           <div className="user" ref="user">
             <div className="details authenticated" onMouseEnter={this.userHover} onMouseLeave={this.userLeave}>
               <div className="summary">
                 <button className="user-name">
-                  <div>Sentinel</div>
+                  <div>{state.saved.username}</div>
                 </button>
               </div>
               <div className="dropdown">
                 <div className="box-shadow">
                   <ul>
                     <li>
-                      <a href="#" onClick={() => dispatch('watched')} className="icon watched">
+                      <NavLink to="/watched" className="icon watched">
                         {translate('watched')}
-                      </a>
+                      </NavLink>
                     </li>
                     <li>
-                      <a href="#" onClick={() => dispatch('starred')} className="icon starred">
+                      <NavLink to="/starred" className="icon starred">
                         {translate('starred')}
-                      </a>
+                      </NavLink>
                     </li>
                     <li>
-                      <a href="#" onClick={() => dispatch('preferences')} className="icon settings">
+                      <NavLink to="/preferences" className="icon settings">
                         {translate('preferences')}
-                      </a>
+                      </NavLink>
                     </li>
                   </ul>
                   {/*<ul>

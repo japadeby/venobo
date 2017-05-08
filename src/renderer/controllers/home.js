@@ -24,7 +24,7 @@ export default class HomeController extends React.Component {
     if (state.isMounted) return
 
     // initialize preferences
-    props.state.window.title = 'Home'
+    //props.state.window.title = 'Home'
     ipcRenderer.send('setAllowNav', false)
 
     HTTP.get(`${config.APP.API}/movies/sort/latest`, (data) => {
@@ -34,6 +34,9 @@ export default class HomeController extends React.Component {
         latestMovies.push({poster: `${config.TMDB.POSTER}${data[i].poster}`})
       }
 
+
+      dispatch('setTitle', 'Home')
+
       this.setState({
         isMounted: true,
         media: {
@@ -41,8 +44,6 @@ export default class HomeController extends React.Component {
         }
       })
     })
-
-    dispatch('update')
   }
 
   componentWillUnmount() {
