@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default class Preferences extends React.Component {
+export default class PreferencesPage extends React.Component {
   render () {
     return (
       <div className='settings scaffold'>
