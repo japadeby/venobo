@@ -90,6 +90,11 @@ export default class Menu {
             click: () => Main.dispatch('escapeBack')
           },
           {
+            label: 'Go Forward',
+            accelerator: 'Alt+Esc',
+            click: () => Main.dispatch('forward')
+          },
+          {
             type: 'separator'
           },
           {

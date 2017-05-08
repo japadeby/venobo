@@ -104,14 +104,12 @@ function init () {
 
     app.isQuitting = true
     e.preventDefault()
-    Main.dispatch('stateSaveLocation')
     Main.dispatch('stateSaveImmediate') // try to save state on exit
     ipcMain.once('stateSaved', () => app.quit())
     setTimeout(() => {
       console.error('Saving state took too long. Quitting.')
       app.quit()
     }, 4000) // quit after 4 secs, at most
-    //app.quit()
   })
 
   app.on('activate', () => {

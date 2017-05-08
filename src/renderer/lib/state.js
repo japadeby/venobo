@@ -122,9 +122,9 @@ function setupStateSaved (callback) {
       iso2: 'EN',
       iso4: 'en-US'
     },
+    history: {},
     starred: [],
     username: os.hostname(),
-    lastLocation: '/home',
     torrents: [],
     torrentsToResume: [],
     version: config.APP.VERSION /* make sure we can upgrade gracefully later */

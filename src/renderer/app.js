@@ -69,11 +69,11 @@ export default class App extends React.Component {
   }
 
   getLastRoute() {
-    const {lastLocation} = this.props.state.saved
+    const {pathname} = this.props.state.saved.history.location
     const {controllers} = this.state
 
     for (let name in controllers) {
-      if (controllers[name][0] === lastLocation) {
+      if (controllers[name][0] === pathname) {
         return controllers[name][1]
       }
     }

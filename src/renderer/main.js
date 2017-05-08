@@ -187,14 +187,17 @@ export default class Main {
       skipVersion: (version) => controllers.update().skipVersion(version),
 
       // State locations
-      back: () => state.history.goBack(),
-      forward: () => state.history.goForward(),
+      escapeBack: () => this.escapeBack(),
+      back: () => state.saved.history.goBack(),
+      forward: () => state.saved.history.goForward(),
 
       // Controlling the window
       setDimensions: this.setDimensions,
       toggleFullScreen: (setTo) => ipcRenderer.send('toggleFullScreen', setTo),
       setTitle: (title) => { state.window.title = title },
-      setHistory : (history) => { state.history = history },
+      setHistory : (history) => {
+        state.saved.history = Object.assign(history, state.saved.history)
+      },
       setLocation: (location) => { state.location = location },
 
       // Everything else
@@ -202,9 +205,6 @@ export default class Main {
       error: this.onError,
       stateSave: () => State.save(state),
       stateSaveImmediate: () => State.saveImmediate(state),
-      stateSaveLocation: () => {
-        state.saved.lastLocation = state.location.pathname
-      },
       update: () => {}, // No-op, just trigger an update
       updateElectron: () => this.updateElectron()
     }
@@ -246,7 +246,7 @@ export default class Main {
 
     HTTP.get(`${config.APP.API}/translation/${locale}`, (translation) => {
       this.app = ReactDOM.render(
-        <App state={state} translation={translation} locale={locale} history={state.history} />,
+        <App state={state} translation={translation} locale={locale} />,
         document.querySelector('#content-wrapper')
       )
     })
@@ -289,14 +289,14 @@ export default class Main {
 
   // Quits modals, full screen, or goes back. Happens when the user hits ESC
   escapeBack () {
-    const {dispatch, state} = this
+    const {state} = this
 
     if (state.modal) {
-      dispatch('exitModal')
+      this.dispatch('exitModal')
     } else if (state.window.isFullScreen) {
-      dispatch('toggleFullScreen')
+      this.dispatch('toggleFullScreen')
     } else {
-      dispatch('back')
+      this.dispatch('back')
     }
   }
 
@@ -360,7 +360,7 @@ export default class Main {
   onWindowBoundsChanged(e, newBounds) {
     const {state, dispatch} = this
 
-    if (state.history.pathname !== '/player') {
+    if (state.location.pathname !== '/player') {
       state.saved.bounds = newBounds
       dispatch('stateSave')
     }
