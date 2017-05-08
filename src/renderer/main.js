@@ -93,8 +93,8 @@ export default class Main {
     }, 1000, true)
 
     // ...focus and blur. Needed to show correct dock icon text ('badge') in OSX
-    //window.addEventListener('focus', (e) => this.onFocus(e))
-    //window.addEventListener('blur', (e) => this.onBlur(e))
+    window.addEventListener('focus', (e) => this.onFocus(e))
+    window.addEventListener('blur', (e) => this.onBlur(e))
 
     if (remote.getCurrentWindow().isVisible()) {
       sound('STARTUP')
@@ -142,8 +142,9 @@ export default class Main {
   // 3. dispatch - the event handler calls dispatch(), main.js sends it to a controller
   // 4. controller - the controller handles the event, changing the state object
   update() {
+    const {app, state} = this
     //this.controllers.playback().showOrHidePlayerControls()
-    this.app.setState(this.state)
+    if (app) app.setState(state)
     this.updateElectron()
   }
 
@@ -318,7 +319,7 @@ export default class Main {
   }
 
   onError(err) {
-    const {update, state} = this
+    const {state} = this
 
     console.error(err.stack || err)
     sound('ERROR')
@@ -327,22 +328,20 @@ export default class Main {
       message: err.message || err
     })
 
-    update()
+    this.update()
   }
 
   onFocus(e) {
-    const {state, update} = this
+    const {state} = this
 
     state.window.isFocused = true
     state.dock.badge = 0
-    update()
+    this.update()
   }
 
   onBlur() {
-    const {state, update} = this
-
-    state.window.isFocused = false
-    update()
+    this.state.window.isFocused = false
+    this.update()
   }
 
   onVisibilityChange() {

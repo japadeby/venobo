@@ -4,6 +4,7 @@ import React from 'react'
 import HomePage from '../pages/home'
 
 import HTTP from '../utils/http'
+import {dispatch} from '../lib/dispatcher'
 import config from '../../config'
 
 // Controls the Home page
@@ -40,6 +41,8 @@ export default class HomeController extends React.Component {
         }
       })
     })
+
+    dispatch('update')
   }
 
   componentWillUnmount() {
@@ -50,7 +53,7 @@ export default class HomeController extends React.Component {
     const {props, state} = this
 
     if (state.isMounted) {
-      return (<HomePage state={props.state} media={state.media} />)
+      return (<HomePage {...props} media={state.media} />)
     } else {
       return (<div>Some loading content here</div>)
     }
