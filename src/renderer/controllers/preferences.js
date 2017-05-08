@@ -40,7 +40,7 @@ export default class PreferencesController extends React.Component {
   }
 
   render() {
-    return (<PreferencesPage state={this.props.state} />)
+    return (<PreferencesPage {...this.props} />)
   }
 
   // Updates a single property in the UNSAVED prefs
