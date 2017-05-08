@@ -9,7 +9,7 @@ import ReactDOM from 'react-dom'
 
 import crashReporter from '../crash-reporter'
 import State from './lib/state'
-import App from './pages/app'
+import App from './app'
 import sound from './lib/sound'
 import config from '../config'
 //import TorrentPlayer from './lib/torrent-player'
@@ -18,8 +18,6 @@ import HTTP from './utils/http'
 //import Telemetry from './lib/telemetry'
 
 // Controllers
-import PreferencesController from './controllers/preferences'
-import HomeController from './controllers/home'
 import TorrentController from './controllers/torrent'
 //import StarredController from './controllers'
 
@@ -59,18 +57,6 @@ export default class Main {
 
     // Create controllers and lazyload them
     this.controllers = {
-      home: createGetter(() => {
-        return new HomeController(state, config)
-      }),
-      preferences: createGetter(() => {
-        return new PreferencesController(state, config)
-      }),
-      /*watched: createGetter(() => {
-        return new WatchedController(state, config)
-      }),
-      starred: createGetter(() => {
-        return new StarredController(state, config)
-      }),*/
       update: createGetter(() => {
         return new UpdateController(state, config)
       }),
@@ -85,23 +71,8 @@ export default class Main {
       }),*/
       subtitles: createGetter(() => {
         return require('./controllers/subtitles')(state)
-      }),
-      /*movies: createGetter(() => {
-        return require('./controllers/movies')(state, config)
-      }),
-      series: createGetter(() => {
-        return require('./controllers/series')(state, config)
-      })*/
+      })
     }
-
-    // Add last page to location history
-    state.location.go({
-      url: state.saved.lastLocation,
-      setup: (callback) => {
-        state.window.title = `Welcome back to ${config.APP.NAME}`
-        callback(null)
-      }
-    })
 
     // Restart everything we were torrenting last time the app ran
     //this.resumeTorrents()

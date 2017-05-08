@@ -1,37 +1,46 @@
-import {dispatch} from '../lib/dispatcher'
 import {ipcRenderer} from 'electron'
+import React from 'react'
 
-// Controls the Preferences screen
-export default class PreferencesController {
+import {dispatch} from '../lib/dispatcher'
+import PreferencesPage from '../pages/preferences'
 
-  state: Object
-  config: Object
+// Controls the Preferences page
+export default class PreferencesController extends React.Component {
 
-  constructor(state, config) {
-    this.state = state
-    this.config = config
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      isMounted: false
+    }
   }
 
-  // Goes to the Preferences screen
-  show() {
-    const {state} = this
+  componentWillMount() {
+    const {state, props} = this
 
-    state.location.go({
-      url: 'preferences',
-      setup: function (callback) {
-        // initialize preferences
-        state.window.title = 'Preferences'
-        /*state.unsaved = Object.assign(state.unsaved || {}, {
-          prefs: Object.assign({}, state.saved.prefs)
-        })*/
-        ipcRenderer.send('setAllowNav', false)
-        callback(null)
-      },
-      destroy: () => {
-        ipcRenderer.send('setAllowNav', true)
-        //this.save()
-      }
+    if (state.isMounted) return
+
+    // initialize preferences
+    props.state.window.title = 'Preferences'
+    props.state.unsaved = Object.assign(props.state.unsaved || {}, {
+      prefs: Object.assign({}, props.state.saved.prefs)
     })
+    ipcRenderer.send('setAllowNav', false)
+    callback(null)
+
+    this.setState({
+      isMounted: true
+    })
+  }
+
+  componentWillUnmount() {
+    console.log('Preferences controller unmounted')
+    ipcRenderer.send('setAllowNav', true)
+    this.save()
+  }
+
+  render() {
+    return (<PreferencesPage state={this.props.state} />)
   }
 
   // Updates a single property in the UNSAVED prefs
@@ -39,9 +48,8 @@ export default class PreferencesController {
   // Call save() to save to config.json
   update(property, value) {
     const path = property.split('.')
-    let obj = this.state.unsaved.prefs
-    let i
-    for (i = 0; i < path.length - 1; i++) {
+    let obj = this.props.state.unsaved.prefs
+    for (let i = 0; i < path.length - 1; i++) {
       if (typeof obj[path[i]] === 'undefined') {
         obj[path[i]] = {}
       }
@@ -52,7 +60,7 @@ export default class PreferencesController {
 
   // All unsaved prefs take effect atomically, and are saved to config.json
   save() {
-    const {unsaved, saved} = this.state
+    const {unsaved, saved} = this.props.state
 
     if (unsaved.prefs.isFileHandler !== saved.prefs.isFileHandler) {
       ipcRenderer.send('setDefaultFileHandler', unsaved.prefs.isFileHandler)

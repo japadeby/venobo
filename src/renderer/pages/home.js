@@ -10,31 +10,14 @@ import Carousel from '../components/carousel'
 import HTTP from '../utils/http'
 import config from '../../config'
 
-export default class Home extends React.Component {
+export default class HomePage extends React.Component {
 
   constructor(props) {
     super(props)
 
     this.state = {
-      isMoviesFetched: false,
+      isMoviesFetched: true,
       movies: null
-    }
-  }
-
-  componentWillMount() {
-    if(!this.state.isMoviesFetched) {
-      HTTP.get(`${config.APP.API}/movies/sort/latest`, (data) => {
-        var latestMovies = []
-
-        for(let i in data) {
-          latestMovies.push({poster: `${config.TMDB.POSTER}${data[i].poster}`})
-        }
-
-        this.setState({
-          isMoviesFetched: true,
-          movies: latestMovies
-        })
-      })
     }
   }
 
@@ -96,7 +79,7 @@ export default class Home extends React.Component {
               </div>
             </div>
           </nav>
-          <Carousel title={"Latest movies added"} route={"/movies/latest"} items={this.state.movies} />
+          <Carousel title={"Latest movies added"} route={"/movies/latest"} items={this.props.media.movies} />
         </div>
       )
     } else {

@@ -1,36 +1,59 @@
-import {dispatch} from '../lib/dispatcher'
 import {ipcRenderer} from 'electron'
+import React from 'react'
 
-// Controls the Preferences screen
-export default class HomeController {
+import HomePage from '../pages/home'
 
-  state: Object
-  config: Object
+import HTTP from '../utils/http'
+import config from '../../config'
 
-  constructor(state, config) {
-    this.state = state
-    this.config = config
+// Controls the Home page
+export default class HomeController extends React.Component {
+
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      isMounted: false
+    }
   }
 
-  // Goes to the Preferences screen
-  show() {
-    const {state} = this
+  componentWillMount() {
+    const {state, props} = this
 
-    state.location.go({
-      url: 'home',
-      setup: function (callback) {
-        // initialize preferences
-        state.window.title = 'Home'
-        /*state.unsaved = Object.assign(state.unsaved || {}, {
-          prefs: Object.assign({}, state.saved.prefs)
-        })*/
-        ipcRenderer.send('setAllowNav', false)
-        callback()
-      },
-      destroy: () => {
-        ipcRenderer.send('setAllowNav', true)
-        //this.save()
+    if (state.isMounted) return
+
+    // initialize preferences
+    props.state.window.title = 'Home'
+    ipcRenderer.send('setAllowNav', false)
+
+    HTTP.get(`${config.APP.API}/movies/sort/latest`, (data) => {
+      var latestMovies = []
+
+      for(let i in data) {
+        latestMovies.push({poster: `${config.TMDB.POSTER}${data[i].poster}`})
       }
+
+      this.setState({
+        isMounted: true,
+        media: {
+          movies: latestMovies
+        }
+      })
     })
   }
+
+  componentWillUnmount() {
+    ipcRenderer.send('setAllowNav', true)
+  }
+
+  render() {
+    const {props, state} = this
+
+    if (state.isMounted) {
+      return (<HomePage state={props.state} media={state.media} />)
+    } else {
+      return (<div>Some loading content here</div>)
+    }
+  }
+
 }
