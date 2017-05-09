@@ -12,47 +12,47 @@ export default class Poster extends React.Component {
   showTooltip = (e) => {
     const {tooltip} = this.props.state
 
-    if (!tooltip.enabled) {
-      const $front = $(e.target).closest('.front')
-      const $frontPos = $front.parent().offset()
-      const $frontWidth = $front.width()
+    tooltip.poster = true
+    //if (!tooltip.enabled) {
+      const $front = $(e.target).closest('.react-item')
+      const $frontPos = $front.offset()
+      const $frontWidth = $front.outerWidth()
 
       const key = $front.data('tooltip')
       let data = this.props.items[key]
 
       data.style = {
         top: $frontPos.top,
-        left: Math.abs($frontPos.top + $frontWidth) / 1.5
+        left: parseFloat($frontPos.left + $frontWidth)
       }
 
       data.pageLink = `/movie/${data.tmdb}`
 
-      tooltip.toggle(data)
-    }
+      tooltip.toggle(true, data)
+    //}
+
+    clearTimeout(tooltip.timeout)
   }
 
-  hideTooltip = (e) => {
-    let target = e.target
-    if (this.props.state.tooltip.enabled) {
-      let timeout = setTimeout(() => {
-        if(!document.querySelector('.tooltip').contains(target)) {
-          //this.props.state.tooltip.toggle()
-        } else {
-          clearTimeout(timeout)
-        }
-      }, 700)
-    }
+  checkForTooltipMouseLeave = (e) => {
+    const {tooltip} = this.props.state
+
+    tooltip.poster = false
+
+    tooltip.timeout = setTimeout(() => {
+      this.props.state.tooltip.toggle()
+    }, tooltip.delay)
   }
 
-  componentWillMount () {
+  componentWillMount() {
     let items = []
 
     for (let i in this.props.items) {
       let item = this.props.items[i]
 
       items.push(
-        <div className="react-item movie" key={item._id}>
-          <div className="front" data-tooltip={i} onMouseEnter={this.showTooltip} onMouseLeave={this.hideTooltip}>
+        <div className="react-item movie" key={item._id} data-tooltip={i}>
+          <div className="front" onMouseEnter={this.showTooltip} onMouseLeave={this.checkForTooltipMouseLeave}>
             {item.poster ? (
               <div className="front-image" style={{backgroundImage: `url(${item.poster})`}}>
                 <div className="backdrop medium">

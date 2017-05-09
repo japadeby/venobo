@@ -9,7 +9,8 @@ export default class Tooltip extends React.Component {
     const {tooltip} = props.state
 
     tooltip.toggle = this.toggle.bind(this)
-    tooltip.enabled = false
+    tooltip.delay = 500
+    //tooltip.enabled = false
 
     this.state = {
       data: {},
@@ -17,18 +18,38 @@ export default class Tooltip extends React.Component {
     }
   }
 
-  toggle(data: Object = {}) {
-    console.log('toggle')
+  toggle(state, data: Object = {}) {
     const {tooltip} = this.props.state
     const {enabled} = this.state
 
-    tooltip.data = data
-    tooltip.enabled = !enabled
+    tooltip.enabled = state
 
     this.setState({
-      enabled: !enabled,
+      enabled: state,
       data: data
     })
+  }
+
+  setTooltipEnabled() {
+    const {tooltip} = this.props.state
+
+    tooltip.poster = false
+
+    clearTimeout(tooltip.timeout)
+  }
+
+  setTooltipDisabled() {
+    const {tooltip} = this.props.state
+
+    tooltip.timeout = setTimeout(() => {
+      if (!tooltip.poster) {
+        tooltip.enabled = false
+
+        this.setState({
+          enabled: false
+        })
+      }
+    }, tooltip.delay)
   }
 
   render() {
@@ -37,10 +58,11 @@ export default class Tooltip extends React.Component {
 
     console.log(enabled)
 
+    {/*tooltip left*/}
     return (
       <div id="tooltip">
         {enabled ? (
-          <section className="tooltip" ref="tooltip" style={{top: `${data.style.top}px`, left: `${data.style.left}px`}}>
+          <section className="tooltip" onMouseEnter={() => this.setTooltipEnabled()} onMouseLeave={() => this.setTooltipDisabled()} ref="tooltip" style={{top: `${data.style.top}px`, left: `${data.style.left}px`}}>
             <header>
               <h1>
                 <NavLink to={data.pageLink} className="page-link">
@@ -86,7 +108,7 @@ export default class Tooltip extends React.Component {
               <div className="arrow" style={{top: '138px'}}></div>
             </div>
             <footer className="two-button">
-              <NavLink to={data.pageLink} className="page-link">
+              <NavLink to={data.pageLink} className="page-link read-more movies"> {/*series?*/}
                 Mere info
               </NavLink>
             </footer>
