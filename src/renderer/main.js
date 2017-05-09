@@ -199,7 +199,6 @@ export default class Main {
         state.saved.history = Object.assign(history, state.saved.history)
       },
       setLocation: (location) => { state.location = location },
-      setTooltip: (data) => { state.tooltip = data },
 
       // Everything else
       //uncaughtError: (proc, err) => telemetry.logUncaughtError(proc, err),

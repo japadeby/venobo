@@ -5,25 +5,52 @@ export default class Tooltip extends React.Component {
 
   constructor(props) {
     super(props)
+
+    const {tooltip} = props.state
+
+    tooltip.toggle = this.toggle.bind(this)
+    tooltip.enabled = false
+
+    this.state = {
+      data: {},
+      enabled: false
+    }
+  }
+
+  toggle(data: Object = {}) {
+    console.log('toggle')
+    const {tooltip} = this.props.state
+    const {enabled} = this.state
+
+    tooltip.data = data
+    tooltip.enabled = !enabled
+
+    this.setState({
+      enabled: !enabled,
+      data: data
+    })
   }
 
   render() {
-    const {media} = this.props
+    const {tooltip} = this.props.state
+    const {data, enabled} = this.state
+
+    console.log(enabled)
 
     return (
       <div id="tooltip">
-        {media ? (
-          <section className="tooltip" style={{top: `${media.style.top}px`, left: `${media.style.left}`}}>
+        {enabled ? (
+          <section className="tooltip" ref="tooltip" style={{top: `${data.style.top}px`, left: `${data.style.left}px`}}>
             <header>
               <h1>
-                <NavLink to={media.pageLink} class="page-link">
-                  {media.title}
+                <NavLink to={data.pageLink} className="page-link">
+                  {data.title}
                 </NavLink>
               </h1>
               <p className="time"></p>
               <p className="genres"></p>
-              <p className="year divider">{media.year}</p>
-              <p className="duration divier">{media.runtime}</p>
+              <p className="year divider">{String(data.year)}</p>
+              <p className="duration divier">{data.runtime}</p>
               <span className="flags">
                 <span className="flag">quality</span>
               </span>
@@ -32,7 +59,7 @@ export default class Tooltip extends React.Component {
               <div className="interaction-block">
                 <div className="imdb-container">
                   <a href="#" className="imdb-link">
-                    6.5
+                    {data.rating}
                   </a>
                 </div>
                 <button className="icon starred">Stjernemærk</button>
@@ -59,7 +86,7 @@ export default class Tooltip extends React.Component {
               <div className="arrow" style={{top: '138px'}}></div>
             </div>
             <footer className="two-button">
-              <NavLink to={media.pageLink} class="page-link">
+              <NavLink to={data.pageLink} className="page-link">
                 Mere info
               </NavLink>
             </footer>

@@ -7,8 +7,6 @@
 import React from 'react'
 
 import Carousel from '../components/carousel'
-import HTTP from '../utils/http'
-import config from '../../config'
 
 export default class HomePage extends React.Component {
 
@@ -25,6 +23,8 @@ export default class HomePage extends React.Component {
   }
 
   render() {
+    const { props } = this
+
     return (
       <div>
         <nav className="block section-menu active">
@@ -73,7 +73,7 @@ export default class HomePage extends React.Component {
             </div>
           </div>
         </nav>
-        <Carousel title={"Latest movies added"} route={"/movies/latest"} items={this.props.media.movies} />
+        <Carousel title={"Latest movies added"} route={"/movies/latest"} items={props.media.movies} state={props.state} />
       </div>
     )
   }

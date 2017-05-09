@@ -21,7 +21,7 @@ export default class Telemetry {
     }
   }
 
-  send (state) {
+  send(state) {
     const {usage} = this
     const now = new Date()
 

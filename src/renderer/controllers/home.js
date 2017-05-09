@@ -28,19 +28,16 @@ export default class HomeController extends React.Component {
     ipcRenderer.send('setAllowNav', false)
 
     HTTP.get(`${config.APP.API}/movies/sort/latest`, (data) => {
-      var latestMovies = []
-
       for(let i in data) {
-        latestMovies.push({poster: `${config.TMDB.POSTER}${data[i].poster}`})
+        data[i].poster = `${config.TMDB.POSTER}${data[i].poster}`
       }
-
 
       dispatch('setTitle', 'Home')
 
       this.setState({
         isMounted: true,
         media: {
-          movies: latestMovies
+          movies: data
         }
       })
     })

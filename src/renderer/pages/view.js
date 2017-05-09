@@ -17,7 +17,7 @@ export default class View extends React.Component {
           <div className="dockable" />
           {props.children}
         </div>
-        <Tooltip media={props.state.tooltip} />
+        <Tooltip state={props.state} />
         <Footer state={props.state} />
       </div>
     )

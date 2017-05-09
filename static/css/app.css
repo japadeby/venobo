@@ -3695,7 +3695,7 @@ section[data-viaplay-module-id="FeatureBox"] {
         padding: 0;
         left: 0;
         margin: 0;
-        background: url(resources/tooltip-arrow-left-24e0122480fd6fe0200a1103d9c0d4aa.png) no-repeat; }
+        background: url(../img/tooltip-arrow-left.png) no-repeat; }
     #tooltip .tooltip.left .gutter {
       left: auto;
       right: -18px; }

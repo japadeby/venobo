@@ -26,6 +26,7 @@ export function determineQuality(magnet: String, metadata: String = ''): String 
   if (lowerCaseMetadata.includes('1080')) return '1080p'
   if (lowerCaseMetadata.includes('720')) return '720p'
   if (lowerCaseMetadata.includes('480')) return '480p'
+  if (lowerCaseMetadata.includes('3d')) return '3D'
 
   // Guess the quality 1080p
   if (lowerCaseMetadata.includes('bluray')) return '1080p'

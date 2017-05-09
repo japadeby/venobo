@@ -1,5 +1,5 @@
 import React from 'react'
-import { MemoryRouter, Route } from 'react-router-dom'
+import {MemoryRouter, Route} from 'react-router-dom'
 
 import View from './pages/view'
 
@@ -7,7 +7,7 @@ import HomeController from './controllers/home'
 import PreferencesController from './controllers/preferences'
 
 import {dispatch} from './lib/dispatcher'
-import { IntlProvider, withTranslate } from './utils/react-multilingual'
+import {IntlProvider, withTranslate} from './utils/react-multilingual'
 
 /**
  * @author @tchaffee <https://github.com/ReactTraining/react-router/issues/4105>
@@ -32,22 +32,19 @@ const PropsRoute = ({ component, ...rest }) => {
 
 export default class App extends React.Component {
 
+  controllers = {
+    home: ['/home', HomeController],
+    //error: ['/error', ErrorController],
+    preferences: ['/preferences', PreferencesController]
+  }
+
   constructor(props) {
     super(props)
-
-    this.state = {
-      controllers: {
-        home: ['/home', HomeController],
-        //error: ['/error', ErrorController],
-        preferences: ['/preferences', PreferencesController]
-      }
-    }
   }
 
   render() {
-    const {props, state} = this
+    const {props, controllers} = this
     const {translation, locale, history} = props
-    const {controllers} = state
 
     return (
       <IntlProvider translations={translation} locale={locale}>
@@ -69,7 +66,7 @@ export default class App extends React.Component {
   }
 
   getLastRoute() {
-    const {controllers} = this.state
+    const {controllers} = this
 
     try {
       const {pathname} = this.props.state.saved.location
@@ -84,16 +81,5 @@ export default class App extends React.Component {
       return controllers.home[1]
     }
   }
-
-  /*getControllers() {
-    const {controllers} = this.state
-    const {state, config} = this.props
-
-    var routes = []
-
-    for (let i in controllers) {
-      routes.push(<View state={})
-    }
-  }*/
 
 }

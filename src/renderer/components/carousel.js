@@ -133,7 +133,7 @@ class Carousel extends React.Component {
             <div className="carousel-wrapper" ref="wrapper">
               <div className="carousel-inner use-transition" style={{transform: `translateX(${state.innerWidth}px)`}}>
                 <span ref="items">
-                  <Poster items={props.items} />
+                  <Poster items={props.items} state={props.state} />
                 </span>
               </div>
             </div>

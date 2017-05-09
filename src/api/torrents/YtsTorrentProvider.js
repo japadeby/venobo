@@ -7,7 +7,7 @@ import {
 
 export default class YtsTorrentProvider {
 
-  static endpoint = 'https://yts.ag'
+  static endpoint = 'https://yts.ag/api/v2/list_movies.json'
   static provider = 'YTS'
 
   /**
@@ -42,7 +42,7 @@ export default class YtsTorrentProvider {
    * @return {Promise}
    */
   static getStatus(): Promise {
-    return axios.get('https://yts.ag/api/v2/list_movies.json')
+    return axios.get(this.endpoint)
       .then(res => res.status === 200)
       .catch(() => false)
   }
@@ -71,7 +71,7 @@ export default class YtsTorrentProvider {
    * @return {String}
    */
   static formatApi(query: Object): String {
-    return `${this.endpoint}/api/v2/list_movies.json?${encodeUri(query)}`
+    return `${this.endpoint}?${encodeUri(query)}`
   }
 
   /**
