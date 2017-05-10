@@ -55,7 +55,9 @@ function getDefaultState () {
       badge: 0,
       progress: 0
     },
-    tooltip: {},
+    tooltip: {
+      delay: config.TOOLTIP_DELAY
+    },
     modal: null, /* modal popover */
     errors: [], /* user-facing errors */
     nextTorrentKey: 1, /* identify torrents for IPC between the main and webtorrent windows */
@@ -120,11 +122,15 @@ function setupStateSaved (callback) {
       openExternalPlayer: false,
       externalPlayerPath: null,
       startup: false,
-      iso2: 'EN',
-      iso4: 'en-US'
+      iso2: 'DK',
+      iso4: 'da-DK'
     },
     history: {},
-    starred: [],
+    starred: {
+      movies: [],
+      shows: [],
+      episodes: {}
+    },
     username: os.hostname(),
     torrents: [],
     torrentsToResume: [],

@@ -1,7 +1,8 @@
 import React from 'react'
 import classNames from 'classnames'
-
 import { NavLink } from 'react-router-dom'
+
+import {dispatch} from '../lib/dispatcher'
 
 export function Scaffold (props) {
   var styles = classNames('scaffold', props.classNames)
@@ -44,4 +45,42 @@ export function ReactGrid (props) {
       </span>
     </div>
   )
+}
+
+export class StarredButton extends React.Component {
+
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      active: props.state.saved.starred.movies.includes(props.tmdb)
+    }
+  }
+
+  setActive = () => {
+    const {state, props} = this
+
+    if (!state.active) {
+      dispatch('addStarredMovie', props.tmdb)
+    } else {
+      dispatch('delStarredMovie', props.tmdb)
+    }
+
+    this.setState({
+      active: !state.active
+    })
+  }
+
+  render() {
+    const {state, props} = this
+
+    const buttonStarred = classNames('icon starred', {
+      active: state.active
+    })
+
+    return (
+      <button className={buttonStarred} onClick={this.setActive}>{state.active ? 'Stjernemærket' : 'Stjernemærk'}</button>
+    )
+  }
+
 }

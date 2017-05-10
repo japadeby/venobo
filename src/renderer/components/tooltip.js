@@ -1,7 +1,10 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 
-export default class Tooltip extends React.Component {
+import {StarredButton} from './items'
+import {withTranslate} from '../utils/react-multilingual'
+
+class Tooltip extends React.Component {
 
   constructor(props) {
     super(props)
@@ -9,12 +12,11 @@ export default class Tooltip extends React.Component {
     const {tooltip} = props.state
 
     tooltip.toggle = this.toggle.bind(this)
-    tooltip.delay = 500
-    //tooltip.enabled = false
 
     this.state = {
       data: {},
-      enabled: false
+      enabled: false,
+      summaryMaxLength: 300
     }
   }
 
@@ -28,9 +30,11 @@ export default class Tooltip extends React.Component {
       enabled: state,
       data: data
     })
+
+    clearTimeout(tooltip.timeout)
   }
 
-  setTooltipEnabled() {
+  setTooltipEnabled = () => {
     const {tooltip} = this.props.state
 
     tooltip.poster = false
@@ -38,7 +42,7 @@ export default class Tooltip extends React.Component {
     clearTimeout(tooltip.timeout)
   }
 
-  setTooltipDisabled() {
+  setTooltipDisabled = () => {
     const {tooltip} = this.props.state
 
     tooltip.timeout = setTimeout(() => {
@@ -52,29 +56,36 @@ export default class Tooltip extends React.Component {
     }, tooltip.delay)
   }
 
-  render() {
-    const {tooltip} = this.props.state
-    const {data, enabled} = this.state
+  componentWillUnmount() {
+    clearTimeout(this.props.state.tooltip.timeout)
+  }
 
-    console.log(enabled)
+  render() {
+    const {state} = this.props
+    const {tooltip} = state
+    const {data, enabled, summaryMaxLength} = this.state
 
     {/*tooltip left*/}
     return (
       <div id="tooltip">
         {enabled ? (
-          <section className="tooltip" onMouseEnter={() => this.setTooltipEnabled()} onMouseLeave={() => this.setTooltipDisabled()} ref="tooltip" style={{top: `${data.style.top}px`, left: `${data.style.left}px`}}>
+          <section className="tooltip" onMouseEnter={this.setTooltipEnabled} onMouseLeave={this.setTooltipDisabled} style={{top: `${data.style.top}px`, left: `${data.style.left}px`}}>
             <header>
               <h1>
                 <NavLink to={data.pageLink} className="page-link">
                   {data.title}
                 </NavLink>
               </h1>
-              <p className="time"></p>
-              <p className="genres"></p>
+              <p className="time">{data.runtime}</p>
+              <p className="genres">
+                {data.genres.join(' / ')}
+              </p>
               <p className="year divider">{String(data.year)}</p>
-              <p className="duration divier">{data.runtime}</p>
+              <p className="duration divider">{data.runtime}</p>
               <span className="flags">
-                <span className="flag">quality</span>
+                {Object.keys(data.torrents).map(quality => {
+                  return (<span className="flag">{quality}</span>)
+                })}
               </span>
             </header>
             <div className="body">
@@ -84,11 +95,12 @@ export default class Tooltip extends React.Component {
                     {data.rating}
                   </a>
                 </div>
-                <button className="icon starred">Stjernemærk</button>
+                <StarredButton key={data.tmdb} tmdb={data.tmdb} state={state}  />
               </div>
-              <p className="group synosis">
-                <span>test</span>
-              </p>
+              <p className="group synopsis">
+          			<span>{data.summary}</span>
+          			<NavLink to="/" className="page-link">Læs mere</NavLink>
+          		</p>
               <span className="group people">
                 <div className="people-list actors">
                   <h2>Actors:</h2>
@@ -121,3 +133,5 @@ export default class Tooltip extends React.Component {
   }
 
 }
+
+export default withTranslate(Tooltip)

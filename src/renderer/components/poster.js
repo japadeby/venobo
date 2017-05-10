@@ -30,11 +30,9 @@ export default class Poster extends React.Component {
 
       tooltip.toggle(true, data)
     //}
-
-    clearTimeout(tooltip.timeout)
   }
 
-  checkForTooltipMouseLeave = (e) => {
+  hideTooltip = (e) => {
     const {tooltip} = this.props.state
 
     tooltip.poster = false
@@ -52,7 +50,7 @@ export default class Poster extends React.Component {
 
       items.push(
         <div className="react-item movie" key={item._id} data-tooltip={i}>
-          <div className="front" onMouseEnter={this.showTooltip} onMouseLeave={this.checkForTooltipMouseLeave}>
+          <div className="front" onMouseEnter={this.showTooltip} onMouseLeave={this.hideTooltip}>
             {item.poster ? (
               <div className="front-image" style={{backgroundImage: `url(${item.poster})`}}>
                 <div className="backdrop medium">

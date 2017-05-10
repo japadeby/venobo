@@ -24,12 +24,13 @@ export default class HomeController extends React.Component {
     if (state.isMounted) return
 
     // initialize preferences
-    //props.state.window.title = 'Home'
-    ipcRenderer.send('setAllowNav', false)
-
-    HTTP.get(`${config.APP.API}/movies/sort/latest`, (data) => {
-      for(let i in data) {
-        data[i].poster = `${config.TMDB.POSTER}${data[i].poster}`
+    HTTP.get(`${config.APP.API}/movies/sort/latest`, (movies) => {
+      for(let i in movies) {
+        movies[i].poster = `${config.TMDB.POSTER}${movies[i].poster}`
+        HTTP.get(`${config.TMDB.API}/movie/${movies[i].tmdb}?api_key=${config.TMDB.KEY}&language=${props.state.saved.prefs.iso4}`, (data) => {
+          movies[i].runtime = `${data.runtime}min`
+          movies[i].summary = data.overview
+        })
       }
 
       dispatch('setTitle', 'Home')
@@ -37,14 +38,10 @@ export default class HomeController extends React.Component {
       this.setState({
         isMounted: true,
         media: {
-          movies: data
+          movies: movies
         }
       })
     })
-  }
-
-  componentWillUnmount() {
-    ipcRenderer.send('setAllowNav', true)
   }
 
   render() {

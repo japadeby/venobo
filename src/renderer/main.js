@@ -199,6 +199,24 @@ export default class Main {
         state.saved.history = Object.assign(history, state.saved.history)
       },
       setLocation: (location) => { state.location = location },
+      addStarredMovie: (tmdbId) => {
+        const {movies} = state.saved.starred
+        if(!movies.includes(tmdbId)) {
+          movies.push(tmdbId)
+
+          State.save(state)
+        }
+      },
+      delStarredMovie: (tmdbId) => {
+        const {movies} = state.saved.starred
+
+        /**
+         * @HACK - Use Array.prototype.splice instead of delete as it replaces the key with null
+         */
+        movies.splice(movies.indexOf(tmdbId), 1)
+
+        State.save(state)
+      },
 
       // Everything else
       //uncaughtError: (proc, err) => telemetry.logUncaughtError(proc, err),
