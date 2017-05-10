@@ -1,5 +1,6 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
+import classNames from 'classnames'
 
 import {StarredButton} from './items'
 import {withTranslate} from '../utils/react-multilingual'
@@ -15,8 +16,7 @@ class Tooltip extends React.Component {
 
     this.state = {
       data: {},
-      enabled: false,
-      summaryMaxLength: 300
+      enabled: false
     }
   }
 
@@ -56,10 +56,6 @@ class Tooltip extends React.Component {
     }, tooltip.delay)
   }
 
-  componentWillUnmount() {
-    clearTimeout(this.props.state.tooltip.timeout)
-  }
-
   render() {
     const {state} = this.props
     const {tooltip} = state
@@ -69,14 +65,14 @@ class Tooltip extends React.Component {
     return (
       <div id="tooltip">
         {enabled ? (
-          <section className="tooltip" onMouseEnter={this.setTooltipEnabled} onMouseLeave={this.setTooltipDisabled} style={{top: `${data.style.top}px`, left: `${data.style.left}px`}}>
+          <section className={classNames('tooltip', data.style.class)} onMouseEnter={this.setTooltipEnabled} onMouseLeave={this.setTooltipDisabled} style={{top: `${data.style.top}px`, left: `${data.style.left}px`}}>
             <header>
               <h1>
                 <NavLink to={data.pageLink} className="page-link">
                   {data.title}
                 </NavLink>
               </h1>
-              <p className="time">{data.runtime}</p>
+              <p className="time"></p>
               <p className="genres">
                 {data.genres.join(' / ')}
               </p>
@@ -90,8 +86,8 @@ class Tooltip extends React.Component {
             </header>
             <div className="body">
               <div className="interaction-block">
-                <div className="imdb-container">
-                  <a href="#" className="imdb-link">
+                <div className="tmdb-container">
+                  <a href="#" className="tmdb-link">
                     {data.rating}
                   </a>
                 </div>
@@ -117,7 +113,7 @@ class Tooltip extends React.Component {
               </span>
             </div>
             <div className="gutter">
-              <div className="arrow" style={{top: '138px'}}></div>
+              <div className="arrow" style={{top: `${data.style.arrow}px`}}></div>
             </div>
             <footer className="two-button">
               <NavLink to={data.pageLink} className="page-link read-more movies"> {/*series?*/}

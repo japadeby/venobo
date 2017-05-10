@@ -73,7 +73,7 @@ module.exports = {
     PORTABLE: IS_PORTABLE
   },
   DELAYED_INIT: 3000, /* 3 seconds */
-  TOOLTIP_DELAY: 700
+  TOOLTIP_DELAY: 400
 }
 
 function getConfigPath () {

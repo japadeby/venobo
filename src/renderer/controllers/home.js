@@ -28,6 +28,7 @@ export default class HomeController extends React.Component {
       for(let i in movies) {
         movies[i].poster = `${config.TMDB.POSTER}${movies[i].poster}`
         HTTP.get(`${config.TMDB.API}/movie/${movies[i].tmdb}?api_key=${config.TMDB.KEY}&language=${props.state.saved.prefs.iso4}`, (data) => {
+          movies[i].title = data.title
           movies[i].runtime = `${data.runtime}min`
           movies[i].summary = data.overview
         })

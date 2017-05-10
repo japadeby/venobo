@@ -18,12 +18,27 @@ export default class Poster extends React.Component {
       const $frontPos = $front.offset()
       const $frontWidth = $front.outerWidth()
 
+      // tooltip is 300px wide
+      const tooltipWidth = 300
+      //console.log($frontPos.left)
+      //console.log($('#content').outerWidth())
+
+      let posLeft = parseFloat($frontPos.left + $frontWidth) + 10
+      let classNames = 'menu-offset'
+
+      if (posLeft + tooltipWidth > $('#content').outerWidth()) {
+        posLeft -= $frontWidth + tooltipWidth
+        classNames += ' left'
+      }
+
       const key = $front.data('tooltip')
       let data = this.props.items[key]
 
       data.style = {
-        top: $frontPos.top,
-        left: parseFloat($frontPos.left + $frontWidth)
+        arrow: 70,
+        class: classNames,
+        top: $frontPos.top - 30,
+        left: posLeft
       }
 
       data.pageLink = `/movie/${data.tmdb}`

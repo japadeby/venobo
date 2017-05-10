@@ -11,7 +11,7 @@ export default class View extends React.Component {
     const {props} = this
 
     return (
-      <div>
+      <div style={{height: '100%'}}>
         <Header state={props.state} />
         <div id="content" className="section">
           <div className="dockable" />
