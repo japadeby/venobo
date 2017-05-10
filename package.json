@@ -30,6 +30,7 @@
     "local-storage-es6": "^1.0.8",
     "location-history": "^1.1.0",
     "node-notifier": "^5.1.2",
+    "opensubtitles-api": "^4.0.0-rc1",
     "parse-torrent": "^5.8.3",
     "potato-detection": "*",
     "react": "^15.4.2",
@@ -37,6 +38,7 @@
     "react-router-dom": "^4.1.0",
     "rimraf": "*",
     "run-parallel": "^1.1.6",
+    "trakt.tv": "^5.0.1",
     "vlc-command": "^1.1.1"
   },
   "devDependencies": {

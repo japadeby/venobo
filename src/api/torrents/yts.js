@@ -1,9 +1,10 @@
 import axios from 'axios'
+import async from 'async'
 
 import {
   encodeUri,
   determineQuality
-} from './BaseTorrentProvider'
+} from './base-provider'
 
 export default class YtsTorrentProvider {
 
@@ -14,12 +15,10 @@ export default class YtsTorrentProvider {
    * @param {String} query
    * @return {Promise}
    */
-  static fetch(query: String): Promise {
+  static fetch(query: String, args: Object = {}): Promise {
     return axios.get(this.formatApi({
       query_term: query,
-      order_by: 'desc',
-      sort_by: 'seeds',
-      limit: 50
+      args
     })).then(res => res.data)
   }
 
@@ -29,6 +28,7 @@ export default class YtsTorrentProvider {
    */
   static formatTorrent(torrent: Object): Object {
     return {
+      size: torrent.size,
       quality: determineQuality(torrent.quality),
       magnet: this.constructMagnet(torrent.hash),
       seeders: parseInt(torrent.seeds, 10),
@@ -52,18 +52,27 @@ export default class YtsTorrentProvider {
    * @param {String} type
    * @return {Promise}
    */
-  static provide(query: string, type: string): Promise {
-    switch (type) {
-      case 'movies':
-        return this.fetch(query)
+  static provideMultiple(movies: Array): Promise {
+    return new Promise((resolve, reject) => {
+      async.each(movies, (movie, callback) => {
+        this.fetch(movie.title)
           .then(res => {
-            if (!res.data.movie_count) return []
-            const torrents = res.data.movies[0].torrents
-            return torrents.map(this.formatTorrent)
-          })
-      default:
-        return []
-    }
+            if (!res.data.movie_count) {
+              movies.splice(movies.indexOf(movie), 1)
+              return callback()
+            }
+
+            movie.torrents.push(res.data.movies[0].torrents.map(torrent => this.formatTorrent(torrent)))
+            callback()
+        })
+      }, function(err) {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(movies)
+        }
+      })
+    })
   }
 
   /**

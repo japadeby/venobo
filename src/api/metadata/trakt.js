@@ -2,7 +2,7 @@ import axios from 'axios'
 import Trakt from 'trakt.tv'
 import OpenSubtitles from 'opensubtitles-api'
 
-export default class TraktMetaDataProvider {
+class TraktMetaDataProvider {
 
   extended = 'full,images,metadata'
 
@@ -13,15 +13,13 @@ export default class TraktMetaDataProvider {
     })
   }
 
-  getPopularMovies(page: Number = 1, limit: Number = 50): Promise<Object> {
+  getPopularMovies(page: Number = 1, limit: Number = 10): Promise<Object> {
     return this.trakt.movies.popular({
       paginate: true,
       page,
       limit,
       extended: this.extended
-    }).then(movies => {
-      movies.map(movie => formatMetadata(movie, 'movies'))
-    })
+    }).then(movies => movies.map(movie => formatMetadata(movie, 'movies')))
   }
 
   getMovie(tmdbId: String): Object {
@@ -99,6 +97,54 @@ export default class TraktMetaDataProvider {
       .then(res => res.data)
   }
 
-  getS
-
 }
+
+function convertRuntimeToHours(runtimeInMinutes: Number): Object {
+  const hours = runtimeInMinutes >= 60 ? Math.round(runtimeInMinutes / 60) : 0
+  const minutes = runtimeInMinutes % 60
+
+  return {
+    full: hours > 0
+            ? `${hours} ${hours > 1 ? 'hours' : 'hour'}${minutes > 0 ? ` ${minutes} minutes` : ''}`
+            : `${minutes} minutes`,
+    hours,
+    minutes
+  }
+}
+
+function roundRating(rating: Number): Number {
+  return Math.round(rating * 10) / 10
+}
+
+function formatMetadata(movie: Object = {}, type: String): Object {
+  return {
+    title: movie.title,
+    year: movie.year,
+    tmdb: movie.ids.tmdb,
+    imdb: movie.ids.imdb,
+    type,
+    certification: movie.certification,
+    summary: movie.overview,
+    genres: movie.genres,
+    rating: movie.rating ? roundRating(movie.rating) : 'n/a',
+    votes: movie.votes,
+    runtime: movie.runtime,
+    runtime_full: convertRuntimeToHours(movie.runtime),
+    trailer: movie.trailer,
+    torrents: [],
+    images: {
+      fanart: {
+        full: movie.images.fanart.full,
+        medium: movie.images.fanart.medium,
+        thumb: movie.images.fanart.thumb
+      },
+      poster: {
+        full: movie.images.poster.full,
+        medium: movie.images.poster.medium,
+        thumb: movie.images.poster.thumb
+      }
+    }
+  }
+}
+
+export default new TraktMetaDataProvider()
