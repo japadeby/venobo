@@ -73,7 +73,8 @@ export default class HomePage extends React.Component {
             </div>
           </div>
         </nav>
-        <Carousel title={"Latest movies added"} route={"/movies/latest"} items={props.media.movies} state={props.state} />
+        <Carousel title={"Most popular movies"} route={"/movies/popular"} items={props.media.movies.popular} state={props.state} />
+        <Carousel title={"Top rated movies"} route={"/movies/top_rated"} items={props.media.movies.topRated} state={props.state} />
       </div>
     )
   }

@@ -2,6 +2,8 @@ import {ipcRenderer} from 'electron'
 import React from 'react'
 
 import {dispatch} from '../lib/dispatcher'
+
+import {ContentSection} from '../components/items'
 import PreferencesPage from '../pages/preferences'
 
 // Controls the Preferences page
@@ -42,7 +44,11 @@ export default class PreferencesController extends React.Component {
   }
 
   render() {
-    return (<PreferencesPage {...this.props} />)
+    return (
+      <ContentSection>
+        <PreferencesPage {...this.props} />
+      </ContentSection>
+    )
   }
 
   // Updates a single property in the UNSAVED prefs

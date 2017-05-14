@@ -58,6 +58,12 @@ function getDefaultState () {
     tooltip: {
       delay: config.TOOLTIP_DELAY
     },
+    media: {
+      movies: [],
+      shows: [],
+      episodes: []
+    },
+    metadata: {},
     modal: null, /* modal popover */
     errors: [], /* user-facing errors */
     nextTorrentKey: 1, /* identify torrents for IPC between the main and webtorrent windows */

@@ -1236,8 +1236,9 @@ input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill {
   display: none; }
 
 html footer.block.page-footer {
-  height: 66px;
-  position: relative;
+  display: block !important;
+  /*height: 66px;
+  position: relative;*/
   width: 100%;
   bottom: 0;
   left: 0;
@@ -3967,7 +3968,7 @@ section[data-viaplay-module-id='SportSchedule'] {
   right: -65px; }
 
 .hero-wrapper img {
-  width: 1428px;
+  width: calc(1428px - 65px);
   height: 804px; }
 
 .hero-backdrop, .hero-vignette {
@@ -4930,7 +4931,7 @@ span.flags {
     -webkit-box-shadow: inset 300px 0 360px 0 #0f161a, inset -170px 0 180px 0 #0f161a, inset 0 -70px 80px 0 #0f161a;
     box-shadow: inset 300px 0 360px 0 #0f161a, inset -170px 0 180px 0 #0f161a, inset 0 -70px 80px 0 #0f161a; }
   .hero-wrapper img {
-    width: 1161px;
+    width: calc(1161px - 65px);
     height: 654px; }
   .hero-backdrop, .hero-vignette {
     width: 1163px;
@@ -5381,7 +5382,7 @@ span.flags {
     min-width: auto; }
   .block.page-footer {
     min-width: auto; }
-    .block.page-footer .scaffold {
+     .scaffold {
       width: auto;
       position: relative; }
     .block.page-footer > .upper {
@@ -5449,7 +5450,7 @@ span.flags {
   .hero-wrapper {
     right: -70px; }
   .hero-wrapper img {
-    width: 768px;
+    width: calc(768px - 65px);
     height: 432px; }
   .hero-backdrop, .hero-vignette {
     right: -71px; }
@@ -5749,7 +5750,7 @@ span.flags {
   .hero-wrapper {
     right: -60px; }
   .hero-wrapper img {
-    width: 400px;
+    width: calc(400px - 65px);
     height: 226px; }
   .hero-backdrop, .hero-vignette {
     right: -61px; }

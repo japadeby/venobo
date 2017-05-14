@@ -48,7 +48,8 @@ module.exports = {
   TMDB: {
     API: 'https://api.themoviedb.org/3',
     KEY: '56dc6f8e86f739bbce37281a8ad47641',
-    POSTER: 'https://image.tmdb.org/t/p/w300_and_h450_bestv2'
+    POSTER: 'https://image.tmdb.org/t/p/w300_and_h450_bestv2',
+    BACKDROP: 'https://image.tmdb.org/t/p/original'
   },
   GITHUB: {
     URL: 'https://github.com/marcus-sa/Venobo',

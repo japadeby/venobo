@@ -1,4 +1,12 @@
 /**
+ * @param {String} metadata
+ * @return {Boolean}
+ */
+export function hasHardcodedSubtitles(metadata: String): Boolean {
+  return metadata.toLowerCase().includes('hc')
+}
+
+/**
  * @param {String} magnet
  * @param {String} metadata
  * @return {String}
@@ -6,12 +14,13 @@
 export function determineQuality(magnet: String, metadata: String = ''): String {
   const lowerCaseMetadata = (metadata || magnet).toLowerCase()
 
-  if (process.env.FLAG_UNVERIFIED_TORRENTS === 'true') {
-    return '480p'
-  }
-
   // Filter non-english languages
   if (hasNonEnglishLanguage(lowerCaseMetadata)) {
+    return ''
+  }
+
+  // Filter videos with hardcoded subtitles
+  if (hasHardcodedSubtitles(lowerCaseMetadata)) {
     return ''
   }
 
@@ -128,11 +137,11 @@ export function hasNonEnglishLanguage(metadata: string): boolean {
   return false
 }
 
-export function hasSubtitles(metadata: string): boolean {
+export function hasSubtitles(metadata: String): Boolean {
   return metadata.includes('sub')
 }
 
-export function hasNonNativeCodec(metadata: string) {
+export function hasNonNativeCodec(metadata: String) {
   return (
     metadata.includes('avi') ||
     metadata.includes('mkv')

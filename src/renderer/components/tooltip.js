@@ -1,8 +1,8 @@
 import React from 'react'
-import { NavLink } from 'react-router-dom'
+import {Link} from 'react-router-dom'
 import classNames from 'classnames'
 
-import {StarredButton} from './items'
+import {StarredIcon} from './items'
 import {withTranslate} from '../utils/react-multilingual'
 
 class Tooltip extends React.Component {
@@ -10,9 +10,7 @@ class Tooltip extends React.Component {
   constructor(props) {
     super(props)
 
-    const {tooltip} = props.state
-
-    tooltip.toggle = this.toggle.bind(this)
+    props.state.tooltip.toggle = this.toggle.bind(this)
 
     this.state = {
       data: {},
@@ -45,15 +43,19 @@ class Tooltip extends React.Component {
   setTooltipDisabled = () => {
     const {tooltip} = this.props.state
 
-    tooltip.timeout = setTimeout(() => {
-      if (!tooltip.poster) {
-        tooltip.enabled = false
+    tooltip.timeout = setTimeout(this.setDisabled, tooltip.delay)
+  }
 
-        this.setState({
-          enabled: false
-        })
-      }
-    }, tooltip.delay)
+  setDisabled = () => {
+    const {tooltip} = this.props.state
+
+    if (!tooltip.poster) {
+      tooltip.enabled = false
+
+      this.setState({
+        enabled: false
+      })
+    }
   }
 
   render() {
@@ -68,9 +70,9 @@ class Tooltip extends React.Component {
           <section className={classNames('tooltip', data.style.class)} onMouseEnter={this.setTooltipEnabled} onMouseLeave={this.setTooltipDisabled} style={{top: `${data.style.top}px`, left: `${data.style.left}px`}}>
             <header>
               <h1>
-                <NavLink to={data.pageLink} className="page-link">
-                  {data.title}
-                </NavLink>
+                <Link to={data.pageLink} className="page-link">
+                  <span onClick={this.setDisabled}>{data.title}</span>
+                </Link>
               </h1>
               <p className="time"></p>
               <p className="genres">
@@ -79,8 +81,8 @@ class Tooltip extends React.Component {
               <p className="year divider">{String(data.year)}</p>
               <p className="duration divider">{data.runtime}</p>
               <span className="flags">
-                {Object.keys(data.torrents).map(quality => {
-                  return (<span className="flag">{quality}</span>)
+                {data.torrents.map(torrent => {
+                  return (<span className="flag">{torrent.quality}</span>)
                 })}
               </span>
             </header>
@@ -88,14 +90,16 @@ class Tooltip extends React.Component {
               <div className="interaction-block">
                 <div className="tmdb-container">
                   <a href="#" className="tmdb-link">
-                    {data.rating}
+                    {data.voted}
                   </a>
                 </div>
-                <StarredButton key={data.tmdb} tmdb={data.tmdb} state={state}  />
+                <StarredIcon type="button" key={data.tmdb} tmdb={data.tmdb} state={state} />
               </div>
               <p className="group synopsis">
           			<span>{data.summary}</span>
-          			<NavLink to="/" className="page-link">Læs mere</NavLink>
+          			<Link to={data.pageLink} className="page-link">
+                  <span onClick={this.setDisabled}>Læs mere</span>
+                </Link>
           		</p>
               <span className="group people">
                 <div className="people-list actors">
@@ -116,9 +120,9 @@ class Tooltip extends React.Component {
               <div className="arrow" style={{top: `${data.style.arrow}px`}}></div>
             </div>
             <footer className="two-button">
-              <NavLink to={data.pageLink} className="page-link read-more movies"> {/*series?*/}
-                Mere info
-              </NavLink>
+              <Link to={data.pageLink} className="page-link read-more movies">
+                <span onClick={this.setDisabled}>Mere info</span>
+              </Link>
             </footer>
           </section>
         ) : (

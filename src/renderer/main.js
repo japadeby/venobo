@@ -14,6 +14,7 @@ import sound from './lib/sound'
 import config from '../config'
 //import TorrentPlayer from './lib/torrent-player'
 import {setDispatch} from './lib/dispatcher'
+import MetaDataProvider from './api/metadata'
 import HTTP from './utils/http'
 //import Telemetry from './lib/telemetry'
 
@@ -37,9 +38,7 @@ export default class Main {
       this.onState(_state)
     })
     // Setup dispatcher
-    setDispatch((...args) => {
-      this.dispatch(...args)
-    })
+    setDispatch((...args) => this.dispatch(...args))
     // Setup HTTP
     HTTP.setup()
   }
@@ -76,6 +75,9 @@ export default class Main {
 
     // Restart everything we were torrenting last time the app ran
     //this.resumeTorrents()
+
+    // Setup MetaDataProvider
+    MetaDataProvider.setState(state)
 
     // Initialize ReactDOM
     this.renderMain()
@@ -190,6 +192,7 @@ export default class Main {
       escapeBack: () => this.escapeBack(),
       back: () => state.saved.history.goBack(),
       forward: () => state.saved.history.goForward(),
+      openUrl: (url) => ipcRenderer.send('openExternal', url),
 
       // Controlling the window
       //setDimensions: this.setDimensions,

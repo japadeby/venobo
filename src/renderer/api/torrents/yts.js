@@ -1,25 +1,23 @@
 import axios from 'axios'
 import async from 'async'
 
+import HTTP from '../../utils/http'
 import {
   encodeUri,
   determineQuality
 } from './base-provider'
 
-export default class YtsTorrentProvider {
+export default class YtsProvider {
 
-  static endpoint = 'https://yts.ag/api/v2/list_movies.json'
-  static provider = 'YTS'
+  static endpoint: String = 'https://yts.ag/api/v2/list_movies.json'
+  static provider: String = 'YTS'
 
   /**
    * @param {String} query
    * @return {Promise}
    */
-  static fetch(query: String, args: Object = {}): Promise {
-    return axios.get(this.formatApi({
-      query_term: query,
-      args
-    })).then(res => res.data)
+  static fetch(args: Object = {}, callback): Promise {
+    HTTP.get(this.formatApi(args), callback)
   }
 
   /**
@@ -48,22 +46,37 @@ export default class YtsTorrentProvider {
   }
 
   /**
+   * @param {String} title
+   * @return {Promise}
+   */
+  static find(title: String): Promise {
+    return new Promise((resolve, reject) => {
+      this.fetch({query_term: title}, (res) => {
+        if (res.data.movie_count === 0) {
+          reject(true)
+        } else {
+          resolve(res.data.movies[0].torrents.map(torrent => this.formatTorrent(torrent)))
+        }
+      })
+    })
+  }
+
+  /**
    * @param {String} query
    * @param {String} type
    * @return {Promise}
    */
-  static provideMultiple(movies: Array): Promise {
+  static findAll(movies: Array): Promise<Array> {
     return new Promise((resolve, reject) => {
-      async.each(movies, (movie, callback) => {
-        this.fetch(movie.title)
-          .then(res => {
-            if (!res.data.movie_count) {
-              movies.splice(movies.indexOf(movie), 1)
-              return callback()
-            }
-
+      async.each(movies, (movie, next) => {
+        movie.torrents = [] // assign empty array to the object
+        this.fetch({query_term: movie.title}, (res) => {
+          if (!res.data.movie_count) {
+            movies.splice(movies.indexOf(movie), 1)
+          } else {
             movie.torrents.push(res.data.movies[0].torrents.map(torrent => this.formatTorrent(torrent)))
-            callback()
+          }
+          next()
         })
       }, function(err) {
         if (err) {

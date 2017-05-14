@@ -2,6 +2,7 @@ import React from 'react'
 import {NavLink} from 'react-router-dom'
 
 import {dispatch} from '../lib/dispatcher'
+import config from '../../config'
 
 export default class Poster extends React.Component {
 
@@ -64,7 +65,7 @@ export default class Poster extends React.Component {
       let item = this.props.items[i]
 
       items.push(
-        <div className="react-item movie" key={item._id} data-tooltip={i}>
+        <div className="react-item movie" key={item.tmdb} data-tooltip={i}>
           <div className="front" onMouseEnter={this.showTooltip} onMouseLeave={this.hideTooltip}>
             {item.poster ? (
               <div className="front-image" style={{backgroundImage: `url(${item.poster})`}}>

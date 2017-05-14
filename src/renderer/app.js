@@ -5,6 +5,7 @@ import View from './pages/view'
 
 import HomeController from './controllers/home'
 import PreferencesController from './controllers/preferences'
+import MovieController from './controllers/movie'
 
 import {dispatch} from './lib/dispatcher'
 import {IntlProvider, withTranslate} from './utils/react-multilingual'
@@ -33,9 +34,10 @@ const PropsRoute = ({ component, ...rest }) => {
 export default class App extends React.Component {
 
   controllers = {
-    home: ['/home', HomeController],
+    '/home': HomeController,
+    '/movie/:tmdb': MovieController,
     //error: ['/error', ErrorController],
-    preferences: ['/preferences', PreferencesController]
+    '/preferences': PreferencesController
   }
 
   constructor(props) {
@@ -51,11 +53,10 @@ export default class App extends React.Component {
         <MemoryRouter>
           <View state={props.state}>
             <PropsRoute exact path="/" component={this.getLastRoute()} state={props.state} />
-            {Object.keys(controllers).map(name => {
-              let path = controllers[name][0]
-              let Component = withTranslate(controllers[name][1])
+            {Object.keys(controllers).map(path => {
+              let Component = withTranslate(controllers[path])
 
-              return (<div key={name}>
+              return (<div key={path}>
                 <PropsRoute path={path} component={Component} state={props.state} />
               </div>)
             })}
@@ -71,14 +72,14 @@ export default class App extends React.Component {
     try {
       const {pathname} = this.props.state.saved.location
 
-      for (let name in controllers) {
-        if (controllers[name][0] === pathname) {
-          return controllers[name][1]
+      for (let path in controllers) {
+        if (path === pathname) {
+          return controllers[path]
         }
       }
     } catch(e) {
       // No match? Don't worry, just return the default home controller
-      return controllers.home[1]
+      return controllers['/home']
     }
   }
 
