@@ -1,5 +1,5 @@
 import {ipcMain, app} from 'electron'
-import parallel from 'run-parallel'
+import async from 'async'
 import path from 'path'
 import fs from 'fs'
 import mkdirp from 'mkdirp'
@@ -63,19 +63,19 @@ function init () {
   app.ipcReady = false // main window has finished loading and IPC is ready
   app.isQuitting = false
 
-  parallel({
-    appReady: (cb) => app.on('ready', () => cb(null)),
-    state: (cb) => State.load(cb)
+  async.parallel({
+    appReady: (done) => app.on('ready', () => done(null)),
+    state: (done) => State.load(done)
   }, onReady)
 
-  function onReady (err, results) {
+  function onReady (err, res) {
     if (err) throw err
 
     isReady = true
 
     // Initialize the menu before Main Window
     Menu.init()
-    Main.init(results.state, {hidden: hidden})
+    Main.init(res.state, {hidden: hidden})
     WebTorrent.init()
 
     // To keep app startup fast, some code is delayed.

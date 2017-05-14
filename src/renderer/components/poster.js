@@ -14,38 +14,35 @@ export default class Poster extends React.Component {
     const {tooltip} = this.props.state
 
     tooltip.poster = true
-    //if (!tooltip.enabled) {
-      const $front = $(e.target).closest('.react-item')
-      const $frontPos = $front.offset()
-      const $frontWidth = $front.outerWidth()
 
-      // tooltip is 300px wide
-      const tooltipWidth = 300
-      //console.log($frontPos.left)
-      //console.log($('#content').outerWidth())
+    const $front = $(e.target).closest('.react-item')
+    const $frontPos = $front.offset()
+    const $frontWidth = $front.outerWidth()
 
-      let posLeft = parseFloat($frontPos.left + $frontWidth) + 10
-      let classNames = 'menu-offset'
+    // tooltip is 300px wide
+    const tooltipWidth = 300
 
-      if (posLeft + tooltipWidth > $('#content').outerWidth()) {
-        posLeft -= $frontWidth + tooltipWidth
-        classNames += ' left'
-      }
+    let posLeft = parseFloat($frontPos.left + $frontWidth) + 10
+    let classNames = 'menu-offset'
 
-      const key = $front.data('tooltip')
-      let data = this.props.items[key]
+    if (posLeft + tooltipWidth > $(window).outerWidth()) {
+      posLeft -= $frontWidth + tooltipWidth
+      classNames += ' left'
+    }
 
-      data.style = {
-        arrow: 70,
-        class: classNames,
-        top: $frontPos.top - 30,
-        left: posLeft
-      }
+    const key = $front.data('tooltip')
+    let data = this.props.items[key]
 
-      data.pageLink = `/movie/${data.tmdb}`
+    data.style = {
+      arrow: 70,
+      class: classNames,
+      top: $frontPos.top - 30,
+      left: posLeft
+    }
 
-      tooltip.toggle(true, data)
-    //}
+    data.pageLink = `/movie/${data.tmdb}`
+
+    tooltip.toggle(true, data)
   }
 
   hideTooltip = (e) => {
@@ -54,7 +51,7 @@ export default class Poster extends React.Component {
     tooltip.poster = false
 
     tooltip.timeout = setTimeout(() => {
-      this.props.state.tooltip.toggle()
+      tooltip.toggle()
     }, tooltip.delay)
   }
 

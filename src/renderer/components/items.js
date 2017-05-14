@@ -4,6 +4,15 @@ import { NavLink } from 'react-router-dom'
 
 import {dispatch} from '../lib/dispatcher'
 
+export function ContentStarred (props) {
+  return (
+    <div id="content" className={classNames('starred', props.classNames)}>
+      <div className="dockable" />
+      {props.children}
+    </div>
+  )
+}
+
 export function ContentSection (props) {
   return (
     <div id="content" className="section">
@@ -79,7 +88,7 @@ export function CollectionHeader (props) {
 }
 
 export function BlockCollection (props) {
-  var styles = classNames('block collection portrait', props.classNames)
+  var styles = classNames('block collection', props.classNames)
   return (
     <section className={styles}>
       {props.children}

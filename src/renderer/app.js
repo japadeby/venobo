@@ -1,11 +1,12 @@
 import React from 'react'
-import {BrowserRouter as Router, Route, Redirect} from 'react-router-dom'
+import {MemoryRouter as Router, Route, Redirect} from 'react-router-dom'
 
 import View from './pages/view'
 
 import HomeController from './controllers/home'
 import PreferencesController from './controllers/preferences'
 import MovieController from './controllers/movie'
+import StarredController from './controllers/starred'
 
 import {dispatch} from './lib/dispatcher'
 import {IntlProvider, withTranslate} from './utils/react-multilingual'
@@ -23,7 +24,7 @@ const renderMergedProps = (component, ...rest) => {
 const PropsRoute = ({ component, ...rest }) => {
   return (
     <Route {...rest} render={routeProps => {
-      dispatch('setLocation', routeProps.location)
+      //dispatch('setLocation', routeProps.location)
       dispatch('setHistory', routeProps.history)
 
       return renderMergedProps(component, routeProps, rest)
@@ -37,7 +38,8 @@ export default class App extends React.Component {
     '/home': HomeController,
     '/movie/:tmdb': MovieController,
     //error: ['/error', ErrorController],
-    '/preferences': PreferencesController
+    '/preferences': PreferencesController,
+    '/starred': StarredController
   }
 
   constructor(props) {
@@ -67,20 +69,12 @@ export default class App extends React.Component {
   }
 
   getLastRoute() {
-    const {props} = this
-
-    console.log('checking')
-
     try {
       const {pathname} = this.props.state.saved.history.location
 
       return pathname
-      /*for (let path in controllers) {
-        if (path === pathname) {
-          return controllers[path]
-        }
-      }*/
     } catch(e) {
+      console.log(e)
       // No match? Don't worry, just return the default home controller
       return '/home'
     }

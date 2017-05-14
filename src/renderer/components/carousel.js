@@ -116,7 +116,7 @@ class Carousel extends React.Component {
       }
 
       return (
-        <BlockCollection classNames="carousel">
+        <BlockCollection classNames="portrait carousel">
           <Scaffold>
             <i className={nav.prev} onClick={this.handlePrev}></i>
             <i className={nav.next} onClick={this.handleNext}></i>

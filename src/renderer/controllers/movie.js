@@ -31,7 +31,7 @@ export default class MovieController extends React.Component {
     if (state.isMounted) return
 
     async.parallel({
-      movie: function(done) {
+      movie: (done) => {
         MetaDataProvider.getMovieById(state.tmdb)
           .then(movie => {
             dispatch('setTitle', movie.title)
@@ -39,7 +39,7 @@ export default class MovieController extends React.Component {
           })
           .catch(done)
       },
-      similar: function(done) {
+      similar: (done) => {
         MetaDataProvider.getSimilarMovies(state.tmdb)
           .then(movies => done(null, movies))
           .catch(done)
