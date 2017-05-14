@@ -1,5 +1,5 @@
 import React from 'react'
-import {MemoryRouter, Route} from 'react-router-dom'
+import {BrowserRouter as Router, Route, Redirect} from 'react-router-dom'
 
 import View from './pages/view'
 
@@ -50,9 +50,9 @@ export default class App extends React.Component {
 
     return (
       <IntlProvider translations={translation} locale={locale}>
-        <MemoryRouter>
+        <Router>
           <View state={props.state}>
-            <PropsRoute exact path="/" component={this.getLastRoute()} state={props.state} />
+            <Route exact path="/" render={() => <Redirect to={this.getLastRoute()} />} />
             {Object.keys(controllers).map(path => {
               let Component = withTranslate(controllers[path])
 
@@ -61,25 +61,28 @@ export default class App extends React.Component {
               </div>)
             })}
           </View>
-        </MemoryRouter>
+        </Router>
       </IntlProvider>
     )
   }
 
   getLastRoute() {
-    const {controllers} = this
+    const {props} = this
+
+    console.log('checking')
 
     try {
-      const {pathname} = this.props.state.saved.location
+      const {pathname} = this.props.state.saved.history.location
 
-      for (let path in controllers) {
+      return pathname
+      /*for (let path in controllers) {
         if (path === pathname) {
           return controllers[path]
         }
-      }
+      }*/
     } catch(e) {
       // No match? Don't worry, just return the default home controller
-      return controllers['/home']
+      return '/home'
     }
   }
 

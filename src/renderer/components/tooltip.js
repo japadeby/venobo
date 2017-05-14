@@ -82,7 +82,7 @@ class Tooltip extends React.Component {
               <p className="duration divider">{data.runtime}</p>
               <span className="flags">
                 {data.torrents.map(torrent => {
-                  return (<span className="flag">{torrent.quality}</span>)
+                  return (<span className="flag" key={torrent.quality}>{torrent.quality}</span>)
                 })}
               </span>
             </header>

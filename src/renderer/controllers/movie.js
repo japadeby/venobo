@@ -1,4 +1,5 @@
 import React from 'react'
+import async from 'async'
 
 import {dispatch} from '../lib/dispatcher'
 
@@ -18,22 +19,41 @@ export default class MovieController extends React.Component {
     }
   }
 
+
+  shouldComponentUpdate(update) {
+    console.log(update)
+    return true
+  }
+
   componentWillMount() {
     const {state, props} = this
-    const {metadata} = props.state
 
     if (state.isMounted) return
 
-    MetaDataProvider.getMovieById(state.tmdb)
-      .then(movie => {
-        dispatch('setTitle', movie.title)
-
-        this.setState({
-          data: movie,
-          isMounted: true
-        })
+    async.parallel({
+      movie: function(done) {
+        MetaDataProvider.getMovieById(state.tmdb)
+          .then(movie => {
+            dispatch('setTitle', movie.title)
+            done(null, movie)
+          })
+          .catch(done)
+      },
+      similar: function(done) {
+        MetaDataProvider.getSimilarMovies(state.tmdb)
+          .then(movies => done(null, movies))
+          .catch(done)
+      }
+    }, (err, res) => {
+      console.log(err)
+      this.setState({
+        data: {
+          movie: res.movie,
+          similar: res.similar
+        },
+        isMounted: true
       })
-      .catch(console.warn)
+    })
   }
 
   render() {

@@ -59,6 +59,30 @@ export default class MetaDataProvider {
     })
   }
 
+  static getSimilarMovies(tmdbId: Number): Promise {
+    const {TMDb} = this
+    let similarMovies = []
+
+    return new Promise((resolve, reject) => {
+      TMDb.getSimilarMovies(tmdbId, (movies) => {
+        async.each(movies, (movie, next) => {
+          this.getMovieById(movie.id)
+            .then(data => {
+              similarMovies.push(data)
+              next()
+            })
+            .catch(() => next())
+        }, (err) => {
+          if (err) {
+            reject(err)
+          } else {
+            resolve(similarMovies)
+          }
+        })
+      })
+    })
+  }
+
   static getPopularMovies(): Promise {
     const {TMDb} = this
     let popularMovies = []

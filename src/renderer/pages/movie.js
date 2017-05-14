@@ -11,6 +11,7 @@ import {
   StarredIcon,
   Scaffold
 } from '../components/items'
+import Carousel from '../components/carousel'
 
 export default class MoviePage extends React.Component {
 
@@ -20,7 +21,7 @@ export default class MoviePage extends React.Component {
 
   render() {
     const {props} = this
-    const {data} = props
+    const {similar, movie} = props.data
 
     return (
       <ContentProduct>
@@ -28,7 +29,7 @@ export default class MoviePage extends React.Component {
           <Hero>
             <Scaffold>
               <HeroWrapper>
-                <img className="hero" src={data.backdrop} />
+                <img className="hero" src={movie.backdrop} />
                 <div className="hero-backdrop"></div>
                 <div className="hero-vignette"></div>
               </HeroWrapper>
@@ -39,38 +40,38 @@ export default class MoviePage extends React.Component {
               <PlayerWrapper />
               <div className="metadata">
                 <div className="thumb portrait thumb-dk">
-                  <img className="poster" src={data.poster} />
+                  <img className="poster" src={movie.poster} />
                 </div>
-                <h1 className="product-title">{data.title}</h1>
+                <h1 className="product-title">{movie.title}</h1>
                 <p className="summary">
                   <span className="genre divider">
-                    {data.genres.map(genre => {
-                      return (<span className="genre-type">{genre}</span>)
+                    {movie.genres.map(genre => {
+                      return (<span className="genre-type" key={genre}>{genre}</span>)
                     })}
                   </span>
                   <span className="year divider">
-                    <span>{data.year}</span>
+                    <span>{movie.year}</span>
                   </span>
                   <span className="duration divider">
-                    <span>{data.runtime}</span>
+                    <span>{movie.runtime}</span>
                   </span>
                   <span className="flags">
-                    {data.torrents.map(torrent => {
-                      return (<span className="flag">{torrent.quality}</span>)
+                    {movie.torrents.map(torrent => {
+                      return (<span className="flag" key={torrent.quality}>{torrent.quality}</span>)
                     })}
                   </span>
                 </p>
                 <div className="interaction-block">
                   <div className="tmdb-container">
-                    <a className="tmdb-link">{data.voted} <span className="tmdb-votes">baseret på {data.votes} brugere</span></a>
+                    <a className="tmdb-link">{movie.voted} <span className="tmdb-votes">baseret på {movie.votes} brugere</span></a>
                   </div>
-                  <StarredIcon tmdb={data.tmdb} state={props.state} />
+                  <StarredIcon tmdb={movie.tmdb} state={props.state} />
                 </div>
                 <span></span>
                 <div className="group">
                   <div className="group">
                     <div className="synopsis">
-                      {data.summary}
+                      {movie.summary}
                     </div>
                   </div>
                   <div className="group">
@@ -86,6 +87,7 @@ export default class MoviePage extends React.Component {
             </Scaffold>
           </MovieProduct>
         </section>
+        <Carousel title={"Lignende film"} items={similar} state={props.state} />
       </ContentProduct>
     )
   }
