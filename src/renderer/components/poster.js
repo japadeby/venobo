@@ -19,28 +19,40 @@ export default class Poster extends React.Component {
     const $frontPos = $front.offset()
     const $frontWidth = $front.outerWidth()
 
-    // tooltip is 300px wide
-    const tooltipWidth = 300
-
-    let posLeft = parseFloat($frontPos.left + $frontWidth) + 10
-    let classNames = 'menu-offset'
-
-    if (posLeft + tooltipWidth > $(window).outerWidth()) {
-      posLeft -= $frontWidth + tooltipWidth
-      classNames += ' left'
-    }
-
     const key = $front.data('tooltip')
-    let data = this.props.items[key]
+    const data = this.props.items[key]
 
     data.style = {
       arrow: 70,
-      class: classNames,
-      top: $frontPos.top - 30,
-      left: posLeft
+      class: '',
+      position: {}
     }
 
-    data.pageLink = `/movie/${data.tmdb}`
+    // tooltip is 300px wide
+    const tooltipWidth = 300
+
+    let tooltipPosLeft = parseFloat($frontPos.left + $frontWidth) + 10
+
+    if (tooltipPosLeft + tooltipWidth > $(window).innerWidth()) {
+      tooltipPosLeft -= $frontWidth + tooltipWidth
+      data.style.class += 'left'
+    }
+
+    const tooltipPosTop = $frontPos.top - 30
+    if (tooltipPosTop <= 25) {
+      tooltipPosLeft -= 20
+      data.style.class += ' menu-offset fixed-top'
+    } else if (tooltipPosTop >= Math.abs($frontPos.top - $(window).height() + 30)) {
+      tooltipPosLeft -= 20
+      data.style.arrow = 300
+      data.style.class += ' fixed-bottom'
+    } else {
+      data.style.position.top = `${tooltipPosTop}px`
+    }
+
+    data.style.position.left = `${tooltipPosLeft}px`
+
+    data.pageLink = `/media/${data.type}/${data.tmdb}`
 
     tooltip.toggle(true, data)
   }
@@ -56,13 +68,9 @@ export default class Poster extends React.Component {
   }
 
   componentWillMount() {
-    let items = []
-
-    for (let i in this.props.items) {
-      let item = this.props.items[i]
-
-      items.push(
-        <div className="react-item movie" key={item.tmdb} data-tooltip={i}>
+    const items = this.props.items.map((item, index) => {
+      return (
+        <div className="react-item movie" key={item.tmdb} data-tooltip={index}>
           <div className="front" onMouseEnter={this.showTooltip} onMouseLeave={this.hideTooltip}>
             {item.poster ? (
               <div className="front-image" style={{backgroundImage: `url(${item.poster})`}}>
@@ -76,7 +84,7 @@ export default class Poster extends React.Component {
           </div>
         </div>
       )
-    }
+    })
 
     this.setState({items: items})
   }

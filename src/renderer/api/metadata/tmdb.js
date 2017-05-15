@@ -21,6 +21,14 @@ export default class TMDbProvider {
     return `${config.TMDB.POSTER}${path}`
   }
 
+  getMovieRecommendations(tmdbId: Number, callback: Function) {
+    const {api, uri} = this
+
+    HTTP.get(`${api}/movie/${tmdbId}/recommendations?${uri}`, (data) => {
+      callback(data.results)
+    })
+  }
+
   getSimilarMovies(tmdbId: Number, callback: Function) {
     const {api, uri} = this
 

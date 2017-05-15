@@ -1,11 +1,11 @@
 import React from 'react'
 import {MemoryRouter as Router, Route, Redirect} from 'react-router-dom'
 
-import View from './pages/view'
+import View from './components/view'
 
 import HomeController from './controllers/home'
 import PreferencesController from './controllers/preferences'
-import MovieController from './controllers/movie'
+import MediaController from './controllers/media'
 import StarredController from './controllers/starred'
 
 import {dispatch} from './lib/dispatcher'
@@ -36,7 +36,7 @@ export default class App extends React.Component {
 
   controllers = {
     '/home': HomeController,
-    '/movie/:tmdb': MovieController,
+    '/media/:type/:tmdb': MediaController,
     //error: ['/error', ErrorController],
     '/preferences': PreferencesController,
     '/starred': StarredController

@@ -1,8 +1,7 @@
 import React from 'react'
 
-import Footer from '../components/footer'
-import Header from '../components/header'
-import Tooltip from '../components/tooltip'
+import Header from './header'
+import Tooltip from './tooltip'
 
 export default class View extends React.Component {
 
@@ -14,7 +13,6 @@ export default class View extends React.Component {
         <Header state={props.state} />
         {props.children}
         <Tooltip state={props.state} />
-        <Footer state={props.state} />
       </div>
     )
   }

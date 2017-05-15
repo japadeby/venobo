@@ -13,10 +13,10 @@ export default class MetaDataProvider {
     this.TMDb = new TMDbProvider(state)
   }
 
-  static formatMovie(data: Object): Object {
+  static formatMetadata(data: Object, type: String): Object {
     const {TMDb, state} = this
 
-    return state.media.movies[data.id] = {
+    return state.media[type][data.id] = {
       title: data.title,
       original_title: data.original_title,
       poster: TMDb.formatPoster(data.poster_path),
@@ -24,9 +24,11 @@ export default class MetaDataProvider {
       genres: data.genres.map(genre => {
         return genre.name
       }),
+      type: (type === 'movies') ? 'movie' : 'show',
       summary: data.overview,
       popularity: data.popularity,
       tmdb: data.id,
+      imdb: data.imdb_id,
       year: data.release_date.substring(0, 4),
       release_date: data.release_date,
       voted: data.vote_average,
@@ -43,8 +45,8 @@ export default class MetaDataProvider {
     return new Promise((resolve, reject) => {
       async.series([
         function(next) {
-          YtsProvider.find(data.original_title)
-            .then(data => next(null, data))
+          YtsProvider.find(data.imdb_id)
+            .then(res => next(null, res))
             .catch(next)
         }
       ], (err, res) => {
@@ -53,8 +55,32 @@ export default class MetaDataProvider {
           reject(data.id)
         } else {
           data.torrents = res[0]
-          resolve(this.formatMovie(data))
+          resolve(this.formatMetadata(data, 'movies'))
         }
+      })
+    })
+  }
+
+  static getMovieRecommendations(tmdbId: Number): Promise {
+    const {TMDb} = this
+    let recommendations = []
+
+    return new Promise((resolve, reject) => {
+      TMDb.getMovieRecommendations(tmdbId, (movies) => {
+        async.each(movies, (movie, next) => {
+          this.getMovieById(movie.id)
+            .then(data => {
+              recommendations.push(data)
+              next()
+            })
+            .catch(() => next())
+        }, (err) => {
+          if (err) {
+            reject(err)
+          } else {
+            resolve(recommendations)
+          }
+        })
       })
     })
   }

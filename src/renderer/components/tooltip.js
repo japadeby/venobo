@@ -67,11 +67,11 @@ class Tooltip extends React.Component {
     return (
       <div id="tooltip">
         {enabled ? (
-          <section className={classNames('tooltip', data.style.class)} onMouseEnter={this.setTooltipEnabled} onMouseLeave={this.setTooltipDisabled} style={{top: `${data.style.top}px`, left: `${data.style.left}px`}}>
+          <section className={classNames('tooltip', data.style.class)} onMouseEnter={this.setTooltipEnabled} onMouseLeave={this.setTooltipDisabled} style={data.style.position}>
             <header>
               <h1>
-                <Link to={data.pageLink} className="page-link">
-                  <span onClick={this.setDisabled}>{data.title}</span>
+                <Link to={data.pageLink} className="page-link" onClick={this.setDisabled}>
+                  <span>{data.title}</span>
                 </Link>
               </h1>
               <p className="time"></p>
@@ -97,8 +97,8 @@ class Tooltip extends React.Component {
               </div>
               <p className="group synopsis">
           			<span>{data.summary}</span>
-          			<Link to={data.pageLink} className="page-link">
-                  <span onClick={this.setDisabled}>Læs mere</span>
+          			<Link to={data.pageLink} className="page-link" onClick={this.setDisabled}>
+                  <span>Læs mere</span>
                 </Link>
           		</p>
               <span className="group people">
@@ -120,8 +120,8 @@ class Tooltip extends React.Component {
               <div className="arrow" style={{top: `${data.style.arrow}px`}}></div>
             </div>
             <footer className="two-button">
-              <Link to={data.pageLink} className="page-link read-more movies">
-                <span onClick={this.setDisabled}>Mere info</span>
+              <Link to={data.pageLink} className="page-link read-more movies" onClick={this.setDisabled}>
+                <span>Mere info</span>
               </Link>
             </footer>
           </section>

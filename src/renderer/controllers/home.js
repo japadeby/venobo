@@ -56,15 +56,13 @@ export default class HomeController extends React.Component {
   render() {
     const {props, state} = this
 
-    if (state.isMounted) {
-      return (
-        <ContentSection>
-          <HomePage {...props} media={state.media} />
-        </ContentSection>
-      )
-    } else {
-      return (<div>Some loading content here</div>)
-    }
+    return state.isMounted ? (
+      <ContentSection>
+        <HomePage {...props} media={state.media} />
+      </ContentSection>
+    ) : (
+      <ContentSection>Some loading page</ContentSection>
+    )
   }
 
 }

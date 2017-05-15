@@ -1237,8 +1237,7 @@ input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill {
 
 html footer.block.page-footer {
   display: block !important;
-  /*height: 66px;
-  position: relative;*/
+  top: 66px;
   width: 100%;
   bottom: 0;
   left: 0;
@@ -3419,7 +3418,7 @@ section[data-viaplay-module-id="FeatureBox"] {
       border-right: solid 10px #212d33; }
     #tooltip .tooltip.fixed-top {
       position: fixed;
-      top: 10px; }
+      top: 10px !important; }
     #tooltip .tooltip.active.left.fixed-left {
       left: -230px; }
       #tooltip .tooltip.active.left.fixed-left.fixed-top, #tooltip .tooltip.active.left.fixed-left.fixed-bottom {
@@ -3429,7 +3428,7 @@ section[data-viaplay-module-id="FeatureBox"] {
     #tooltip .tooltip.fixed-bottom {
       top: auto;
       position: fixed;
-      bottom: 10px; }
+      bottom: 10px !important; }
     #tooltip .tooltip > * {
       padding: 0 20px 0 30px; }
       #tooltip .tooltip > *:first-child {
@@ -3968,7 +3967,7 @@ section[data-viaplay-module-id='SportSchedule'] {
   right: -65px; }
 
 .hero-wrapper img {
-  width: calc(1428px - 65px);
+  width: calc(1428px - 64px);
   height: 804px; }
 
 .hero-backdrop, .hero-vignette {
@@ -4931,7 +4930,7 @@ span.flags {
     -webkit-box-shadow: inset 300px 0 360px 0 #0f161a, inset -170px 0 180px 0 #0f161a, inset 0 -70px 80px 0 #0f161a;
     box-shadow: inset 300px 0 360px 0 #0f161a, inset -170px 0 180px 0 #0f161a, inset 0 -70px 80px 0 #0f161a; }
   .hero-wrapper img {
-    width: calc(1161px - 65px);
+    width: calc(1161px - 64px);
     height: 654px; }
   .hero-backdrop, .hero-vignette {
     width: 1163px;
@@ -4987,7 +4986,7 @@ span.flags {
     font-size: 4rem;
     line-height: 4.6rem; }
   .hero-wrapper img, .hero-backdrop, .hero-vignette {
-    width: 1024px;
+    width: calc(1024px - 64px);
     height: 576px; }
   .hero-wrapper {
     right: -60px; }
@@ -5450,7 +5449,7 @@ span.flags {
   .hero-wrapper {
     right: -70px; }
   .hero-wrapper img {
-    width: calc(768px - 65px);
+    width: calc(768px - 64px);
     height: 432px; }
   .hero-backdrop, .hero-vignette {
     right: -71px; }
@@ -5750,7 +5749,7 @@ span.flags {
   .hero-wrapper {
     right: -60px; }
   .hero-wrapper img {
-    width: calc(400px - 65px);
+    width: calc(400px - 64px);
     height: 226px; }
   .hero-backdrop, .hero-vignette {
     right: -61px; }

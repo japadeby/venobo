@@ -3,31 +3,39 @@ import classNames from 'classnames'
 import { NavLink } from 'react-router-dom'
 
 import {dispatch} from '../lib/dispatcher'
+import Footer from './footer'
+
+function Content (props) {
+  return (
+    <div id="content" className={props.classNames}>
+      <div className="dockable"></div>
+      {props.children}
+      <Footer state={props.state} />
+    </div>
+  )
+}
 
 export function ContentStarred (props) {
   return (
-    <div id="content" className={classNames('starred', props.classNames)}>
-      <div className="dockable" />
+    <Content classNames={classNames('starred', props.classNames)}>
       {props.children}
-    </div>
+    </Content>
   )
 }
 
 export function ContentSection (props) {
   return (
-    <div id="content" className="section">
-      <div className="dockable" />
+    <Content classNames="section">
       {props.children}
-    </div>
+    </Content>
   )
 }
 
 export function ContentProduct (props) {
   return (
-    <div id="content" className="product">
-      <div className="dockable" />
+    <Content classNames="product">
       {props.children}
-    </div>
+    </Content>
   )
 }
 
