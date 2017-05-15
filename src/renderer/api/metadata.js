@@ -31,7 +31,7 @@ export default class MetaDataProvider {
       release_date: data.release_date,
       voted: data.vote_average,
       votes: data.vote_count,
-      runtime: (data.runtime === 0) ? 'N/A' : `${data.runtime}min`,
+      runtime: (data.runtime) ? `${data.runtime}min` : 'N/A',
       released: (data.status === "Released"),
       torrents: data.torrents
     }

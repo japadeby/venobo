@@ -14,25 +14,30 @@ export default class MovieController extends React.Component {
 
     this.state = {
       data: {},
-      tmdb: props.match.params.tmdb,
       isMounted: false
     }
   }
 
+  componentWillReceiveProps(nextProps) {
+    const {tmdb} = nextProps.match.params
 
-  shouldComponentUpdate(update) {
-    console.log(update)
-    return true
+    if (this.state.tmdb !== tmdb) {
+      this.setState({
+        isMounted: false,
+        data: {}
+      })
+      this.setMovie(tmdb)
+    }
   }
 
-  componentWillMount() {
-    const {state, props} = this
+  componentDidMount() {
+    this.setMovie(this.props.match.params.tmdb)
+  }
 
-    if (state.isMounted) return
-
+  setMovie(tmdb) {
     async.parallel({
       movie: (done) => {
-        MetaDataProvider.getMovieById(state.tmdb)
+        MetaDataProvider.getMovieById(tmdb)
           .then(movie => {
             dispatch('setTitle', movie.title)
             done(null, movie)
@@ -40,12 +45,11 @@ export default class MovieController extends React.Component {
           .catch(done)
       },
       similar: (done) => {
-        MetaDataProvider.getSimilarMovies(state.tmdb)
+        MetaDataProvider.getSimilarMovies(tmdb)
           .then(movies => done(null, movies))
           .catch(done)
       }
     }, (err, res) => {
-      console.log(err)
       this.setState({
         data: {
           movie: res.movie,
