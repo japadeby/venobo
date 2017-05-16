@@ -45,7 +45,7 @@ export default class MetaDataProvider {
     return new Promise((resolve, reject) => {
       async.series([
         function(next) {
-          YtsProvider.find(data.imdb_id)
+          YtsProvider.find(data.imdb_id) // YTS supports IMDb results
             .then(res => next(null, res))
             .catch(next)
         }
@@ -62,50 +62,64 @@ export default class MetaDataProvider {
   }
 
   static getMovieRecommendations(tmdbId: Number): Promise {
-    const {TMDb} = this
-    let recommendations = []
+    const {TMDb, state} = this
+    const {recommendations} = state.media.lists.movies
 
     return new Promise((resolve, reject) => {
-      TMDb.getMovieRecommendations(tmdbId, (movies) => {
-        async.each(movies, (movie, next) => {
-          this.getMovieById(movie.id)
-            .then(data => {
-              recommendations.push(data)
-              next()
+      if (!recommendations.hasOwnProperty(tmdbId)) {
+        recommendations[tmdbId] = []
+        TMDb.getMovieRecommendations(tmdbId)
+          .then(movies => {
+            async.each(movies, (movie, next) => {
+              this.getMovieById(movie.id)
+                .then(data => {
+                  recommendations[tmdbId].push(data)
+                  next()
+                })
+                .catch(() => next())
+            }, (err) => {
+              if (err) {
+                reject(err)
+              } else {
+                resolve(recommendations[tmdbId])
+              }
             })
-            .catch(() => next())
-        }, (err) => {
-          if (err) {
-            reject(err)
-          } else {
-            resolve(recommendations)
-          }
-        })
-      })
+          })
+          .catch(reject)
+      } else {
+        resolve(recommendations[tmdbId])
+      }
     })
   }
 
   static getSimilarMovies(tmdbId: Number): Promise {
-    const {TMDb} = this
-    let similarMovies = []
+    const {TMDb, state} = this
+    const {similar} = state.media.lists.movies
 
     return new Promise((resolve, reject) => {
-      TMDb.getSimilarMovies(tmdbId, (movies) => {
-        async.each(movies, (movie, next) => {
-          this.getMovieById(movie.id)
-            .then(data => {
-              similarMovies.push(data)
-              next()
+      if (!similar.hasOwnProperty(tmdbId)) {
+        similar[tmdbId] = []
+        TMDb.getSimilarMovies(tmdbId)
+          .then(movies => {
+            async.each(movies, (movie, next) => {
+              this.getMovieById(movie.id)
+                .then(data => {
+                  similar[tmdbId].push(data)
+                  next()
+                })
+                .catch(() => next())
+            }, (err) => {
+              if (err) {
+                reject(err)
+              } else {
+                resolve(similar[tmdbId])
+              }
             })
-            .catch(() => next())
-        }, (err) => {
-          if (err) {
-            reject(err)
-          } else {
-            resolve(similarMovies)
-          }
-        })
-      })
+          })
+          .catch(reject)
+      } else {
+        resolve(similar[tmdbId])
+      }
     })
   }
 
@@ -114,22 +128,24 @@ export default class MetaDataProvider {
     let popularMovies = []
 
     return new Promise((resolve, reject) => {
-      TMDb.getPopularMovies(movies => {
-        async.each(movies, (movie, next) => {
-          this.getMovieById(movie.id)
-            .then(data => {
-              popularMovies.push(data)
-              next()
-            })
-            .catch(() => next())
-        }, (err) => {
-          if (err) {
-            reject(err)
-          } else {
-            resolve(popularMovies)
-          }
+      TMDb.getPopularMovies()
+        .then(movies => {
+          async.each(movies, (movie, next) => {
+            this.getMovieById(movie.id)
+              .then(data => {
+                popularMovies.push(data)
+                next()
+              })
+              .catch(() => next())
+          }, (err) => {
+            if (err) {
+              reject(err)
+            } else {
+              resolve(popularMovies)
+            }
+          })
         })
-      })
+        .catch(reject)
     })
   }
 
@@ -138,22 +154,24 @@ export default class MetaDataProvider {
     let topRatedMovies = []
 
     return new Promise((resolve, reject) => {
-      TMDb.getTopRatedMovies(movies => {
-        async.each(movies, (movie, next) => {
-          this.getMovieById(movie.id)
-            .then(data => {
-              topRatedMovies.push(data)
-              next()
-            })
-            .catch(() => next())
-        }, (err) => {
-          if (err) {
-            reject(err)
-          } else {
-            resolve(topRatedMovies)
-          }
+      TMDb.getTopRatedMovies()
+        .then(movies => {
+          async.each(movies, (movie, next) => {
+            this.getMovieById(movie.id)
+              .then(data => {
+                topRatedMovies.push(data)
+                next()
+              })
+              .catch(() => next())
+          }, (err) => {
+            if (err) {
+              reject(err)
+            } else {
+              resolve(topRatedMovies)
+            }
+          })
         })
-      })
+        .catch(reject)
     })
   }
 
@@ -186,11 +204,13 @@ export default class MetaDataProvider {
 
     return new Promise((resolve, reject) => {
       if (!movies.hasOwnProperty(tmdbId)) {
-        TMDb.getMovie(tmdbId, (data) => {
-          this.addTorrents(data)
-            .then(resolve)
-            .catch(reject)
-        })
+        TMDb.getMovie(tmdbId)
+          .then(data => {
+            this.addTorrents(data)
+              .then(resolve)
+              .catch(reject)
+          })
+          .catch(reject)
       } else {
         resolve(movies[tmdbId])
       }

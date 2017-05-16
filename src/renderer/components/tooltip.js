@@ -3,7 +3,7 @@ import {Link} from 'react-router-dom'
 import classNames from 'classnames'
 
 import {StarredIcon} from './items'
-import {withTranslate} from '../utils/react-multilingual'
+import {withTranslate} from './react-multilingual'
 
 class Tooltip extends React.Component {
 

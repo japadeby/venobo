@@ -1,7 +1,7 @@
 import axios from 'axios'
 import async from 'async'
 
-import HTTP from '../../utils/http'
+import HTTP from '../../lib/http'
 import {
   encodeUri,
   determineQuality

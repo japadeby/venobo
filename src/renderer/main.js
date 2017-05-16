@@ -15,14 +15,14 @@ import config from '../config'
 //import TorrentPlayer from './lib/torrent-player'
 import {setDispatch} from './lib/dispatcher'
 import MetaDataProvider from './api/metadata'
-import HTTP from './utils/http'
+import HTTP from './lib/http'
 //import Telemetry from './lib/telemetry'
 
 // Controllers
 import TorrentController from './controllers/torrent'
 //import StarredController from './controllers'
 
-class Main {
+export default class Main {
 
   controllers: Object
   cast: Object
@@ -80,7 +80,7 @@ class Main {
     MetaDataProvider.setState(state)
 
     // Initialize ReactDOM
-    this.renderMain()
+    this.renderMain(state)
 
     // Calling update() updates the UI given the current state
     // Do this at least once a second to give every file in every torrentSummary
@@ -223,7 +223,7 @@ class Main {
 
       // Everything else
       //uncaughtError: (proc, err) => telemetry.logUncaughtError(proc, err),
-      error: () => this.onError(),
+      error: (err) => this.onError(err),
       stateSave: () => State.save(state),
       stateSaveImmediate: () => State.saveImmediate(state),
       update: () => {}, // No-op, just trigger an update
@@ -252,25 +252,17 @@ class Main {
     }
   }
 
-  renderMain(iso2, iso4) {
-    const {state} = this
-    const {prefs} = state.saved
+  renderMain(state) {
+    const {iso2} = state.saved.prefs
 
-    if (typeof iso2 !== 'undefined' && typeof iso4 !== 'undefined') {
-      prefs.iso2 = iso2
-      prefs.iso4 = iso4
-
-      State.save(state)
-    }
-
-    const locale = iso2 || prefs.iso2
-
-    HTTP.get(`${config.APP.API}/translation/${locale}`, (translation) => {
-      this.app = ReactDOM.render(
-        <App state={state} translation={translation} locale={locale} />,
-        document.querySelector('#content-wrapper')
-      )
-    })
+    HTTP.get(`${config.APP.API}/translation/${iso2}`)
+      .then(translation => {
+        this.app = ReactDOM.render(
+          <App state={state} translation={translation} locale={iso2} />,
+          document.querySelector('#content-wrapper')
+        )
+      })
+      .catch(err => this.dispatch('error', err))
   }
 
   setupIpc() {
@@ -405,5 +397,3 @@ class Main {
   }
 
 }
-
-export default new Main

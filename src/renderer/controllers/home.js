@@ -1,4 +1,3 @@
-import {ipcRenderer} from 'electron'
 import React from 'react'
 import async from 'async'
 
@@ -6,9 +5,7 @@ import HomePage from '../pages/home'
 
 import {ContentSection} from '../components/items'
 
-import HTTP from '../utils/http'
 import {dispatch} from '../lib/dispatcher'
-import config from '../../config'
 import MetaDataProvider from '../api/metadata'
 
 // Controls the Home page
@@ -39,6 +36,7 @@ export default class HomeController extends React.Component {
           .catch(done)
       }
     }, (err, res) => {
+      console.log(err)
       this.setState({
         isMounted: true,
         media: {

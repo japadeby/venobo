@@ -73,8 +73,9 @@ module.exports = {
     PRODUCTION: IS_PRODUCTION,
     PORTABLE: IS_PORTABLE
   },
-  DELAYED_INIT: 3000, /* 3 seconds */
-  TOOLTIP_DELAY: 400
+  DELAYED_INIT: 3000, // 3 seconds
+  TOOLTIP_DELAY: 400,
+  CACHE_DURATION: 3 * 60 // 3 hours cache duration
 }
 
 function getConfigPath () {

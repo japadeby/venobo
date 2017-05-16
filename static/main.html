@@ -18,7 +18,7 @@
 		const NODE_ENV = process.env.NODE_ENV
 
 		if (NODE_ENV === 'test') require('babel-register')
-		require(`../${NODE_ENV === 'test' ? 'src' : 'build'}/renderer/main.js`)
+		new (require(`../${NODE_ENV === 'test' ? 'src' : 'build'}/renderer/main.js`))
 	</script>
 
 </body>

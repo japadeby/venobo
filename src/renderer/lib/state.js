@@ -59,6 +59,14 @@ function getDefaultState () {
       delay: config.TOOLTIP_DELAY
     },
     media: {
+      lists: {
+        movies: {
+          recommendations: {},
+          similar: {},
+          popular: {},
+          topRated: {}
+        }
+      },
       movies: [],
       shows: [],
       episodes: []

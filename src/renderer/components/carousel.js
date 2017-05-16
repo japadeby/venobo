@@ -2,7 +2,7 @@ import React from 'react'
 import classNames from 'classnames'
 import { NavLink } from 'react-router-dom'
 
-import { withTranslate } from '../utils/react-multilingual'
+import { withTranslate } from './react-multilingual'
 
 import Poster from './poster'
 import {

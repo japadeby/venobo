@@ -1,4 +1,4 @@
-import HTTP from '../../utils/http'
+import HTTP from '../../lib/http'
 import config from '../../../config'
 
 export default class TMDbProvider {
@@ -21,46 +21,38 @@ export default class TMDbProvider {
     return `${config.TMDB.POSTER}${path}`
   }
 
-  getMovieRecommendations(tmdbId: Number, callback: Function) {
+  getMovieRecommendations(tmdbId: Number): Promise<Object> {
     const {api, uri} = this
 
-    HTTP.get(`${api}/movie/${tmdbId}/recommendations?${uri}`, (data) => {
-      callback(data.results)
-    })
+    return HTTP.get(`${api}/movie/${tmdbId}/recommendations?${uri}`)
+      .then(data => data.results)
   }
 
-  getSimilarMovies(tmdbId: Number, callback: Function) {
+  getSimilarMovies(tmdbId: Number): Promise<Object> {
     const {api, uri} = this
 
-    HTTP.get(`${api}/movie/${tmdbId}/similar?${uri}`, (data) => {
-      callback(data.results)
-    })
+    return HTTP.get(`${api}/movie/${tmdbId}/similar?${uri}`)
+      .then(data => data.results)
   }
 
-  getPopularMovies(callback: Function) {
+  getPopularMovies(): Promise<Object> {
     const {api, uri} = this
 
-    HTTP.get(`${api}/movie/popular?${uri}`, (data) => {
-      callback(data.results)
-    })
+    return HTTP.get(`${api}/movie/popular?${uri}`)
+      .then(data => data.results)
   }
 
-  getTopRatedMovies(callback: Function) {
+  getTopRatedMovies(): Promise<Object> {
     const {api, uri} = this
 
-    HTTP.get(`${api}/movie/top_rated?${uri}`, (data) => {
-      callback(data.results)
-    })
+    return HTTP.get(`${api}/movie/top_rated?${uri}`)
+      .then(data => data.results)
   }
 
-  /**
-   * @param {String} tmdbId
-   * @return {Promise}
-   */
-  getMovie(tmdbId: String, callback: Function) {
+  getMovie(tmdbId: Number): Promise<Object> {
     const {api, uri} = this
 
-    HTTP.get(`${api}/movie/${tmdbId}?${uri}`, callback)
+    return HTTP.get(`${api}/movie/${tmdbId}?${uri}`)
   }
 
 }

@@ -22,11 +22,11 @@ export default class HTTP {
     const {Storage} = this
 
     return new Promise((resolve, reject) => {
-      Storage.isNotExpiredThenRead(url, 3 * 60) // 3hrs max storage duration
+      Storage.isNotExpiredThenRead(url, config.CACHE_DURATION)
         .then(resolve)
         .catch(() => {
           axios.get(url)
-            .then(res =>
+            .then(res => {
               Storage.write(url, res.data, resolve)
             })
             .catch(err => {

@@ -2,6 +2,7 @@ import React from 'react'
 import {MemoryRouter as Router, Route, Redirect} from 'react-router-dom'
 
 import View from './components/view'
+import {IntlProvider, withTranslate} from './components/react-multilingual'
 
 import HomeController from './controllers/home'
 import PreferencesController from './controllers/preferences'
@@ -9,7 +10,6 @@ import MediaController from './controllers/media'
 import StarredController from './controllers/starred'
 
 import {dispatch} from './lib/dispatcher'
-import {IntlProvider, withTranslate} from './utils/react-multilingual'
 
 /**
  * @author @tchaffee <https://github.com/ReactTraining/react-router/issues/4105>
