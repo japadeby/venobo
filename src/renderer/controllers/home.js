@@ -22,10 +22,8 @@ export default class HomeController extends React.Component {
     }
   }
 
-  componentWillMount() {
-    const {state, props} = this
-
-    if (state.isMounted) return
+  componentDidMount() {
+    const {props} = this
 
     dispatch('setTitle', 'Home')
 

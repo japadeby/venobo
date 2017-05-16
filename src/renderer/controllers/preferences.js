@@ -17,10 +17,8 @@ export default class PreferencesController extends React.Component {
     }
   }
 
-  componentWillMount() {
-    const {state, props} = this
-
-    if (state.isMounted) return
+  componentDidMount() {
+    const {props} = this
 
     // initialize preferences
     //props.state.window.title = 'Preferences'
@@ -37,10 +35,8 @@ export default class PreferencesController extends React.Component {
   }
 
   componentWillUnmount() {
-    if (this.state.isMounted) {
-      ipcRenderer.send('setAllowNav', true)
-      this.save()
-    }
+    ipcRenderer.send('setAllowNav', true)
+    this.save()
   }
 
   render() {

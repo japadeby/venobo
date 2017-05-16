@@ -15,10 +15,6 @@ export default class StarredPage extends React.Component {
     super(props)
   }
 
-  componentWillMount () {
-
-  }
-
   render () {
     return (
       <BlockCollection>

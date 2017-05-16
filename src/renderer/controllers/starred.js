@@ -19,11 +19,9 @@ export default class StarredController extends React.Component {
     }
   }
 
-  componentWillMount() {
+  componentDidMount() {
     const {props, state} = this
     const {starred} = props.state.saved
-
-    if (state.isMounted) return
 
     const countMovies = starred.movies.length
     const countShows = starred.shows.length
@@ -67,15 +65,13 @@ export default class StarredController extends React.Component {
   render() {
     const {props, state} = this
 
-    if (state.isMounted) {
-      return (
-        <ContentStarred>
-          <BlockCollection classNames="empty-container starred-list"><Scaffold><div className="empty-content-icon"><span className="title">Stjernemærket</span><span className="text">Stjernemærk det, som du er interesseret i at se. Så har du altid en liste til rådighed, når du har lyst – på alle dine Viaplay-enheder!</span><div className="starred-list-icon"></div><span className="info">Du har ikke stjernemærket noget endnu.</span></div></Scaffold></BlockCollection>
-        </ContentStarred>
-      )
-    } else {
-      return (<div>Some loading content</div>)
-    }
+    return state.isMounted ? (
+      <ContentStarred>
+        <BlockCollection classNames="empty-container starred-list"><Scaffold><div className="empty-content-icon"><span className="title">Stjernemærket</span><span className="text">Stjernemærk det, som du er interesseret i at se. Så har du altid en liste til rådighed, når du har lyst – på alle dine Viaplay-enheder!</span><div className="starred-list-icon"></div><span className="info">Du har ikke stjernemærket noget endnu.</span></div></Scaffold></BlockCollection>
+      </ContentStarred>
+    ) : (
+      <div>Some loading content</div>
+    )
   }
 
 }

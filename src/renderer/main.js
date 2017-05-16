@@ -22,7 +22,7 @@ import HTTP from './utils/http'
 import TorrentController from './controllers/torrent'
 //import StarredController from './controllers'
 
-export default class Main {
+class Main {
 
   controllers: Object
   cast: Object
@@ -405,3 +405,5 @@ export default class Main {
   }
 
 }
+
+export default new Main

@@ -16,8 +16,8 @@ export default class YtsProvider {
    * @param {String} query
    * @return {Promise}
    */
-  static fetch(args: Object = {}, callback): Promise {
-    HTTP.get(this.formatApi(args), callback)
+  static fetch(args: Object = {}): Promise {
+    return HTTP.get(this.formatApi(args))
   }
 
   /**
@@ -51,13 +51,15 @@ export default class YtsProvider {
    */
   static find(title: String): Promise {
     return new Promise((resolve, reject) => {
-      this.fetch({query_term: title}, (res) => {
-        if (res.data.movie_count === 0) {
-          reject(true)
-        } else {
-          resolve(res.data.movies[0].torrents.map(torrent => this.formatTorrent(torrent)))
-        }
-      })
+      this.fetch({query_term: title})
+        .then(res => {
+          if (res.data.movie_count === 0) {
+            reject(true)
+          } else {
+            resolve(res.data.movies[0].torrents.map(torrent => this.formatTorrent(torrent)))
+          }
+        })
+        .catch(reject)
     })
   }
 
@@ -70,14 +72,16 @@ export default class YtsProvider {
     return new Promise((resolve, reject) => {
       async.each(movies, (movie, next) => {
         movie.torrents = [] // assign empty array to the object
-        this.fetch({query_term: movie.title}, (res) => {
-          if (!res.data.movie_count) {
-            movies.splice(movies.indexOf(movie), 1)
-          } else {
-            movie.torrents.push(res.data.movies[0].torrents.map(torrent => this.formatTorrent(torrent)))
-          }
-          next()
-        })
+        this.fetch({query_term: movie.title})
+          .then(res => {
+            if (!res.data.movie_count) {
+              movies.splice(movies.indexOf(movie), 1)
+            } else {
+              movie.torrents.push(res.data.movies[0].torrents.map(torrent => this.formatTorrent(torrent)))
+            }
+            next()
+          })
+          .catch(next)
       }, function(err) {
         if (err) {
           reject(err)

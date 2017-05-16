@@ -18,23 +18,27 @@ export default class HTTP {
     this.Storage = new LocalStorage(config.PATH.CACHE, config.APP.SECRET_KEY)
   }
 
-  static get(url: String, callback: Function) {
+  static get(url: String) {
     const {Storage} = this
 
-    Storage.isNotExpiredThenRead(url, 3 * 60)
-      .then(callback)
-      .catch(() => {
-        axios.get(url)
-          .then(res => {
-            Storage.write(url, res.data, callback)
-          })
-          .catch(err => {
-            this.parse(url, err, callback)
-          })
-      })
+    return new Promise((resolve, reject) => {
+      Storage.isNotExpiredThenRead(url, 3 * 60) // 3hrs max storage duration
+        .then(resolve)
+        .catch(() => {
+          axios.get(url)
+            .then(res =>
+              Storage.write(url, res.data, resolve)
+            })
+            .catch(err => {
+              Storage.existsThenRead(url)
+                .then(resolve)
+                .catch(() => reject(err))
+            })
+        })
+    })
   }
 
-  static post(url: String, params: Object, callback: Function) {
+  /*static post(url: String, params: Object, callback: Function) {
     const {Storage} = this
 
     // To make sure the caching works with post requests, the params needs to be added as the cache id
@@ -50,12 +54,6 @@ export default class HTTP {
             this.parse(urlParam, err, callback)
           })
       })
-  }
-
-  static parse(url: String, err: String, callback: Function) {
-    this.Storage.existsThenRead(url)
-      .then(callback)
-      .catch(console.warn)
-  }
+  }*/
 
 }
