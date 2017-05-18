@@ -7,6 +7,7 @@ import {ContentSection} from '../components/items'
 
 import {dispatch} from '../lib/dispatcher'
 import MetaDataProvider from '../api/metadata'
+import TorrentAdapter from '../api/torrents/adapter'
 
 // Controls the Home page
 export default class HomeController extends React.Component {
@@ -23,6 +24,10 @@ export default class HomeController extends React.Component {
     const {props} = this
 
     dispatch('setTitle', 'Home')
+
+    TorrentAdapter('tt3315342', 'movies', {searchQuery: 'Logan 2017'})
+      .then(console.log)
+      .catch(console.log)
 
     async.parallel({
       popular: function(done) {

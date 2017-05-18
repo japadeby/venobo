@@ -13,7 +13,7 @@ export default class MetaDataProvider {
     this.TMDb = new TMDbProvider(state)
   }
 
-  static formatMetadata(data: Object, type: String): Object {
+  static addMetadata(data: Object, type: String): Object {
     const {TMDb, state} = this
 
     return state.media[type][data.id] = {
@@ -55,7 +55,7 @@ export default class MetaDataProvider {
           reject(data.id)
         } else {
           data.torrents = res[0]
-          resolve(this.formatMetadata(data, 'movies'))
+          resolve(this.addMetadata(data, 'movies'))
         }
       })
     })

@@ -136,8 +136,8 @@ function setupStateSaved (callback) {
       openExternalPlayer: false,
       externalPlayerPath: null,
       startup: false,
-      iso2: 'DK',
-      iso4: 'da-DK'
+      iso2: 'EN',
+      iso4: 'en-US'
     },
     history: {},
     starred: {

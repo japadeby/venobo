@@ -13,8 +13,8 @@ const appConfig = require('application-config')('Venobo')
 
 const APP_TEAM = pckg.productName + ' Dev'
 const STATIC_PATH = path.join(__dirname, '..', 'static')
-const IS_TEST = isTest()
-const PORTABLE_PATH = IS_TEST
+const IS_DEV = isDev()
+const PORTABLE_PATH = IS_DEV
         ? path.join(process.platform === 'win32' ? 'C:\\Windows\\Temp' : '/tmp', pckg.productName)
         : path.join(path.dirname(process.execPath), pckg.productName)
 const IS_PRODUCTION = isProduction()
@@ -52,8 +52,8 @@ module.exports = {
     BACKDROP: 'https://image.tmdb.org/t/p/original'
   },
   GITHUB: {
-    URL: 'https://github.com/marcus-sa/Venobo',
-    ISSUES: 'https://github.com/marcus-sa/Venobo/issues'
+    URL: 'https://github.com/venobo/app',
+    ISSUES: 'https://github.com/venobo/app/issues'
   },
   WINDOW: {
     INDEX: {
@@ -69,7 +69,7 @@ module.exports = {
     DEVTOOLS: true
   },
   IS: {
-    TEST: IS_TEST,
+    DEV: IS_DEV,
     PRODUCTION: IS_PRODUCTION,
     PORTABLE: IS_PORTABLE
   },
@@ -107,14 +107,16 @@ function getDefaultDownloadPath () {
   }
 }
 
-function isTest () {
-  return process.env.NODE_ENV === 'test'
+function isDev () {
+  return process.env.NODE_ENV === 'development'
 }
 
 function isPortable () {
-  if (IS_TEST) { return true }
+  if (IS_DEV) return true
   // Fast path: Non-Windows platforms should not check for path on disk
-  if (process.platform !== 'win32' || !IS_PRODUCTION) { return false }
+  if (process.platform !== 'win32' || !IS_PRODUCTION) {
+    return false
+  }
 
   try {
     // This line throws if the "Venobo" folder does not exist, and does

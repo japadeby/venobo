@@ -5,7 +5,7 @@ import HTTP from '../../lib/http'
 import {
   encodeUri,
   determineQuality
-} from './base-provider'
+} from './provider'
 
 export default class YtsProvider {
 

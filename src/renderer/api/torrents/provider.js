@@ -1,4 +1,20 @@
 /**
+ * Handle a promise and set a timeout
+ */
+export function timeout(promise, time: Number = 10000) {
+  return new Promise((resolve, reject) => {
+    promise.then(resolve).catch(console.log)
+
+    setTimeout(() => {
+      reject(new Error('Timeout exceeded'))
+    }, process.env.CONFIG_API_TIMEOUT
+        ? parseInt(process.env.CONFIG_API_TIMEOUT, 10)
+        : time
+    )
+  })
+}
+
+/**
  * @param {String} metadata
  * @return {Boolean}
  */
@@ -158,7 +174,7 @@ export function sortTorrentsBySeeders(torrents: Array<any>) {
   })
 }
 
-export function constructMovieQueries(title: string, imdbId: string): Array<string> {
+export function constructMovieQueries(title: String, imdbId: String): Array<string> {
   const queries = [
     title, // default
     imdbId
@@ -179,7 +195,7 @@ export function combineAllQueries(queries: Array<Promise>) {
     )
 }
 
-export function constructSeasonQueries(title: string, season: number): Array<string> {
+export function constructSeasonQueries(title: String, season: Number): Array<string> {
   const formattedSeasonNumber = `s${formatSeasonEpisodeToObject(season, 1).season}`
 
   return [
@@ -212,16 +228,6 @@ export function getIdealTorrent(torrents: Array<any>) {
         return (prev.seeders > next.seeders) ? -1 : 1
       })[0]
     : idealTorrent
-}
-
-/**
- * @param {String} error
- * @return {Void}
- */
-export function handleProviderError(error: String) {
-  if (process.env.NODE_ENV === 'development') {
-    console.log(error)
-  }
 }
 
 /**

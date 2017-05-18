@@ -15,10 +15,10 @@
 	<script type="text/javascript">
     window.$ = require('jquery')
 
-		const NODE_ENV = process.env.NODE_ENV
+		const IS_DEV = process.env.NODE_ENV === 'development'
 
-		if (NODE_ENV === 'test') require('babel-register')
-		new (require(`../${NODE_ENV === 'test' ? 'src' : 'build'}/renderer/main.js`))
+		if (IS_DEV) require('babel-register')
+		new (require(`../${IS_DEV ? 'src' : 'build'}/renderer/main.js`))
 	</script>
 
 </body>

@@ -113,7 +113,7 @@ function init () {
   })
 
   app.on('activate', () => {
-    if (isReady) Main.win.show()
+    if (isReady) Main.show()
   })
 }
 
@@ -124,7 +124,9 @@ function delayedInit () {
   // dock.init()
   updater()
 
-  if (process.platform !== 'darwin') { Tray.init() }
+  if (process.platform !== 'darwin') {
+    Tray.init()
+  }
 }
 
 function onAppOpen (newArgv) {
@@ -132,7 +134,7 @@ function onAppOpen (newArgv) {
 
   if (app.ipcReady) {
     log('Second app instance opened, but was prevented:', newArgv)
-    Main.win.show()
+    Main.show()
 
     processArgv(newArgv)
   } else {
@@ -146,7 +148,7 @@ function onAppOpen (newArgv) {
 // Test: 4 args, eg: electron -r .../mocks.js .
 function sliceArgv (argv) {
   return argv.slice(config.IS.PRODUCTION ? 1
-    : config.IS.TEST ? 4
+    : config.IS.DEV ? 4
     : 2)
 }
 
