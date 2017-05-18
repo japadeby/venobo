@@ -9,7 +9,8 @@ import {
 
 const providers = [
   require('./yify'),
-  require('./kat')
+  require('./kat'),
+  require('./rarbg')
 ]
 
 export default async function TorrentAdapter(imdbId: string,
@@ -28,7 +29,7 @@ export default async function TorrentAdapter(imdbId: string,
       const providerResults = await Promise.all(torrentPromises)
 
       switch (type) {
-        case 'movies':
+        case 'movies': {
           return selectTorrents(
             appendAttributes(providerResults).map((result: Object) => ({
               ...result,
@@ -37,24 +38,31 @@ export default async function TorrentAdapter(imdbId: string,
             undefined,
             returnAll
           )
-        case 'shows':
+        }
+        
+        case 'shows': {
+          let { season, episode } = extendedDetails
+
           return selectTorrents(
             appendAttributes(providerResults)
               .filter(show => !!show.metadata)
-              .filter(show => filterShows(show, extendedDetails.season, extendedDetails.episode))
+              .filter(show => filterShows(show, season, episode))
               .map(result => ({
                 ...result,
                 method: 'shows'
               })),
             undefined,
-            returnAll,
-            args
+            returnAll
           )
-        case 'season_complete':
+        }
+        
+        case 'season_complete': {
+          let { season } = extendedDetails
+
           return selectTorrents(
             appendAttributes(providerResults)
               .filter(show => !!show.metadata)
-              .filter(show => filterShowsComplete(show, extendedDetails.season))
+              .filter(show => filterShowsComplete(show, season))
               .map(result => ({
                 ...result,
                 method: 'season_complete'
@@ -63,6 +71,8 @@ export default async function TorrentAdapter(imdbId: string,
             returnAll,
             args
           )
+        }
+
         default:
           throw new Error('Invalid query method')
       }

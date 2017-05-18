@@ -14,7 +14,7 @@ import sound from './lib/sound'
 import config from '../config'
 //import TorrentPlayer from './lib/torrent-player'
 import {setDispatch} from './lib/dispatcher'
-import MetaDataProvider from './api/metadata'
+import MetadataAdapter from './api/metadata/adapter'
 import HTTP from './lib/http'
 //import Telemetry from './lib/telemetry'
 
@@ -77,7 +77,7 @@ export default class Main {
     //this.resumeTorrents()
 
     // Setup MetaDataProvider
-    MetaDataProvider.setState(state)
+    MetadataAdapter.setState(state)
 
     // Initialize ReactDOM
     this.renderMain(state)

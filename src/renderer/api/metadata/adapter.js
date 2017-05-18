@@ -1,9 +1,9 @@
 import async from 'async'
 
-import YtsProvider from './torrents/yts'
-import TMDbProvider from './metadata/tmdb'
+import TMDbProvider from './tmdb'
+import TorrentAdapter from '../torrents/adapter'
 
-export default class MetaDataProvider {
+export default class MetadataAdapter {
 
   static TMDb: Object
   static state: Object
@@ -13,7 +13,7 @@ export default class MetaDataProvider {
     this.TMDb = new TMDbProvider(state)
   }
 
-  static addMetadata(data: Object, type: String): Object {
+  static combineMetadata(data: Object, type: String, torrents: Object): Object {
     const {TMDb, state} = this
 
     return state.media[type][data.id] = {
@@ -35,29 +35,19 @@ export default class MetaDataProvider {
       votes: data.vote_count,
       runtime: (data.runtime) ? `${data.runtime}min` : 'N/A',
       released: (data.status === "Released"),
-      torrents: data.torrents
+      torrents: torrents
     }
   }
 
-  static addTorrents(data: Object, callback: Function) {
-    //const {movies} = this.state.media
-
+  static addTorrents(data: Object): Promise {
     return new Promise((resolve, reject) => {
-      async.series([
-        function(next) {
-          YtsProvider.find(data.imdb_id) // YTS supports IMDb results
-            .then(res => next(null, res))
-            .catch(next)
-        }
-      ], (err, res) => {
-        if (err) {
-          //delete movies[data.id]
-          reject(data.id)
-        } else {
-          data.torrents = res[0]
-          resolve(this.addMetadata(data, 'movies'))
-        }
+      TorrentAdapter(data.imdb_id, 'movies', {
+        searchQuery: data.original_title
       })
+        .then(torrents => {
+          resolve(this.combineMetadata(data, 'movies', torrents))
+        })
+        .catch(reject)
     })
   }
 

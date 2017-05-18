@@ -1,9 +1,8 @@
 import {
+  mergeProviderPromises,
   formatSeasonEpisodeToString,
   constructSeasonQueries,
-  constructMovieQueries,
-  merge,
-  timeout
+  constructSearchQueries
 } from './provider'
 
 import axios from 'axios'
@@ -57,7 +56,7 @@ export default class KatTorrentProvider {
     }
   }
 
-  static getStatus() {
+  static getStatus(): Boolean {
     return axios.get(this.endpoint)
       .then(res => res.status === 200)
       .catch(() => false)
@@ -67,17 +66,12 @@ export default class KatTorrentProvider {
     const { searchQuery } = extendedDetails
 
     switch (type) {
-      case 'movies':
-        return timeout(
-          Promise.all(
-            constructMovieQueries(searchQuery, imdbId).map(query => this.fetch(query))
-          )
+      case 'movies': {
+        return mergeProviderPromises(
+          constructSearchQueries(searchQuery, imdbId).map(query => this.fetch(query))
         )
-          // Flatten array of arrays to an array with no empty arrays
-          .then(
-            res => merge(res).filter(array => array.length !== 0)
-          )
-          .catch(err => [])
+      }
+
       case 'shows': {
         const { season, episode } = extendedDetails
 
@@ -85,6 +79,7 @@ export default class KatTorrentProvider {
           `${searchQuery} ${formatSeasonEpisodeToString(season, episode)}`
         ).catch(err => [])
       }
+
       case 'season_complete': {
         const { season } = extendedDetails
         const queries = constructSeasonQueries(searchQuery, season)

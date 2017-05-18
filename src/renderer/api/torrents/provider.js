@@ -174,7 +174,7 @@ export function sortTorrentsBySeeders(torrents: Array<any>) {
   })
 }
 
-export function constructMovieQueries(title: String, imdbId: String): Array<string> {
+export function constructSearchQueries(title: String, imdbId: String): Array<string> {
   const queries = [
     title, // default
     imdbId
@@ -228,6 +228,16 @@ export function getIdealTorrent(torrents: Array<any>) {
         return (prev.seeders > next.seeders) ? -1 : 1
       })[0]
     : idealTorrent
+}
+
+export function mergeProviderPromises(promises): Promise {
+  return timeout(
+    Promise.all(promises)
+  )
+    .then(
+      res => merge(res).filter(array => array.length !== 0)
+    )
+    .catch(err => [])
 }
 
 /**

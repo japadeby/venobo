@@ -5,7 +5,7 @@ import {dispatch} from '../lib/dispatcher'
 
 import {ContentSection} from '../components/items'
 import MediaPage from '../pages/media'
-import MetaDataProvider from '../api/metadata'
+import MetadataAdapter from '../api/metadata/adapter'
 
 export default class MediaController extends React.Component {
 
@@ -40,7 +40,7 @@ export default class MediaController extends React.Component {
     if (type === 'movie') {
       async.parallel({
         movie: (done) => {
-          MetaDataProvider.getMovieById(tmdb)
+          MetadataAdapter.getMovieById(tmdb)
             .then(movie => {
               dispatch('setTitle', movie.title)
               done(null, movie)
@@ -48,16 +48,17 @@ export default class MediaController extends React.Component {
             .catch(done)
         },
         similar: (done) => {
-          MetaDataProvider.getSimilarMovies(tmdb)
+          MetadataAdapter.getSimilarMovies(tmdb)
             .then(movies => done(null, movies))
             .catch(done)
         },
         recommendations: (done) => {
-          MetaDataProvider.getMovieRecommendations(tmdb)
+          MetadataAdapter.getMovieRecommendations(tmdb)
             .then(movies => done(null, movies))
             .catch(done)
         }
       }, (err, res) => {
+        console.log(err)
         this.setState({
           data: {
             type: 'movie',

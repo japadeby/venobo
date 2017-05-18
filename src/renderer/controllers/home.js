@@ -6,8 +6,7 @@ import HomePage from '../pages/home'
 import {ContentSection} from '../components/items'
 
 import {dispatch} from '../lib/dispatcher'
-import MetaDataProvider from '../api/metadata'
-import TorrentAdapter from '../api/torrents/adapter'
+import MetadataAdapter from '../api/metadata/adapter'
 
 // Controls the Home page
 export default class HomeController extends React.Component {
@@ -25,23 +24,19 @@ export default class HomeController extends React.Component {
 
     dispatch('setTitle', 'Home')
 
-    TorrentAdapter('tt3315342', 'movies', {searchQuery: 'Logan 2017'})
-      .then(console.log)
-      .catch(console.log)
-
     async.parallel({
       popular: function(done) {
-        MetaDataProvider.getPopularMovies()
+        MetadataAdapter.getPopularMovies()
           .then(data => done(null, data))
           .catch(done)
       },
       topRated: function(done) {
-        MetaDataProvider.getTopRatedMovies()
+        MetadataAdapter.getTopRatedMovies()
           .then(data => done(null, data))
           .catch(done)
       }
     }, (err, res) => {
-      console.log(err)
+      console.log(res)
       this.setState({
         isMounted: true,
         media: {

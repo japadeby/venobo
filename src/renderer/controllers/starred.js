@@ -3,7 +3,7 @@ import async from 'async'
 
 import {ContentStarred, BlockCollection, Scaffold} from '../components/items'
 
-import MetaDataProvider from '../api/metadata'
+import MetadataAdapter from '../api/metadata/adapter'
 
 import StarredPage from '../pages/starred'
 
@@ -33,7 +33,7 @@ export default class StarredController extends React.Component {
 
           if (countMovies) {
             async.each(starred.movies, (tmdbId, next) => {
-              MetaDataProvider.getMovieById(tmdbId)
+              MetadataAdapter.getMovieById(tmdbId)
                 .then(movie => {
                   movies.push(movie)
                   next()
