@@ -27,6 +27,7 @@ export default class RarbgTorrentProvider {
 
   static cheerio(html): Object {
     let $ = cheerio.load(html)
+    let providerName = this.provider
 
     const torrents = $('table.lista2t tr.lista2').map(function() {
       var $this = $(this).find('.lista')
@@ -38,7 +39,8 @@ export default class RarbgTorrentProvider {
         metadata: magnet,
         seeders: parseInt($this.eq(4).text(), 10),
         size: $this.eq(3).text(),
-        uploader: $this.eq(7).text()
+        uploader: $this.eq(7).text(),
+        _provider: providerName
       }
     }).get()
 
@@ -57,9 +59,12 @@ export default class RarbgTorrentProvider {
 
     switch (type) {
       case 'movies': {
-        return mergeProviderPromises(
+        //console.log(this.fetchMovies(imdbId || searchQuery))
+        return this.fetchMovies(imdbId || searchQuery)
+          .catch(err => [])
+        /*return mergeProviderPromises(
           constructSearchQueries(searchQuery, imdbId).map(query => this.fetchMovies(query))
-        )
+        )*/
       }
       case 'shows': {
         const { season, episode } = extendedDetails

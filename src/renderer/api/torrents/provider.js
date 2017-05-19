@@ -240,6 +240,14 @@ export function mergeProviderPromises(promises): Promise {
     .catch(err => [])
 }
 
+export function mergeProviderPromise(promise: Promise): Promise {
+  return timeout(promise)
+    .then(
+      res => merge(res).filter(array => array.length !== 0)
+    )
+    .catch(err => [])
+}
+
 /**
  * @param {Object} args
  * @return {String}

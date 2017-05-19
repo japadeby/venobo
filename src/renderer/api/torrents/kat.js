@@ -67,9 +67,12 @@ export default class KatTorrentProvider {
 
     switch (type) {
       case 'movies': {
-        return mergeProviderPromises(
+        //console.log(timeout(this.fetch(imdbId || searchQuery)))
+        return this.fetch(imdbId || searchQuery)
+          .catch(err => [])
+        /*return mergeProviderPromises(
           constructSearchQueries(searchQuery, imdbId).map(query => this.fetch(query))
-        )
+        )*/
       }
 
       case 'shows': {

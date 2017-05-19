@@ -53,7 +53,7 @@ export default class YtsTorrentProvider {
     }
   }
 
-  static constructMagnet (hash: String): String {
+  static constructMagnet(hash: String): String {
     return `magnet:?xt=urn:btih:${hash}`
   }
 

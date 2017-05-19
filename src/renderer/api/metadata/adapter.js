@@ -45,9 +45,9 @@ export default class MetadataAdapter {
         searchQuery: data.original_title
       })
         .then(torrents => {
-          resolve(this.combineMetadata(data, 'movies', torrents))
+          if (!torrents) reject()
+          else resolve(this.combineMetadata(data, 'movies', torrents))
         })
-        .catch(reject)
     })
   }
 

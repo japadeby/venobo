@@ -56,14 +56,14 @@ export default class MediaPage extends React.Component {
                     <span>{media.runtime}</span>
                   </span>
                   <span className="flags">
-                    {media.torrents.map(torrent => {
-                      let {quality} = torrent
+                    {Object.keys(media.torrents).map(quality => {
                       return (<span className="flag" key={quality}>{quality}</span>)
                     })}
                   </span>
                 </p>
                 <div className="interaction-block">
                   <div className="tmdb-container">
+                    {/*{translate('torrent.votes', {votes: media.votes})}*/}
                     <a className="tmdb-link">{media.voted} <span className="tmdb-votes">baseret på {media.votes} brugere</span></a>
                   </div>
                   <StarredIcon tmdb={media.tmdb} state={props.state} />

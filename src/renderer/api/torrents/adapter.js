@@ -39,7 +39,7 @@ export default async function TorrentAdapter(imdbId: string,
             returnAll
           )
         }
-        
+
         case 'shows': {
           let { season, episode } = extendedDetails
 
@@ -55,7 +55,7 @@ export default async function TorrentAdapter(imdbId: string,
             returnAll
           )
         }
-        
+
         case 'season_complete': {
           let { season } = extendedDetails
 
@@ -168,7 +168,9 @@ export function selectTorrents(torrents: Array<any>,
       '1080p': sortedTorrents.find((torrent: Object) => torrent.quality === '1080p')
     }
 
-  //setCache(key, formattedTorrents)
+  for (let i in formattedTorrents) {
+    if (formattedTorrents[i] == null) delete formattedTorrents[i]
+  }
 
-  return formattedTorrents
+  return (sortedTorrents.length === 0) ? null : formattedTorrents
 }

@@ -58,7 +58,6 @@ export default class MediaController extends React.Component {
             .catch(done)
         }
       }, (err, res) => {
-        console.log(err)
         this.setState({
           data: {
             type: 'movie',
