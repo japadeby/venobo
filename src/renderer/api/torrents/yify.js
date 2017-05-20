@@ -9,21 +9,23 @@ import {
 export default class YtsTorrentProvider {
 
   static endpoint: String = 'https://yts.ag/api/v2/list_movies.json'
-  static provider: String = 'YTS'
+  static provider: String = 'Yify'
 
   static fetch(imdbId): Promise {
-    return HTTP.get(this.formatApi({
-      query_term: imdbId,
-      order_by: 'desc',
-      sort_by: 'seeds',
-      limit: 50
-    })).then(res => res.data)
+    return HTTP.fetchTorrent(
+      this.formatApi({
+        query_term: imdbId,
+        order_by: 'desc',
+        sort_by: 'seeds',
+        limit: 50
+      })
+    ).then(res => res.data)
   }
 
   static formatTorrent(torrent: Object): Object {
     return {
       size: torrent.size,
-      quality: determineQuality(torrent.quality),
+      quality: torrent.quality,
       magnet: this.constructMagnet(torrent.hash),
       seeders: parseInt(torrent.seeds, 10),
       leechers: parseInt(torrent.peers, 10),

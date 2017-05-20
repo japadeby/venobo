@@ -19,7 +19,21 @@ export function timeout(promise, time: Number = 10000) {
  * @return {Boolean}
  */
 export function hasHardcodedSubtitles(metadata: String): Boolean {
-  return metadata.toLowerCase().includes('hc')
+  return metadata.includes('hc') || metadata.includes('korsub')
+}
+
+/**
+ * @param {String} metadata
+ * @return {Boolean}
+ */
+export function isCamRecorded(metadata: String): Boolean {
+  return (
+      metadata.includes('cam') ||
+      metadata.includes('hdtc') ||
+      metadata.includes('dvdscr') ||
+      metadata.includes('hdts') ||
+      metadata.includes('blurred')
+  )
 }
 
 /**
@@ -30,22 +44,17 @@ export function hasHardcodedSubtitles(metadata: String): Boolean {
 export function determineQuality(magnet: String, metadata: String = ''): String {
   const lowerCaseMetadata = (metadata || magnet).toLowerCase()
 
+  // Filter videos recorded with a camera
+  if (isCamRecorded(lowerCaseMetadata)) return ''
+
   // Filter non-english languages
-  if (hasNonEnglishLanguage(lowerCaseMetadata)) {
-    return ''
-  }
+  if (hasNonEnglishLanguage(lowerCaseMetadata)) return ''
 
   // Filter videos with hardcoded subtitles
-  if (hasHardcodedSubtitles(lowerCaseMetadata)) {
-    return ''
-  }
+  if (hasHardcodedSubtitles(lowerCaseMetadata)) return ''
 
   // Filter videos with 'rendered' subtitles
-  if (hasSubtitles(lowerCaseMetadata)) {
-    return process.env.FLAG_SUBTITLE_EMBEDDED_MOVIES === 'true'
-            ? '480p'
-            : ''
-  }
+  if (hasSubtitles(lowerCaseMetadata)) return ''
 
   // Most accurate categorization
   if (lowerCaseMetadata.includes('1080')) return '1080p'
@@ -56,6 +65,7 @@ export function determineQuality(magnet: String, metadata: String = ''): String 
   // Guess the quality 1080p
   if (lowerCaseMetadata.includes('bluray')) return '1080p'
   if (lowerCaseMetadata.includes('blu-ray')) return '1080p'
+  if (lowerCaseMetadata.includes('mkv')) return '1080p'
 
   // Guess the quality 720p, prefer english
   if (lowerCaseMetadata.includes('dvd')) return '720p'
@@ -64,12 +74,6 @@ export function determineQuality(magnet: String, metadata: String = ''): String 
   if (lowerCaseMetadata.includes('web')) return '720p'
   if (lowerCaseMetadata.includes('hdtv')) return '720p'
   if (lowerCaseMetadata.includes('eng')) return '720p'
-
-  if (hasNonNativeCodec(lowerCaseMetadata)) {
-    return process.env.FLAG_SUPPORTED_PLAYBACK_FILTERING === 'true'
-            ? '720p'
-            : ''
-  }
 
   if (process.env.NODE_ENV === 'development') {
     console.warn(`${magnet}, could not be verified`)

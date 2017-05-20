@@ -1,28 +1,44 @@
-import {
-  mergeProviderPromises,
-  constructSearchQueries,
-  formatSeasonEpisodeToString,
-  timeout
-} from './provider'
-
 import axios from 'axios'
 import cheerio from 'cheerio'
 
 import HTTP from '../../lib/http'
+import {
+  mergeProviderPromises,
+  constructSearchQueries,
+  formatSeasonEpisodeToString,
+  timeout,
+  encodeUri
+} from './provider'
 
 export default class RarbgTorrentProvider {
 
   static endpoint = 'https://rarbgproxy.com' // use proxy
   static provider = 'Rarbg'
 
+  static formatApi(query: Object): String {
+    return `${this.endpoint}/torrents.php?${encodeUri(query)}`
+  }
+
   static fetchShows(query: String): Promise {
-    return HTTP.get(`${this.endpoint}/torrents.php?category=18;41;49&search=${encodeURIComponent(query)}&order=seeders&by=DESC`)
-      .then(res => this.cheerio(res))
+    return HTTP.fetchTorrent(
+      this.formatApi({
+        category: '18;41;49',
+        search: query,
+        order: 'seeders',
+        by: 'DESC'
+      })
+    ).then(res => this.cheerio(res))
   }
 
   static fetchMovies(query: String): Promise {
-    return HTTP.get(`${this.endpoint}/torrents.php?category=48;17;44;45;47;42;46&search=${encodeURIComponent(query)}&order=seeders&by=DESC`)
-      .then(res => this.cheerio(res))
+    return HTTP.fetchTorrent(
+      this.formatApi({
+        category: '48;17;44;45;47;42;46',
+        search: query,
+        order:'seeders',
+        by: 'DESC'
+      })
+    ).then(res => this.cheerio(res))
   }
 
   static cheerio(html): Object {
@@ -53,24 +69,19 @@ export default class RarbgTorrentProvider {
       .catch(() => false)
   }
 
-  // Rarbg doesn't support imdbId search
   static provide(imdbId: String, type: String, extendedDetails: Object): Promise<Array> {
-    const { searchQuery } = extendedDetails
+    const { search } = extendedDetails
 
     switch (type) {
       case 'movies': {
-        //console.log(this.fetchMovies(imdbId || searchQuery))
-        return this.fetchMovies(imdbId || searchQuery)
+        return this.fetchMovies(imdbId || search)
           .catch(err => [])
-        /*return mergeProviderPromises(
-          constructSearchQueries(searchQuery, imdbId).map(query => this.fetchMovies(query))
-        )*/
       }
       case 'shows': {
         const { season, episode } = extendedDetails
 
         return mergeProviderPromises(
-          constructSearchQueries(searchQuery, imdbId).map(
+          constructSearchQueries(search, imdbId).map(
             query => this.fetchShows(`${query} ${formatSeasonEpisodeToString(season, episode)}`)
           )
         )

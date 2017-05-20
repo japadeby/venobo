@@ -58,6 +58,7 @@ export default class MediaController extends React.Component {
             .catch(done)
         }
       }, (err, res) => {
+        console.log(res.movie)
         this.setState({
           data: {
             type: 'movie',
@@ -68,7 +69,7 @@ export default class MediaController extends React.Component {
           isMounted: true
         })
       })
-    } else if(type === 'show') {
+    } else if (type === 'show') {
 
     } else {
       throw new Error('Invalid media type')

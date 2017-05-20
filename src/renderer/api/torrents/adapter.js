@@ -9,8 +9,9 @@ import {
 
 const providers = [
   require('./yify'),
-  require('./kat'),
-  require('./rarbg')
+  require('./kickass'),
+  require('./rarbg'),
+  require('./piratebay')
 ]
 
 export default async function TorrentAdapter(imdbId: string,

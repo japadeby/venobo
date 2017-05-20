@@ -7,6 +7,7 @@ import {ContentSection} from '../components/items'
 
 import {dispatch} from '../lib/dispatcher'
 import MetadataAdapter from '../api/metadata/adapter'
+import TorrentAdapter from '../api/torrents/adapter'
 
 // Controls the Home page
 export default class HomeController extends React.Component {
@@ -21,6 +22,10 @@ export default class HomeController extends React.Component {
 
   componentDidMount() {
     const {props} = this
+
+    TorrentAdapter('tt0460681', 'shows', {search: 'Supernatural', season: 11, episode: 1})
+      .then(console.log)
+      .catch(console.log)
 
     dispatch('setTitle', 'Home')
 

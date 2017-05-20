@@ -12,48 +12,54 @@ import config from '../../config'
 
 export default class HTTP {
 
-  static Storage: Object
+  static Cache: Object
 
   static setup() {
-    this.Storage = new LocalStorage(config.PATH.CACHE, config.APP.SECRET_KEY)
+    this.Cache = new LocalStorage(config.PATH.CACHE, config.APP.SECRET_KEY)
   }
 
-  static get(url: String) {
-    const {Storage} = this
+  static cacheExistsThenRead(url: String) {
+    const {Cache} = this
 
     return new Promise((resolve, reject) => {
-      Storage.isNotExpiredThenRead(url, config.CACHE_DURATION)
-        .then(resolve)
-        .catch(() => {
-          axios.get(url)
-            .then(res => {
-              Storage.write(url, res.data, resolve)
-            })
-            .catch(err => {
-              Storage.existsThenRead(url)
-                .then(resolve)
-                .catch(() => reject(err))
-            })
+      axios.get(url)
+        .then(res => {
+          Cache.write(url, res.data, resolve)
+        })
+        .catch(err => {
+          Cache.existsThenRead(url)
+            .then(resolve)
+            .catch(() => reject(err))
         })
     })
   }
 
-  /*static post(url: String, params: Object, callback: Function) {
-    const {Storage} = this
+  static fetchTorrent(url: String) {
+    const {Cache} = this
 
-    // To make sure the caching works with post requests, the params needs to be added as the cache id
-    var urlParam = url + md5(JSON.stringify(params))
-    Storage.isNotExpiredThenRead(urlParam, 3 * 60)
-      .then(callback)
-      .catch(() => {
-        axios.post(url, params)
-          .then(res => {
-            Storage.write(urlParam, res.data, callback)
-          })
-          .catch(err => {
-            this.parse(urlParam, err, callback)
-          })
-      })
-  }*/
+    return new Promise((resolve, reject) => {
+      Cache.isNotExpiredThenRead(url, config.CACHE_DURATION)
+        .then(resolve)
+        .catch(() => {
+          this.cacheExistsThenRead(url)
+            .then(resolve)
+            .catch(reject)
+        })
+    })
+  }
+
+  static get(url: String) {
+    const {Cache} = this
+
+    return new Promise((resolve, reject) => {
+      Cache.existsThenRead(url)
+        .then(resolve)
+        .catch(() => {
+          this.cacheExistsThenRead(url)
+            .then(resolve)
+            .catch(reject)
+        })
+    })
+  }
 
 }

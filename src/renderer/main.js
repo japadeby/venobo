@@ -14,8 +14,8 @@ import sound from './lib/sound'
 import config from '../config'
 //import TorrentPlayer from './lib/torrent-player'
 import {setDispatch} from './lib/dispatcher'
-import MetadataAdapter from './api/metadata/adapter'
 import HTTP from './lib/http'
+import MetadataAdapter from './api/metadata/adapter'
 //import Telemetry from './lib/telemetry'
 
 // Controllers
@@ -76,7 +76,7 @@ export default class Main {
     // Restart everything we were torrenting last time the app ran
     //this.resumeTorrents()
 
-    // Setup MetaDataProvider
+    // Setup MetadataAdapter
     MetadataAdapter.setState(state)
 
     // Initialize ReactDOM
@@ -255,7 +255,9 @@ export default class Main {
   renderMain(state) {
     const {iso2} = state.saved.prefs
 
-    HTTP.get(`${config.APP.API}/translation/${iso2}`)
+    console.log(iso2)
+
+    HTTP.fetchTorrent(`${config.APP.API}/translation/${iso2}`)
       .then(translation => {
         this.app = ReactDOM.render(
           <App state={state} translation={translation} locale={iso2} />,

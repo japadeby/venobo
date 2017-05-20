@@ -6415,7 +6415,7 @@ span.flags {
   .tmdb-link span {
     color: #8a8c90; }
   .tmdb-link:before {
-    background-image: url(../img/tmdb-logo.png);
+    background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiP…wwLjMtMC4xLDAuNC0wLjIKCQlzMC4xLTAuNSwwLjEtMS4xVjh6Ii8+CjwvZz4KPC9zdmc+Cg==);
     content: " ";
     display: block;
     pointer-events: none;
