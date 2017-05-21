@@ -1,5 +1,6 @@
 import React from 'react'
 import {NavLink} from 'react-router-dom'
+import randomString from 'crypto-random-string'
 
 import {dispatch} from '../lib/dispatcher'
 import config from '../../config'
@@ -70,7 +71,7 @@ export default class Poster extends React.Component {
   componentWillMount() {
     const items = this.props.items.map((item, index) => {
       return (
-        <div className="react-item movie" key={item.tmdb} data-tooltip={index}>
+        <div className="react-item movie" key={randomString(10)} data-tooltip={index}>
           <div className="front" onMouseEnter={this.showTooltip} onMouseLeave={this.hideTooltip}>
             {item.poster ? (
               <div className="front-image" style={{backgroundImage: `url(${item.poster})`}}>

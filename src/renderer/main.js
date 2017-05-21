@@ -6,17 +6,16 @@ import {clipboard, remote, ipcRenderer} from 'electron'
 import fs from 'fs'
 import React from 'react'
 import ReactDOM from 'react-dom'
+import LocalStorage from 'local-storage-es6'
 
 import crashReporter from '../crash-reporter'
 import State from './lib/state'
 import App from './app'
 import sound from './lib/sound'
 import config from '../config'
-//import TorrentPlayer from './lib/torrent-player'
 import {setDispatch} from './lib/dispatcher'
 import HTTP from './lib/http'
 import MetadataAdapter from './api/metadata/adapter'
-//import Telemetry from './lib/telemetry'
 
 // Controllers
 import TorrentController from './controllers/torrent'
@@ -39,13 +38,17 @@ export default class Main {
     })
     // Setup dispatcher
     setDispatch((...args) => this.dispatch(...args))
-    // Setup HTTP
-    HTTP.setup()
   }
 
   onState(_state) {
     // Make available for easier debugging
     const state = this.state = _state
+
+    // Setup cache
+    state.cache = new LocalStorage(config.PATH.CACHE, config.APP.SECRET_KEY)
+
+    // Set HTTP cache
+    HTTP.setCache(state.cache)
 
     //const _telemetry = this.telemetry = new Telemetry(state)
 
@@ -190,8 +193,14 @@ export default class Main {
 
       // State locations
       escapeBack: () => this.escapeBack(),
-      back: () => state.saved.history.goBack(),
-      forward: () => state.saved.history.goForward(),
+      back: () => {
+        this.hideTooltip()
+        state.saved.history.goBack()
+      },
+      forward: () => {
+        this.hideTooltip()
+        state.saved.history.goForward()
+      },
       openUrl: (url) => ipcRenderer.send('openExternal', url),
 
       // Controlling the window
@@ -257,8 +266,9 @@ export default class Main {
 
     console.log(iso2)
 
-    HTTP.fetchTorrent(`${config.APP.API}/translation/${iso2}`)
+    HTTP.fetchCache(`${config.APP.API}/translation/${iso2}`)
       .then(translation => {
+        console.log(translation)
         this.app = ReactDOM.render(
           <App state={state} translation={translation} locale={iso2} />,
           document.querySelector('#content-wrapper')
@@ -300,6 +310,13 @@ export default class Main {
     ipc.send('ipcReady')
 
     State.on('stateSaved', () => ipc.send('stateSaved'))
+  }
+
+  hideTooltip() {
+    const {state} = this
+
+    if (!state.tooltip.enabled) return
+    state.tooltip.toggle()
   }
 
   // Quits modals, full screen, or goes back. Happens when the user hits ESC

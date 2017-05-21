@@ -33,6 +33,8 @@ export default class MediaController extends React.Component {
   componentDidMount() {
     const {tmdb, type} = this.props.match.params
 
+    console.log(type)
+
     this.setData(tmdb, type)
   }
 

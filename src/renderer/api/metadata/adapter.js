@@ -5,11 +5,13 @@ import TorrentAdapter from '../torrents/adapter'
 
 export default class MetadataAdapter {
 
+  static Cache: Object
   static TMDb: Object
   static state: Object
 
   static setState(state: Object) {
     this.state = state
+    this.Cache = state.cache
     this.TMDb = new TMDbProvider(state)
   }
 
@@ -42,9 +44,9 @@ export default class MetadataAdapter {
   }
 
   static formatMovieMetadata(data: Object, torrents: Object): Object {
-    const {TMDb, state} = this
+    const {TMDb, state, Cache} = this
 
-    return state.media.movies[data.id] = {
+    const metadata = state.media.movies[data.id] = {
       title: data.title,
       original_title: data.original_title,
       poster: TMDb.formatPoster(data.poster_path),
@@ -65,9 +67,29 @@ export default class MetadataAdapter {
       released: (data.status === "Released"),
       torrents: torrents
     }
+
+    Cache.writeSync(`adapter-${data.id}`, metadata)
+
+    return metadata
   }
 
-  static addTorrents(data: Object, type: String): Promise {
+  static addShowTorrents(data: Object, ...args): Promise {
+    return new Promise((resolve, reject) => {
+      TorrentAdapter(data.imdb_id, 'shows', {
+        search: data.original_title,
+        ...args
+      })
+        .then(torrents => {
+          if (!torrents) {
+            reject()
+          } else {
+            resolve(this.formatShowMetadata(data, torrents))
+          }
+        })
+    })
+  }
+
+  static addMovieTorrents(data: Object): Promise {
     return new Promise((resolve, reject) => {
       TorrentAdapter(data.imdb_id, 'movies', {
         search: data.original_title
@@ -75,12 +97,8 @@ export default class MetadataAdapter {
         .then(torrents => {
           if (!torrents) {
             reject()
-          } else if (type === 'movie') {
-            resolve(this.formatMovieMetadata(data, torrents))
-          } else if (type === 'show') {
-            resolve(this.formatShowMetadata(data, torrents))
           } else {
-            throw new Error('Invalid media type')
+            resolve(this.formatMovieMetadata(data, torrents))
           }
         })
     })
@@ -155,9 +173,11 @@ export default class MetadataAdapter {
     return new Promise((resolve, reject) => {
       TMDb.getPopularMovies()
         .then(movies => {
+          console.log(movies)
           async.each(movies, (movie, next) => {
             this.getMovieById(movie.id)
               .then(data => {
+                console.log(data)
                 popularMovies.push(data)
                 next()
               })
@@ -224,18 +244,25 @@ export default class MetadataAdapter {
    * @return {Promise}
    */
   static getMovieById(tmdbId: Number): Promise {
-    const {state, TMDb} = this
+    const {state, TMDb, Cache} = this
     const {movies} = state.media
 
     return new Promise((resolve, reject) => {
       if (!movies.hasOwnProperty(tmdbId)) {
-        TMDb.getMovie(tmdbId)
+        Cache.isNotExpiredThenRead(`adapter-${tmdbId}`)
           .then(data => {
-            this.addTorrents(data, 'movie')
-              .then(resolve)
+            movies[tmdbId] = data
+            resolve(data)
+          })
+          .catch(() => {
+            TMDb.getMovie(tmdbId)
+              .then(data => {
+                this.addMovieTorrents(data)
+                  .then(resolve)
+                  .catch(reject)
+              })
               .catch(reject)
           })
-          .catch(reject)
       } else {
         resolve(movies[tmdbId])
       }

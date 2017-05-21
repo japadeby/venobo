@@ -10,7 +10,8 @@ export default class TMDbProvider {
 
   constructor(state) {
     this.uri = `api_key=${config.TMDB.KEY}&language=${state.saved.prefs.iso4}`
-    this.api = config.TMDB.API
+    this.api = `${config.TMDB.API}/3`
+    this.api4 = `${config.TMDB.API}/4`
   }
 
   formatBackdrop(path: String): String {
@@ -24,65 +25,71 @@ export default class TMDbProvider {
   getMovieRecommendations(tmdbId: Number): Promise<Object> {
     const {api, uri} = this
 
-    return HTTP.get(`${api}/movie/${tmdbId}/recommendations?${uri}`)
+    return HTTP.fetch(`${api}/movie/${tmdbId}/recommendations?${uri}`)
       .then(data => data.results)
   }
 
   getSimilarMovies(tmdbId: Number): Promise<Object> {
     const {api, uri} = this
 
-    return HTTP.get(`${api}/movie/${tmdbId}/similar?${uri}`)
+    return HTTP.fetch(`${api}/movie/${tmdbId}/similar?${uri}`)
       .then(data => data.results)
   }
 
   getPopularMovies(): Promise<Object> {
     const {api, uri} = this
 
-    return HTTP.get(`${api}/movie/popular?${uri}`)
+    return HTTP.fetch(`${api}/movie/popular?${uri}`)
       .then(data => data.results)
   }
 
   getTopRatedMovies(): Promise<Object> {
     const {api, uri} = this
 
-    return HTTP.get(`${api}/movie/top_rated?${uri}`)
+    return HTTP.fetch(`${api}/movie/top_rated?${uri}`)
       .then(data => data.results)
   }
 
   getMovie(tmdbId: Number): Promise<Object> {
     const {api, uri} = this
 
-    return HTTP.get(`${api}/movie/${tmdbId}?${uri}`)
+    return HTTP.fetch(`${api}/movie/${tmdbId}?${uri}`)
   }
 
   getShow(tmdbId: Number): Promise<Object> {
     const {api, uri} = this
 
-    return HTTP.get(`${api}/tv/${tmdbId}?${uri}`)
+    return HTTP.fetch(`${api}/tv/${tmdbId}?${uri}`)
   }
 
   getShowSeason(tmdbId: Number, season: Number): Promise<Object> {
     const {api, uri} = this
 
-    return HTTP.get(`${api}/tv/${tmdbId}/season/${season}?${uri}`)
+    return HTTP.fetch(`${api}/tv/${tmdbId}/season/${season}?${uri}`)
   }
 
   getShowSeasonEpisode(tmdbId: Number, season: Number, episode: Number): Promise<Object> {
     const {api, uri} = this
 
-    return HTTP.get(`${api}/tv/${tmdbId}/season/${season}/episode/${episode}?${uri}`)
+    return HTTP.fetch(`${api}/tv/${tmdbId}/season/${season}/episode/${episode}?${uri}`)
   }
 
   getShowExternalIds(tmdbId: Number) {
     const {api, uri} = this
 
-    return HTTP.get(`${api}/tv/${tmdbId}/external_ids?${uri}`)
+    return HTTP.fetch(`${api}/tv/${tmdbId}/external_ids?${uri}`)
   }
 
-  searchAll(query: String) {
+  searchAll(query: String, page: Number = 0) {
     const {api, uri} = this
 
-    return HTTP.get(`${api}/search/multi?${uri}&page=1&include_adult=false&query=${query}`)
+    return HTTP.fetch(`${api}/search/multi?${uri}&page=${page}&include_adult=false&query=${query}`)
+  }
+
+  getList(id: Number, page: Number = 1) {
+    const {api4, uri} = this
+
+    return HTTP.fetch(`${api4}/list/${id}?${uri}&page=${page}`)
   }
 
 }

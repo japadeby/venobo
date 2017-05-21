@@ -71,6 +71,7 @@ function getDefaultState () {
       shows: [],
       episodes: []
     },
+    cache: {}, // cache module
     metadata: {},
     modal: null, /* modal popover */
     errors: [], /* user-facing errors */

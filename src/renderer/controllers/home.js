@@ -22,7 +22,6 @@ export default class HomeController extends React.Component {
 
   componentDidMount() {
     const {props} = this
-
     TorrentAdapter('tt0460681', 'shows', {search: 'Supernatural', season: 11, episode: 1})
       .then(console.log)
       .catch(console.log)

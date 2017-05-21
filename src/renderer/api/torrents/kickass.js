@@ -15,7 +15,7 @@ export default class KatTorrentProvider {
   static provider = 'Kickass'
 
   static fetch(query: String): Promise {
-    return HTTP.fetchTorrent(`${this.endpoint}/usearch/${encodeURIComponent(query)}/?field=seeders&sorder=desc`)
+    return HTTP.get(`${this.endpoint}/usearch/${encodeURIComponent(query)}/?field=seeders&sorder=desc`)
       .then(res => this.cheerio(res))
       .catch(err => [])
   }

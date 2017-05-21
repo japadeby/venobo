@@ -12,7 +12,7 @@ export default class YtsTorrentProvider {
   static provider: String = 'Yify'
 
   static fetch(imdbId): Promise {
-    return HTTP.fetchTorrent(
+    return HTTP.fetch(
       this.formatApi({
         query_term: imdbId,
         order_by: 'desc',

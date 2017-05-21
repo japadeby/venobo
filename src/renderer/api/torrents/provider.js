@@ -29,9 +29,9 @@ export function hasHardcodedSubtitles(metadata: String): Boolean {
 export function isCamRecorded(metadata: String): Boolean {
   return (
       metadata.includes('cam') ||
-      metadata.includes('hdtc') ||
+      metadata.includes('tc') ||
       metadata.includes('dvdscr') ||
-      metadata.includes('hdts') ||
+      metadata.includes('ts') ||
       metadata.includes('blurred')
   )
 }
@@ -41,7 +41,7 @@ export function isCamRecorded(metadata: String): Boolean {
  * @param {String} metadata
  * @return {String}
  */
-export function determineQuality(magnet: String, metadata: String = ''): String {
+export function determineQuality(magnet: String, metadata: String): String {
   const lowerCaseMetadata = (metadata || magnet).toLowerCase()
 
   // Filter videos recorded with a camera
@@ -61,6 +61,8 @@ export function determineQuality(magnet: String, metadata: String = ''): String 
   if (lowerCaseMetadata.includes('720')) return '720p'
   if (lowerCaseMetadata.includes('480')) return '480p'
   if (lowerCaseMetadata.includes('3d')) return '3D'
+  if (lowerCaseMetadata.includes('4k')) return '4K'
+  if (lowerCaseMetadata.includes('hd')) return '4K'
 
   // Guess the quality 1080p
   if (lowerCaseMetadata.includes('bluray')) return '1080p'
@@ -76,7 +78,7 @@ export function determineQuality(magnet: String, metadata: String = ''): String 
   if (lowerCaseMetadata.includes('eng')) return '720p'
 
   if (process.env.NODE_ENV === 'development') {
-    console.warn(`${magnet}, could not be verified`)
+    console.warn(`${metadata}, could not be verified`)
   }
 
   return ''

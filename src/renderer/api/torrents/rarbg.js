@@ -20,7 +20,7 @@ export default class RarbgTorrentProvider {
   }
 
   static fetchShows(query: String): Promise {
-    return HTTP.fetchTorrent(
+    return HTTP.get(
       this.formatApi({
         category: '18;41;49',
         search: query,
@@ -31,7 +31,7 @@ export default class RarbgTorrentProvider {
   }
 
   static fetchMovies(query: String): Promise {
-    return HTTP.fetchTorrent(
+    return HTTP.get(
       this.formatApi({
         category: '48;17;44;45;47;42;46',
         search: query,
