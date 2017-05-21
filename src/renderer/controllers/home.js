@@ -22,20 +22,26 @@ export default class HomeController extends React.Component {
 
   componentDidMount() {
     const {props} = this
-    TorrentAdapter('tt0460681', 'shows', {search: 'Supernatural', season: 11, episode: 1})
+
+    MetadataAdapter.getShowById(48866)
       .then(console.log)
       .catch(console.log)
 
     dispatch('setTitle', 'Home')
 
     async.parallel({
-      popular: function(done) {
+      popularMovies: function(done) {
         MetadataAdapter.getPopularMovies()
           .then(data => done(null, data))
           .catch(done)
       },
-      topRated: function(done) {
+      topRatedMovies: function(done) {
         MetadataAdapter.getTopRatedMovies()
+          .then(data => done(null, data))
+          .catch(done)
+      },
+      popularShows: function(done) {
+        MetadataAdapter.getPopularShows()
           .then(data => done(null, data))
           .catch(done)
       }
@@ -45,8 +51,12 @@ export default class HomeController extends React.Component {
         isMounted: true,
         media: {
           movies: {
-            popular: res.popular,
-            topRated: res.topRated
+            popular: res.popularMovies,
+            topRated: res.topRatedMovies
+          },
+          shows: {
+            popular: res.popularShows,
+            topRated: undefined
           }
         }
       })

@@ -62,7 +62,7 @@ export function determineQuality(magnet: String, metadata: String): String {
   if (lowerCaseMetadata.includes('480')) return '480p'
   if (lowerCaseMetadata.includes('3d')) return '3D'
   if (lowerCaseMetadata.includes('4k')) return '4K'
-  if (lowerCaseMetadata.includes('hd')) return '4K'
+  if (lowerCaseMetadata.includes('uhd')) return '4K'
 
   // Guess the quality 1080p
   if (lowerCaseMetadata.includes('bluray')) return '1080p'
@@ -76,6 +76,7 @@ export function determineQuality(magnet: String, metadata: String): String {
   if (lowerCaseMetadata.includes('web')) return '720p'
   if (lowerCaseMetadata.includes('hdtv')) return '720p'
   if (lowerCaseMetadata.includes('eng')) return '720p'
+  if (lowerCaseMetadata.includes('xvid')) return '720p'
 
   if (process.env.NODE_ENV === 'development') {
     console.warn(`${metadata}, could not be verified`)

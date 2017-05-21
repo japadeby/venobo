@@ -256,9 +256,9 @@ export default class Main {
     }
 
     // Update the virtual DOM, unless it's just a mouse move event
-    if (action !== 'mediaMouseMoved' /*|| this.controllers.playback().showOrHidePlayerControls()*/) {
+    /*if (action !== 'mediaMouseMoved' || this.controllers.playback().showOrHidePlayerControls()) {
       this.update()
-    }
+    }*/
   }
 
   renderMain(state) {
@@ -357,7 +357,7 @@ export default class Main {
       message: err.message || err
     })
 
-    this.update()
+    //this.update()
   }
 
   onFocus(e) {
@@ -365,12 +365,16 @@ export default class Main {
 
     state.window.isFocused = true
     state.dock.badge = 0
-    this.update()
+    //this.update()
+  }
+
+  onScroll() {
+    this.hideTooltip()
   }
 
   onBlur() {
     this.state.window.isFocused = false
-    this.update()
+    //this.update()
   }
 
   onVisibilityChange() {
@@ -386,7 +390,7 @@ export default class Main {
       ipcRenderer.send('setAspectRatio', state.playing.aspectRatio)
     }
 
-    this.update()
+    //this.update()
   }
 
   onWindowBoundsChanged(e, newBounds) {

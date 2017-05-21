@@ -166,7 +166,8 @@ export function selectTorrents(torrents: Array<any>,
     : {
       '480p': sortedTorrents.find((torrent: Object) => torrent.quality === '480p'),
       '720p': sortedTorrents.find((torrent: Object) => torrent.quality === '720p'),
-      '1080p': sortedTorrents.find((torrent: Object) => torrent.quality === '1080p')
+      '1080p': sortedTorrents.find((torrent: Object) => torrent.quality === '1080p'),
+      '4K': sortedTorrents.find((torrent: Object) => torrent.quality === '4k')
     }
 
   for (let i in formattedTorrents) {

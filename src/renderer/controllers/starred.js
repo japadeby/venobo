@@ -23,10 +23,20 @@ export default class StarredController extends React.Component {
     const {props, state} = this
     const {starred} = props.state.saved
 
-    const countMovies = starred.movies.length
-    const countShows = starred.shows.length
+    let movies = []
 
-    if (countMovies || countShows) {
+    async.each(starred.movies, (tmdbId, next) => {
+      MetadataAdapter.getMovieById(tmdbId)
+        .then(movie => {
+          movies.push(movie)
+          next(null)
+        })
+        .catch(next)
+    }, function(err) {
+      console.log(movies)
+    })
+
+    /*if (countMovies || countShows) {
       async.parallel({
         movies: (done) => {
           let movies = []
@@ -48,7 +58,7 @@ export default class StarredController extends React.Component {
         },
         shows: (done) => done()
       }, (err, res) => {
-        console.log(res)
+        console.log(err, res)
 
         this.setState({
           isMounted: true
@@ -59,7 +69,7 @@ export default class StarredController extends React.Component {
         empty: true,
         isMounted: true
       })
-    }
+    }*/
   }
 
   render() {

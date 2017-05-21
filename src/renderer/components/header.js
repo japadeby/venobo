@@ -46,6 +46,25 @@ class Header extends React.Component {
     }
   }
 
+  search = (e) => {
+    this.throttle(() => {
+
+    })
+  }
+
+  throttle(callback: Function, delay: Number = 2500) {
+    let timer = null
+
+    return function () {
+      var context = this, args = arguments
+      clearTimeout(timer)
+
+      timer = window.setTimeout(() => {
+        callback.apply(context, args)
+      }, delay)
+    }
+  }
+
   componentWillUnmount() {
     // make sure you remove the listener when the component is destroyed
     document.removeEventListener('click', this.searchHandleFocus, false)
@@ -104,7 +123,7 @@ class Header extends React.Component {
             </div>
           </div>
           <div className="search" ref="search" onMouseEnter={this.searchHover} onMouseLeave={this.searchLeave} onClick={this.searchFocus}>
-            <input className="searchfield" autoComplete="off" ref="searchPhrase" placeholder={translate('nav.search')} type="search" />
+            <input className="searchfield" onKeyUp={this.search} autoComplete="off" ref="searchPhrase" placeholder={translate('nav.search')} type="search" />
 				    <div className="result dropdown">
               <div className="list"></div>
               <p className="empty-result">Intet resultat</p>

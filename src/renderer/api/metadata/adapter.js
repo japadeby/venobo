@@ -16,9 +16,9 @@ export default class MetadataAdapter {
   }
 
   static formatShowMetadata(data: Object, torrents: Object): Object {
-    const {TMDb, state} = this
+    const {TMDb, state, Cache} = this
 
-    return state.media.shows[data.id] = {
+    const metadata = state.media.shows[data.id] = {
       title: data.name,
       original_title: data.original_name,
       poster: TMDb.formatPoster(data.poster_path),
@@ -27,20 +27,22 @@ export default class MetadataAdapter {
         return genre.name
       }),
       type: 'show',
-      smmary: data.overview,
+      summary: data.overview,
       popularity: data.popularity,
       tmdb: data.id,
-      imdb: data.imdb_id,
+      //imdb: data.imdb_id,
       year: data.first_air_date.substring(0, 4),
       release_date: data.first_air_date,
       voted: data.vote_average,
       votes: data.vote_count,
-      runtime: (data.runtime) ? `${data.runtime}min` : 'N/A',
-      released: (data.status === "Released"),
-      torrents: torrents,
+      season_episodes: torrents,
       episodes_count: data.number_of_episodes,
       seasons_count: data.number_of_seasons
     }
+
+    Cache.writeSync(`show-${data.id}`, metadata)
+
+    return metadata
   }
 
   static formatMovieMetadata(data: Object, torrents: Object): Object {
@@ -68,7 +70,7 @@ export default class MetadataAdapter {
       torrents: torrents
     }
 
-    Cache.writeSync(`adapter-${data.id}`, metadata)
+    Cache.writeSync(`movie-${data.id}`, metadata)
 
     return metadata
   }
@@ -166,6 +168,28 @@ export default class MetadataAdapter {
     })
   }
 
+  static getPopularShows(): Promise {
+    const {TMDb} = this
+    let popularShows = []
+
+    return new Promise((resolve, reject) => {
+      TMDb.getPopularShows()
+        .then(shows => {
+          async.each(shows, (show, next) => {
+            this.getShowById(show.id)
+              .then(data => next(null, data))
+              .catch(() => next())
+          }, (err) => {
+            if (err) {
+              reject(err)
+            } else {
+              resolve(popularShows)
+            }
+          })
+        })
+    })
+  }
+
   static getPopularMovies(): Promise {
     const {TMDb} = this
     let popularMovies = []
@@ -249,7 +273,7 @@ export default class MetadataAdapter {
 
     return new Promise((resolve, reject) => {
       if (!movies.hasOwnProperty(tmdbId)) {
-        Cache.isNotExpiredThenRead(`adapter-${tmdbId}`)
+        Cache.isNotExpiredThenRead(`movie-${tmdbId}`)
           .then(data => {
             movies[tmdbId] = data
             resolve(data)
@@ -269,23 +293,60 @@ export default class MetadataAdapter {
     })
   }
 
-  static getShowById(tmdbId: Number): Promise {
-    const {state, TMDb} = this
+  static getEpisodeDetails(tmdbId: Number, season: Number, episode: Number) {
+    return TMDb.getShowEpisode(tmdbId, season, episode)
+  }
+
+  static async getShowById(tmdbId: Number): Promise {
+    const {state, TMDb, Cache} = this
     const {shows} = state.media
 
     return new Promise((resolve, reject) => {
       if (!shows.hasOwnProperty(tmdbId)) {
-        TMDb.getShow(tmdbId)
+        Cache.isNotExpiredThenRead(`show-${tmdbId}`)
           .then(data => {
-            TMDb.getShowExternalIds(tmdbId)
-              .then(external => {
-                data.imdb_id = external.imdb_id
-                this.addTorrents(data, 'show')
-                  .then(resolve)
-                  .catch(reject)
-              })
+            shows[tmdbId] = data
+            resolve(data)
           })
-          .catch(reject)
+          .catch(() => {
+            TMDb.getShow(tmdbId)
+              .then(show => {
+                let seasons = {}
+
+                async.forEachOf(show.seasons, function(value, key, nextSeason) {
+                  const season = key + 1
+                  seasons[season] = {}
+
+                  async.times(value.episode_count, function(index, nextEpisode) {
+                    const episode = index + 1
+                    seasons[season][episode] = {}
+
+                    TMDb.getShowSeasonEpisode(tmdbId, season, episode)
+                      .then(data => {
+                        TorrentAdapter(undefined, 'shows', {
+                          search: show.original_name,
+                          season,
+                          episode
+                        })
+                          .then(torrents => {
+                            seasons[season][episode] = torrents
+                            nextEpisode(null, torrents)
+                          })
+                      })
+                      .catch(nextEpisode)
+                  }, function(err, data) {
+                    nextSeason(err)
+                  })
+                }, (err) => {
+                  if (err) {
+                    reject(err)
+                  } else {
+                    resolve(this.formatShowMetadata(show, seasons))
+                  }
+                })
+              })
+              .catch(reject)
+          })
       } else {
         resolve(shows[tmdbId])
       }

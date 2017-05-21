@@ -3488,11 +3488,8 @@ section[data-viaplay-module-id="FeatureBox"] {
           right: 0;
           top: 38px;
           background: #ffffff;
-          background: -webkit-gradient(linear, left top, right top, from(rgba(255, 255, 255, 0)), to(#ffffff), color-stop(50%, #ffffff));
-          background: -moz-linear-gradient(to right, rgba(255, 255, 255, 0), #ffffff 50%, #ffffff);
-          background: -o-linear-gradient(to right, rgba(255, 255, 255, 0), #ffffff 50%, #ffffff);
-          background: -ms-linear-gradient(to right, rgba(255, 255, 255, 0), #ffffff 50%, #ffffff);
-          background: linear-gradient(to right, rgba(255, 255, 255, 0), #ffffff 50%, #ffffff); }
+          background: linear-gradient(to right, rgba(255, 255, 255, 0), #ffffff 50%, #ffffff);
+        }
       #tooltip .tooltip .body .interaction-block:not(:empty) {
         border-width: 1px 0;
         border-style: solid;

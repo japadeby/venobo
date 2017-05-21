@@ -15,12 +15,12 @@ export default class PirateBayTorrentProvider {
   static provider = 'The Pirate Bay'
 
   static fetchMovies(query: String, page: Number = 0) {
-    return HTTP.get(`${this.endpoint}/search/${query}/0/99/207`)
+    return HTTP.fetchCache(`${this.endpoint}/search/${query}/0/99/207`)
       .then(res => this.cheerio(res))
   }
 
   static fetchShows(query: String, page: Number = 0) {
-    return HTTP.get(`${this.endpoint}/search/${query}/0/99/208`)
+    return HTTP.fetchCache(`${this.endpoint}/search/${query}/0/99/208`)
       .then(res => this.cheerio(res))
   }
 
