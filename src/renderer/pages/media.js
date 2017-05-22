@@ -1,4 +1,6 @@
 import React from 'react'
+import randomString from 'crypto-random-string'
+import classNames from 'classnames'
 
 import {dispatch} from '../lib/dispatcher'
 
@@ -17,11 +19,113 @@ export default class MediaPage extends React.Component {
 
   constructor(props) {
     super(props)
+
+    this.state = {
+      pagination: 1,
+      episodes: '',
+      navigation: ''
+    }
+  }
+
+  renderNavigation(pagination) {
+    const {media} = this.props.data
+    const seasons = media.season_episodes
+
+    return Object.keys(seasons).map(season => {
+      const active = classNames({
+        active: pagination == season
+      })
+      return (
+        <a href="#" className={active} data-season={season} key={season} onClick={this.paginate}>{season}</a>
+      )
+    })
+  }
+
+  paginate = (e) => {
+    const {pagination} = this.state.pagination
+    const season = Number($(e.target).data('season'))
+
+    if (season !== pagination) {
+      this.setState({
+        pagination: season,
+        navigation: this.renderNavigation(season),
+        episodes: this.renderEpisodes(season)
+      })
+    }
+
+    e.preventDefault()
+  }
+
+  renderEpisodes(season) {
+    const {media} = this.props.data
+    const episodes = media.season_episodes[season]
+
+    return Object.keys(episodes).map(episode => {
+      const {poster, title, summary, voted, votes, torrents} = episodes[episode]
+      return (
+        <div className="episode table" key={randomString(5)}>
+          <div className="front">
+            <div>
+              <h3>
+                <a className="episode-link">
+                  <div className="front-image episode-img" style={{background: `url(${poster}) no-repeat center center`}}></div>
+                </a>
+              </h3>
+              <div className="backdrop small">
+                <div className="box">
+                  <div className="play-link"></div>
+                  <div className="load-spinner dark small"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="meta-data-container">
+            <div className="meta">
+              <span className="title">{episode}. {title}</span>
+              &nbsp;&nbsp;&nbsp;
+              {/*<span className="episode-length">57min</span>*/}
+              <span className="flags">
+                {Object.keys(torrents).map(quality => {
+                  return (
+                    <span className="flag" key={quality}>{quality}</span>
+                  )
+                })}
+              </span>
+            </div>
+            <div className="table">
+              <div className="synopsis">
+                <span>{summary}</span>
+              </div>
+              <div className="progress">
+                <progress value="99" max="100">99% </progress>
+                <p className="remaining">0 minutter tilbage</p>
+              </div>
+              <div className="starred">
+                <a className="icon starred"></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    })
+  }
+
+  componentDidMount() {
+    const {state, props} = this
+    const {type} = props.data.media
+    const {pagination} = state
+
+    if (type === 'show') {
+      this.setState({
+        episodes: this.renderEpisodes(pagination),
+        navigation: this.renderNavigation(pagination)
+      })
+    }
   }
 
   render() {
-    const {props} = this
-    const {similar, media, recommendations} = props.data
+    const {props, state} = this
+    const {similar, media, recommended} = props.data
 
     return (
       <ContentProduct>
@@ -96,44 +200,23 @@ export default class MediaPage extends React.Component {
           <div>
             <div className="block season-navigation landscape">
               <Scaffold>
-                <span className="label">Sæson</span>
-                <div className="tabs">
-                  <a href="">1</a>
-                  <a href="">2</a>
+                <span className="label">Season</span>
+                <div className="tabs" ref="pagination">
+                  {state.navigation}
                 </div>
               </Scaffold>
             </div>
             <section className="block season landscape">
               <Scaffold>
-                <div className="episodes">
-                  <div className="episode table">
-                    <div className="front">
-                      <h3>
-                        <a className="episode-link">
-                          <div className="front-image episode-img"></div>
-                        </a>
-                      </h3>
-                      <div className="backdrop small">
-                        <div className="box">
-                          <div className="play-link"></div>
-                          <div className="load-spinner dark small"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="meta-data-container">
-                      <div className="meta">
-                        <span className="title">1. Through a Glass</span>
-                        <span className="episode-length">57min</span>
-                      </div>
-                    </div>
-                  </div>
+                <div className="episodes" ref="episodes">
+                  {state.episodes}
                 </div>
               </Scaffold>
             </section>
           </div>
         }
         <Carousel title={"Lignende film"} items={similar} state={props.state} />
-        <Carousel title={"Recomendations"} items={recommendations} state={props.state} />
+        <Carousel title={"Recomendations"} items={recommended} state={props.state} />
       </ContentProduct>
     )
   }

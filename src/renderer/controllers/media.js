@@ -52,21 +52,18 @@ export default class MediaController extends React.Component {
               dispatch('setTitle', show.title)
               done(null, show)
             })
-            .catch(done)
+            .catch(err => done('media: ' + err))
         }
       },
       similar: (done) => {
         if (type === 'movie') {
           MetadataAdapter.getSimilarMovies(tmdb)
-            .then(movies => {
-              console.log('similar: ', movies)
-              done(null, movies)
-            })
+            .then(movies => done(null, movies))
             .catch(done)
         } else if (type === 'show') {
           MetadataAdapter.getSimilarShows(tmdb)
             .then(shows => done(null, shows))
-            .catch(done)
+            .catch(err => done('similar: ' + err))
         }
       },
       recommended: (done) => {
@@ -77,17 +74,18 @@ export default class MediaController extends React.Component {
         } else if (type === 'show') {
           MetadataAdapter.getShowRecommendations(tmdb)
             .then(shows => done(null, shows))
-            .catch(done)
+            .catch(err => done('recommended: ' + err))
         }
       }
     }, (err, data) => {
-      console.log(data)
+      console.log('fetching')
+      console.log(err)
       this.setState({
         data: {
           type: type,
           media: data.media,
           similar: data.similar,
-          recommendations: data.recommended
+          recommended: data.recommended
         },
         isMounted: true
       })

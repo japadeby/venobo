@@ -47,7 +47,6 @@ export default class HomeController extends React.Component {
           .catch(done)
       }
     }, (err, res) => {
-      console.log(res.topRatedShows)
       this.setState({
         isMounted: true,
         media: {

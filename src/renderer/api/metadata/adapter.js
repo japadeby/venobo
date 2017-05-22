@@ -144,6 +144,7 @@ export default class MetadataAdapter {
         similar[tmdbId] = []
         Cache.existsThenRead(cacheId)
           .then(data => {
+            console.log('exists')
             similar[tmdbId] = data
             resolve(data)
           })
@@ -180,10 +181,10 @@ export default class MetadataAdapter {
 
     return new Promise((resolve, reject) => {
       if (!recommendations.hasOwnProperty(tmdbId)) {
-        var showList = recommendations[tmdbId] = []
+        recommendations[tmdbId] = []
         Cache.existsThenRead(cacheId)
           .then(data => {
-            showList = data
+            recommendations[tmdbId] = data
             resolve(data)
           })
           .catch(() => {
@@ -192,7 +193,7 @@ export default class MetadataAdapter {
                 async.each(shows, (show, next) => {
                   this.checkShow(show.id)
                     .then(data => {
-                      showState.push(data)
+                      recommendations[tmdbId].push(data)
                       next()
                     })
                     .catch(() => next())
@@ -200,7 +201,7 @@ export default class MetadataAdapter {
                   if (err) {
                     reject(err)
                   } else {
-                    Cache.write(cacheId, showList, resolve)
+                    Cache.write(cacheId, recommendations[tmdbId], resolve)
                   }
                 })
               })
