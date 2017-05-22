@@ -14,6 +14,10 @@ export default class TMDbProvider {
     this.api4 = `${config.TMDB.API}/4`
   }
 
+  formatEpisodePoster(path: String): String {
+    return `${config.TMDB.STILL}${path}`
+  }
+
   formatBackdrop(path: String): String {
     return `${config.TMDB.BACKDROP}${path}`
   }
@@ -22,31 +26,45 @@ export default class TMDbProvider {
     return `${config.TMDB.POSTER}${path}`
   }
 
+  getSimilarShows(tmdbId: Number): Promise<Object> {
+    const {api, uri} = this
+
+    return HTTP.fetchLimitCache(`${api}/tv/${tmdbId}/similar?${uri}`)
+      .then(data => data.results)
+  }
+
+  getShowRecommendations(tmdbId: Number): Promise<Object> {
+    const {api, uri} = this
+
+    return HTTP.fetchLimitCache(`${api}/tv/${tmdbId}/recommendations?${uri}`)
+      .then(data => data.results)
+  }
+
   getMovieRecommendations(tmdbId: Number): Promise<Object> {
     const {api, uri} = this
 
-    return HTTP.fetchLimit(`${api}/movie/${tmdbId}/recommendations?${uri}`)
+    return HTTP.fetchLimitCache(`${api}/movie/${tmdbId}/recommendations?${uri}`)
       .then(data => data.results)
   }
 
   getSimilarMovies(tmdbId: Number): Promise<Object> {
     const {api, uri} = this
 
-    return HTTP.fetchLimit(`${api}/movie/${tmdbId}/similar?${uri}`)
+    return HTTP.fetchLimitCache(`${api}/movie/${tmdbId}/similar?${uri}`)
       .then(data => data.results)
   }
 
   getPopularMovies(): Promise<Object> {
     const {api, uri} = this
 
-    return HTTP.fetchLimit(`${api}/movie/popular?${uri}`)
+    return HTTP.fetchLimitCache(`${api}/movie/popular?${uri}`)
       .then(data => data.results)
   }
 
   getTopRatedMovies(): Promise<Object> {
     const {api, uri} = this
 
-    return HTTP.fetchLimit(`${api}/movie/top_rated?${uri}`)
+    return HTTP.fetchLimitCache(`${api}/movie/top_rated?${uri}`)
       .then(data => data.results)
   }
 
@@ -59,14 +77,14 @@ export default class TMDbProvider {
   getPopularShows(): Promise<Object> {
     const {api, uri} = this
 
-    return HTTP.fetchLimit(`${api}/tv/popular?${uri}`)
+    return HTTP.fetchLimitCache(`${api}/tv/popular?${uri}`)
       .then(data => data.results)
   }
 
   getTopRatedShows(): Promise<Object> {
     const {api, uri} = this
 
-    return HTTP.fetchLimit(`${api}/tv/top_rated?${uri}`)
+    return HTTP.fetchLimitCache(`${api}/tv/top_rated?${uri}`)
       .then(data => data.results)
   }
 

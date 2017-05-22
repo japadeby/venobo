@@ -45,8 +45,19 @@ export default class HTTP {
 
     return new Promise((resolve, reject) => {
       Limiter.removeTokens(1, (err, remaining) => {
-        console.log(remaining)
         this.fetch(url)
+          .then(resolve)
+          .catch(reject)
+      })
+    })
+  }
+
+  static fetchLimitCache(url: String): Promise {
+    const {Limiter} = this
+
+    return new Promise((resolve, reject) => {
+      Limiter.removeTokens(1, (err, remaining) => {
+        this.fetchCache(url)
           .then(resolve)
           .catch(reject)
       })

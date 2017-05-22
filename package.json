@@ -25,11 +25,13 @@
     "classnames": "^2.2.5",
     "cp-file": "^4.1.1",
     "crypto-js": "*",
+    "crypto-random-string": "*",
     "debounce": "^1.0.0",
     "dlnacasts": "*",
     "fn-getter": "^1.0.0",
     "history": "^4.6.1",
     "jquery": "*",
+    "limiter": "^1.1.0",
     "local-storage-es6": "^1.0.8",
     "node-notifier": "^5.1.2",
     "opensubtitles-api": "^4.0.0-rc1",
@@ -39,8 +41,7 @@
     "react-dom": "^15.4.2",
     "react-router-dom": "^4.1.0",
     "rimraf": "*",
-    "vlc-command": "^1.1.1",
-    "crypto-random-string": "*"
+    "vlc-command": "^1.1.1"
   },
   "devDependencies": {
     "babel-cli": "*",

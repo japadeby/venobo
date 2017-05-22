@@ -49,7 +49,8 @@ module.exports = {
     API: 'https://api.themoviedb.org',
     KEY: '56dc6f8e86f739bbce37281a8ad47641',
     POSTER: 'https://image.tmdb.org/t/p/w300_and_h450_bestv2',
-    BACKDROP: 'https://image.tmdb.org/t/p/original'
+    BACKDROP: 'https://image.tmdb.org/t/p/original',
+    STILL: 'https://image.tmdb.org/t/p/w227_and_h127_bestv2'
   },
   GITHUB: {
     URL: 'https://github.com/venobo/app',

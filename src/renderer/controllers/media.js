@@ -33,49 +33,65 @@ export default class MediaController extends React.Component {
   componentDidMount() {
     const {tmdb, type} = this.props.match.params
 
-    console.log(type)
-
     this.setData(tmdb, type)
   }
 
   setData(tmdb, type) {
-    if (type === 'movie') {
-      async.parallel({
-        movie: (done) => {
+    async.parallel({
+      media: (done) => {
+        if (type === 'movie') {
           MetadataAdapter.getMovieById(tmdb)
             .then(movie => {
               dispatch('setTitle', movie.title)
               done(null, movie)
             })
             .catch(done)
-        },
-        similar: (done) => {
-          MetadataAdapter.getSimilarMovies(tmdb)
-            .then(movies => done(null, movies))
+        } else if (type === 'show') {
+          MetadataAdapter.getShowById(tmdb)
+            .then(show => {
+              dispatch('setTitle', show.title)
+              done(null, show)
+            })
             .catch(done)
-        },
-        recommendations: (done) => {
+        }
+      },
+      similar: (done) => {
+        if (type === 'movie') {
+          MetadataAdapter.getSimilarMovies(tmdb)
+            .then(movies => {
+              console.log('similar: ', movies)
+              done(null, movies)
+            })
+            .catch(done)
+        } else if (type === 'show') {
+          MetadataAdapter.getSimilarShows(tmdb)
+            .then(shows => done(null, shows))
+            .catch(done)
+        }
+      },
+      recommended: (done) => {
+        if (type === 'movie') {
           MetadataAdapter.getMovieRecommendations(tmdb)
             .then(movies => done(null, movies))
             .catch(done)
+        } else if (type === 'show') {
+          MetadataAdapter.getShowRecommendations(tmdb)
+            .then(shows => done(null, shows))
+            .catch(done)
         }
-      }, (err, res) => {
-        console.log(res.movie)
-        this.setState({
-          data: {
-            type: 'movie',
-            media: res.movie,
-            similar: res.similar,
-            recommendations: res.recommendations
-          },
-          isMounted: true
-        })
+      }
+    }, (err, data) => {
+      console.log(data)
+      this.setState({
+        data: {
+          type: type,
+          media: data.media,
+          similar: data.similar,
+          recommendations: data.recommended
+        },
+        isMounted: true
       })
-    } else if (type === 'show') {
-
-    } else {
-      throw new Error('Invalid media type')
-    }
+    })
   }
 
   render() {
