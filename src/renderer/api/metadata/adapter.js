@@ -15,10 +15,20 @@ export default class MetadataAdapter {
     this.TMDb = new TMDbProvider(state)
   }
 
-  static formatShowMetadata(data: Object, torrents: Object): Object {
-    const {TMDb, state, Cache} = this
+  static saveShowMetadata(data: Object, torrents: Object): Object {
+    const {state, Cache} = this
 
-    const metadata = state.media.shows[data.id] = {
+    const formattedData = state.media.shows[data.id] = this.formatShowMetadata(data, torrents)
+
+    Cache.writeSync(`show-${data.id}`, formattedData)
+
+    return formattedData
+  }
+
+  static formatShowMetadata(data: Object, torrents: Object = {}): Object {
+    const {TMDb} = this
+
+    return {
       title: data.name,
       original_title: data.original_name,
       poster: TMDb.formatPoster(data.poster_path),
@@ -36,19 +46,25 @@ export default class MetadataAdapter {
       voted: data.vote_average,
       votes: data.vote_count,
       season_episodes: torrents,
-      episodes_count: data.number_of_episodes,
+      episodes_count: data.episodeCount,
       seasons_count: data.number_of_seasons
     }
-
-    Cache.writeSync(`show-${data.id}`, metadata)
-
-    return metadata
   }
 
-  static formatMovieMetadata(data: Object, torrents: Object): Object {
-    const {TMDb, state, Cache} = this
+  static saveMovieMetadata(data: Object, torrents: Object): Object {
+    const {state, Cache} = this
 
-    const metadata = state.media.movies[data.id] = {
+    const formattedData = state.media.movies[data.id] = this.formatMovieMetadata(data, torrents)
+
+    Cache.writeSync(`movie-${data.id}`, formattedData)
+
+    return formattedData
+  }
+
+  static formatMovieMetadata(data: Object, torrents: Object = {}): Object {
+    const {TMDb} = this
+
+    return {
       title: data.title,
       original_title: data.original_title,
       poster: TMDb.formatPoster(data.poster_path),
@@ -69,10 +85,6 @@ export default class MetadataAdapter {
       released: (data.status === "Released"),
       torrents: torrents
     }
-
-    Cache.writeSync(`movie-${data.id}`, metadata)
-
-    return metadata
   }
 
   static addShowTorrents(data: Object, ...args): Promise {
@@ -85,7 +97,7 @@ export default class MetadataAdapter {
           if (!torrents) {
             reject()
           } else {
-            resolve(this.formatShowMetadata(data, torrents))
+            resolve(this.saveShowMetadata(data, torrents))
           }
         })
     })
@@ -100,7 +112,7 @@ export default class MetadataAdapter {
           if (!torrents) {
             reject()
           } else {
-            resolve(this.formatMovieMetadata(data, torrents))
+            resolve(this.saveMovieMetadata(data, torrents))
           }
         })
     })
@@ -169,96 +181,153 @@ export default class MetadataAdapter {
   }
 
   static getPopularShows(): Promise {
-    const {TMDb} = this
-    let popularShows = []
+    const {TMDb, state, Cache} = this
+    let {popular} = state.media.lists.shows
 
     return new Promise((resolve, reject) => {
-      TMDb.getPopularShows()
-        .then(shows => {
-          async.each(shows, (show, next) => {
-            this.getShowById(show.id)
-              .then(data => next(null, data))
-              .catch(() => next())
-          }, (err) => {
-            if (err) {
-              reject(err)
-            } else {
-              resolve(popularShows)
-            }
+      if (!popular.length) {
+        Cache.isNotExpiredThenRead('getPopularShows')
+          .then(data => {
+            popular = data
+            resolve(data)
           })
-        })
+          .catch(() => {
+            TMDb.getPopularShows()
+              .then(shows => {
+                async.each(shows, (show, next) => {
+                  this.checkShow(show.id)
+                    .then(data => {
+                      popular.push(data)
+                      next()
+                    })
+                    .catch(() => next())
+                }, (err) => {
+                  if (err) {
+                    reject(err)
+                  } else {
+                    Cache.writeSync('getPopularShows', popular)
+                    resolve(popular)
+                  }
+                })
+              })
+              .catch(reject)
+          })
+      } else {
+        resolve(popular)
+      }
+    })
+  }
+
+  static getTopRatedShows(): Promise {
+    const {TMDb, state, Cache} = this
+    let {topRated} = state.media.lists.shows
+
+    return new Promise((resolve, reject) => {
+      if (!topRated.length) {
+        Cache.isNotExpiredThenRead('getTopRatedShows')
+          .then(data => {
+            topRated = data
+            resolve(data)
+          })
+          .catch(() => {
+            TMDb.getTopRatedShows()
+              .then(shows => {
+                async.each(shows, (show, next) => {
+                  this.checkShow(show.id)
+                    .then(data => {
+                      topRated.push(data)
+                      next()
+                    })
+                    .catch(() => next())
+                }, (err) => {
+                  if (err) {
+                    reject(err)
+                  } else {
+                    Cache.writeSync('getTopRatedShows', topRated)
+                    resolve(topRated)
+                  }
+                })
+              })
+              .catch(reject)
+          })
+      } else {
+        resolve(topRated)
+      }
     })
   }
 
   static getPopularMovies(): Promise {
-    const {TMDb} = this
-    let popularMovies = []
+    const {TMDb, state, Cache} = this
+    let {popular} = state.media.lists.movies
 
     return new Promise((resolve, reject) => {
-      TMDb.getPopularMovies()
-        .then(movies => {
-          console.log(movies)
-          async.each(movies, (movie, next) => {
-            this.getMovieById(movie.id)
-              .then(data => {
-                console.log(data)
-                popularMovies.push(data)
-                next()
-              })
-              .catch(() => next())
-          }, (err) => {
-            if (err) {
-              reject(err)
-            } else {
-              resolve(popularMovies)
-            }
+      if (!popular.length) {
+        Cache.isNotExpiredThenRead('getPopularMovies')
+          .then(data => {
+            popular = data
+            resolve(data)
           })
-        })
-        .catch(reject)
+          .catch(() => {
+            TMDb.getPopularMovies()
+              .then(shows => {
+                async.each(shows, (show, next) => {
+                  this.getMovieById(show.id)
+                    .then(data => {
+                      popular.push(data)
+                      next()
+                    })
+                    .catch(() => next())
+                }, (err) => {
+                  if (err) {
+                    reject(err)
+                  } else {
+                    Cache.writeSync('getPopularMovies', popular)
+                    resolve(popular)
+                  }
+                })
+              })
+              .catch(reject)
+          })
+      } else {
+        resolve(popular)
+      }
     })
   }
 
   static getTopRatedMovies(): Promise {
-    const {TMDb} = this
-    let topRatedMovies = []
+    const {TMDb, state, Cache} = this
+    let {topRated} = state.media.lists.movies
 
     return new Promise((resolve, reject) => {
-      TMDb.getTopRatedMovies()
-        .then(movies => {
-          async.each(movies, (movie, next) => {
-            this.getMovieById(movie.id)
-              .then(data => {
-                topRatedMovies.push(data)
-                next()
-              })
-              .catch(() => next())
-          }, (err) => {
-            if (err) {
-              reject(err)
-            } else {
-              resolve(topRatedMovies)
-            }
+      if (!topRated.length) {
+        Cache.isNotExpiredThenRead('getTopRatedMovies')
+          .then(data => {
+            topRated = data
+            resolve(data)
           })
-        })
-        .catch(reject)
-    })
-  }
-
-  /**
-   * @param {Object} data
-   * @return {Promise}
-   */
-  static getMovieByData(data: Object): Promise {
-    const {state, TMDb} = this
-    const {movies} = state.media
-
-    return new Promise((resolve, reject) => {
-      if (!movies.hasOwnProperty(data.id)) {
-        this.addTorrents(data)
-          .then(resolve)
-          .catch(reject)
+          .catch(() => {
+            TMDb.getTopRatedMovies()
+              .then(shows => {
+                async.each(shows, (show, next) => {
+                  this.getMovieById(show.id)
+                    .then(data => {
+                      topRated.push(data)
+                      next()
+                    })
+                    .catch(() => next())
+                }, (err) => {
+                  if (err) {
+                    reject(err)
+                  } else {
+                    Cache.writeSync('getTopRatedMovies', topRated)
+                    resolve(topRated)
+                  }
+                })
+              })
+              .catch(reject)
+          })
       } else {
-        resolve(movies[data.id])
+        resolve(topRated)
       }
     })
   }
@@ -293,13 +362,35 @@ export default class MetadataAdapter {
     })
   }
 
-  static getEpisodeDetails(tmdbId: Number, season: Number, episode: Number) {
-    return TMDb.getShowEpisode(tmdbId, season, episode)
+  static checkShow(tmdbId: Object): Promise {
+    const {state, TMDb, Cache} = this
+
+    return new Promise((resolve, reject) => {
+      TMDb.getShow(tmdbId)
+        .then(show => {
+          TorrentAdapter(undefined, 'shows', {
+            search: show.original_name,
+            season: 1,
+            episode: 1
+          })
+            .then(torrents => {
+              console.log(torrents)
+              if (torrents) {
+                resolve(this.formatShowMetadata(show))
+              } else {
+                reject()
+              }
+            })
+        })
+        .catch(reject)
+    })
   }
 
-  static async getShowById(tmdbId: Number): Promise {
+  static getShowById(tmdbId: Number): Promise {
     const {state, TMDb, Cache} = this
     const {shows} = state.media
+
+    console.log(tmdbId)
 
     return new Promise((resolve, reject) => {
       if (!shows.hasOwnProperty(tmdbId)) {
@@ -312,9 +403,11 @@ export default class MetadataAdapter {
             TMDb.getShow(tmdbId)
               .then(show => {
                 let seasons = {}
+                show.episodeCount = 0
 
-                async.forEachOf(show.seasons, function(value, key, nextSeason) {
-                  const season = key + 1
+                async.forEachOf(show.seasons, function(value, index, nextSeason) {
+                  const season = value.season_number
+                  if (season === 0) return nextSeason(null)
                   seasons[season] = {}
 
                   async.times(value.episode_count, function(index, nextEpisode) {
@@ -329,7 +422,10 @@ export default class MetadataAdapter {
                           episode
                         })
                           .then(torrents => {
-                            seasons[season][episode] = torrents
+                            if (torrents) {
+                              show.episodeCount++
+                              seasons[season][episode] = torrents
+                            }
                             nextEpisode(null, torrents)
                           })
                       })
@@ -341,7 +437,7 @@ export default class MetadataAdapter {
                   if (err) {
                     reject(err)
                   } else {
-                    resolve(this.formatShowMetadata(show, seasons))
+                    resolve(this.saveShowMetadata(show, seasons))
                   }
                 })
               })

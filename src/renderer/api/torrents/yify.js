@@ -45,7 +45,7 @@ export default class YtsTorrentProvider {
       case 'movies':
         return this.fetch(imdbId)
           .then(res => {
-            if (!res.movie_count) return []
+            if (res.movie_count === 0) return []
             const torrents = res.movies[0].torrents
             return torrents.map(torrent => this.formatTorrent(torrent))
           })

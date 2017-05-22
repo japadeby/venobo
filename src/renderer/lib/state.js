@@ -63,8 +63,14 @@ function getDefaultState () {
         movies: {
           recommendations: {},
           similar: {},
-          popular: {},
-          topRated: {}
+          popular: [],
+          topRated: []
+        },
+        shows: {
+          recommendations: {},
+          similar: {},
+          popular: [],
+          topRated: []
         }
       },
       movies: [],

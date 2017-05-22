@@ -6,7 +6,8 @@ import {
   mergeProviderPromises,
   formatSeasonEpisodeToString,
   constructSeasonQueries,
-  constructSearchQueries
+  constructSearchQueries,
+  timeout
 } from './provider'
 
 export default class KatTorrentProvider {
@@ -50,14 +51,16 @@ export default class KatTorrentProvider {
 
     switch (type) {
       case 'movies':
-        return this.fetch(imdbId || search)
+        return timeout(
+          this.fetch(imdbId || search)
+        ).catch(err => [])
 
       case 'shows': {
         const {season, episode} = extendedDetails
 
-        return this.fetch(
+        return timeout(this.fetch(
           `${search} ${formatSeasonEpisodeToString(season, episode)}`
-        )
+        )).catch(err => [])
       }
 
       case 'season_complete': {

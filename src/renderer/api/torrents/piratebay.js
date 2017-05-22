@@ -56,8 +56,9 @@ export default class PirateBayTorrentProvider {
 
     switch (type) {
       case 'movies': {
-        return this.fetchMovies(imdbId || search)
-          .catch(err => [])
+        return timeout(
+          this.fetchMovies(imdbId || search)
+        ).catch(err => [])
       }
 
       case 'shows': {

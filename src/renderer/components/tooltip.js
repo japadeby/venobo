@@ -81,9 +81,9 @@ class Tooltip extends React.Component {
               <p className="year divider">{String(data.year)}</p>
               <p className="duration divider">{data.runtime}</p>
               <span className="flags">
-                {Object.keys(data.torrents).map(quality => {
+                {data.torrents != null ? Object.keys(data.torrents).map(quality => {
                   return (<span className="flag" key={quality}>{quality}</span>)
-                })}
+                }) : ''}
               </span>
             </header>
             <div className="body">

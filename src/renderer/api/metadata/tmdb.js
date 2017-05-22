@@ -25,85 +25,85 @@ export default class TMDbProvider {
   getMovieRecommendations(tmdbId: Number): Promise<Object> {
     const {api, uri} = this
 
-    return HTTP.fetch(`${api}/movie/${tmdbId}/recommendations?${uri}`)
+    return HTTP.fetchLimit(`${api}/movie/${tmdbId}/recommendations?${uri}`)
       .then(data => data.results)
   }
 
   getSimilarMovies(tmdbId: Number): Promise<Object> {
     const {api, uri} = this
 
-    return HTTP.fetch(`${api}/movie/${tmdbId}/similar?${uri}`)
+    return HTTP.fetchLimit(`${api}/movie/${tmdbId}/similar?${uri}`)
       .then(data => data.results)
   }
 
   getPopularMovies(): Promise<Object> {
     const {api, uri} = this
 
-    return HTTP.fetch(`${api}/movie/popular?${uri}`)
+    return HTTP.fetchLimit(`${api}/movie/popular?${uri}`)
       .then(data => data.results)
   }
 
   getTopRatedMovies(): Promise<Object> {
     const {api, uri} = this
 
-    return HTTP.fetch(`${api}/movie/top_rated?${uri}`)
+    return HTTP.fetchLimit(`${api}/movie/top_rated?${uri}`)
       .then(data => data.results)
   }
 
   getMovie(tmdbId: Number): Promise<Object> {
     const {api, uri} = this
 
-    return HTTP.fetch(`${api}/movie/${tmdbId}?${uri}`)
+    return HTTP.fetchLimit(`${api}/movie/${tmdbId}?${uri}`)
   }
 
   getPopularShows(): Promise<Object> {
     const {api, uri} = this
 
-    return HTTP.fetch(`${api}/tv/popular?${uri}`)
+    return HTTP.fetchLimit(`${api}/tv/popular?${uri}`)
       .then(data => data.results)
   }
 
   getTopRatedShows(): Promise<Object> {
     const {api, uri} = this
 
-    return HTTP.fetch(`${api}/tv/top_rated?${uri}`)
+    return HTTP.fetchLimit(`${api}/tv/top_rated?${uri}`)
       .then(data => data.results)
   }
 
   getShow(tmdbId: Number): Promise<Object> {
     const {api, uri} = this
 
-    return HTTP.fetch(`${api}/tv/${tmdbId}?${uri}`)
+    return HTTP.fetchLimit(`${api}/tv/${tmdbId}?${uri}`)
   }
 
   getShowSeason(tmdbId: Number, season: Number): Promise<Object> {
     const {api, uri} = this
 
-    return HTTP.fetch(`${api}/tv/${tmdbId}/season/${season}?${uri}`)
+    return HTTP.fetchLimit(`${api}/tv/${tmdbId}/season/${season}?${uri}`)
   }
 
   getShowSeasonEpisode(tmdbId: Number, season: Number, episode: Number): Promise<Object> {
     const {api, uri} = this
 
-    return HTTP.fetch(`${api}/tv/${tmdbId}/season/${season}/episode/${episode}?${uri}`)
+    return HTTP.fetchLimit(`${api}/tv/${tmdbId}/season/${season}/episode/${episode}?${uri}`)
   }
 
   getShowExternalIds(tmdbId: Number) {
     const {api, uri} = this
 
-    return HTTP.fetch(`${api}/tv/${tmdbId}/external_ids?${uri}`)
+    return HTTP.fetchLimit(`${api}/tv/${tmdbId}/external_ids?${uri}`)
   }
 
   searchAll(query: String, page: Number = 0) {
     const {api, uri} = this
 
-    return HTTP.fetch(`${api}/search/multi?${uri}&page=${page}&include_adult=false&query=${encodeURIComponent(query)}`)
+    return HTTP.fetchLimit(`${api}/search/multi?${uri}&page=${page}&include_adult=false&query=${encodeURIComponent(query)}`)
   }
 
   getList(id: Number, page: Number = 1) {
     const {api4, uri} = this
 
-    return HTTP.fetch(`${api4}/list/${id}?${uri}&page=${page}`)
+    return HTTP.fetchLimit(`${api4}/list/${id}?${uri}&page=${page}`)
   }
 
 }

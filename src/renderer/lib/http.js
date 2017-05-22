@@ -5,15 +5,17 @@
  */
 
 import axios from 'axios'
-import debounce from 'debounce'
+import {RateLimiter} from 'limiter'
 
 import config from '../../config'
 
 export default class HTTP {
 
   static Cache: Object
+  static Limiter: Object
 
   static setCache(cache) {
+    this.Limiter = new RateLimiter(25, 10000) // limit 2 requests every 1 second
     this.Cache = cache
   }
 
@@ -35,6 +37,19 @@ export default class HTTP {
             })
             .catch(reject)
         })
+    })
+  }
+
+  static fetchLimit(url: String): Promise {
+    const {Limiter} = this
+
+    return new Promise((resolve, reject) => {
+      Limiter.removeTokens(1, (err, remaining) => {
+        console.log(remaining)
+        this.fetch(url)
+          .then(resolve)
+          .catch(reject)
+      })
     })
   }
 

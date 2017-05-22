@@ -1,7 +1,7 @@
 /**
  * Handle a promise and set a timeout
  */
-export function timeout(promise, time: Number = 10000) {
+export function timeout(promise, time: Number = 2500) {
   return new Promise((resolve, reject) => {
     promise.then(resolve).catch(console.log)
 

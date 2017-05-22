@@ -39,7 +39,8 @@
     "react-dom": "^15.4.2",
     "react-router-dom": "^4.1.0",
     "rimraf": "*",
-    "vlc-command": "^1.1.1"
+    "vlc-command": "^1.1.1",
+    "crypto-random-string": "*"
   },
   "devDependencies": {
     "babel-cli": "*",

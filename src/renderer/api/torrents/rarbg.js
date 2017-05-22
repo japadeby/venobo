@@ -74,8 +74,9 @@ export default class RarbgTorrentProvider {
 
     switch (type) {
       case 'movies': {
-        return this.fetchMovies(imdbId || search)
-          .catch(err => [])
+        return timeout(
+          this.fetchMovies(imdbId || search)
+        ).catch(err => [])
       }
       case 'shows': {
         const { season, episode } = extendedDetails

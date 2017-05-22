@@ -23,10 +23,6 @@ export default class HomeController extends React.Component {
   componentDidMount() {
     const {props} = this
 
-    MetadataAdapter.getShowById(48866)
-      .then(console.log)
-      .catch(console.log)
-
     dispatch('setTitle', 'Home')
 
     async.parallel({
@@ -44,9 +40,14 @@ export default class HomeController extends React.Component {
         MetadataAdapter.getPopularShows()
           .then(data => done(null, data))
           .catch(done)
+      },
+      topRatedShows: function(done) {
+        MetadataAdapter.getTopRatedShows()
+          .then(data => done(null, data))
+          .catch(done)
       }
     }, (err, res) => {
-      console.log(res)
+      console.log(res.topRatedShows)
       this.setState({
         isMounted: true,
         media: {
@@ -56,7 +57,7 @@ export default class HomeController extends React.Component {
           },
           shows: {
             popular: res.popularShows,
-            topRated: undefined
+            topRated: res.topRatedShows
           }
         }
       })
