@@ -52,7 +52,7 @@ export default class App extends React.Component {
 
     return (
       <IntlProvider translations={translation} locale={locale}>
-        <Router>
+        <Router onUpdate={() => window.scrollTo(0, 0)}>
           <View state={props.state}>
             <Route exact path="/" render={() => <Redirect to={this.getLastRoute()} />} />
             {Object.keys(controllers).map(path => {

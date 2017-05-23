@@ -6,7 +6,6 @@ import {clipboard, remote, ipcRenderer} from 'electron'
 import fs from 'fs'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import LocalStorage from 'local-storage-es6'
 
 import crashReporter from '../crash-reporter'
 import State from './lib/state'
@@ -44,12 +43,6 @@ export default class Main {
     // Make available for easier debugging
     const state = this.state = _state
 
-    // Setup cache
-    state.cache = new LocalStorage(config.PATH.CACHE, config.APP.SECRET_KEY)
-
-    // Set HTTP cache
-    HTTP.setCache(state.cache)
-
     //const _telemetry = this.telemetry = new Telemetry(state)
 
     // Log uncaught JS errors
@@ -81,6 +74,9 @@ export default class Main {
 
     // Setup MetadataAdapter
     MetadataAdapter.setState(state)
+
+    // Set HTTP state
+    HTTP.setState(state)
 
     // Initialize ReactDOM
     this.renderMain(state)
@@ -177,6 +173,7 @@ export default class Main {
     const {state, controllers} = this
 
     const dispatchHandlers = {
+      appQuit: () => ipcRenderer.send('appQuit'),
       //ddTorrent: (id) => controllers.
 
       // Subtitles
@@ -264,11 +261,8 @@ export default class Main {
   renderMain(state) {
     const {iso2} = state.saved.prefs
 
-    console.log(iso2)
-
     HTTP.fetchCache(`${config.APP.API}/translation/${iso2}`)
       .then(translation => {
-        console.log(translation)
         this.app = ReactDOM.render(
           <App state={state} translation={translation} locale={iso2} />,
           document.querySelector('#content-wrapper')

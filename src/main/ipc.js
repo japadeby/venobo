@@ -40,6 +40,8 @@ export default function () {
   /**
    * Events
    */
+  ipc.on('appQuit', () => app.quit())
+
   ipc.on('onPlayerOpen', () => {
     Menu.togglePlaybackControls(true)
     powerSaveBlocker.enable()

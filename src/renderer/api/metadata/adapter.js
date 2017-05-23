@@ -20,7 +20,7 @@ export default class MetadataAdapter {
 
     const formattedData = state.media.shows[data.id] = this.formatShowMetadata(data, torrents)
 
-    Cache.writeSync(`show-${data.id}`, formattedData)
+    Cache.writeSync(`show-${data.id}-${state.saved.prefs.iso2}`, formattedData)
 
     return formattedData
   }
@@ -71,7 +71,7 @@ export default class MetadataAdapter {
 
     const formattedData = state.media.movies[data.id] = this.formatMovieMetadata(data, torrents)
 
-    Cache.writeSync(`movie-${data.id}`, formattedData)
+    Cache.writeSync(`movie-${data.id}-${state.saved.prefs.iso2}`, formattedData)
 
     return formattedData
   }
@@ -85,7 +85,6 @@ export default class MetadataAdapter {
       poster: TMDb.formatPoster(data.poster_path),
       backdrop: TMDb.formatBackdrop(data.backdrop_path),
       genres: data.genres.map(genre => {
-        console.log(genre)
         return genre.name
       }),
       type: 'movie',
@@ -137,14 +136,13 @@ export default class MetadataAdapter {
   static getSimilarShows(tmdbId: Number): Promise {
     const {TMDb, state, Cache} = this
     const {similar} = state.media.lists.shows
-    const cacheId = `gss-${tmdbId}`
+    const cacheId = `gss-${tmdbId}-${state.saved.prefs.iso2}`
 
     return new Promise((resolve, reject) => {
       if (!similar.hasOwnProperty(tmdbId)) {
         similar[tmdbId] = []
         Cache.existsThenRead(cacheId)
           .then(data => {
-            console.log('exists')
             similar[tmdbId] = data
             resolve(data)
           })
@@ -177,7 +175,7 @@ export default class MetadataAdapter {
   static getShowRecommendations(tmdbId: Number): Promise {
     const {TMDb, state, Cache} = this
     const {recommendations} = state.media.lists.shows
-    const cacheId = `gsr-${tmdbId}`
+    const cacheId = `gsr-${tmdbId}-${state.saved.prefs.iso2}`
 
     return new Promise((resolve, reject) => {
       if (!recommendations.hasOwnProperty(tmdbId)) {
@@ -216,7 +214,7 @@ export default class MetadataAdapter {
   static getMovieRecommendations(tmdbId: Number): Promise {
     const {TMDb, state, Cache} = this
     const {recommendations} = state.media.lists.movies
-    const cacheId = `gmr-${tmdbId}`
+    const cacheId = `gmr-${tmdbId}-${state.saved.prefs.iso2}`
 
     return new Promise((resolve, reject) => {
       if (!recommendations.hasOwnProperty(tmdbId)) {
@@ -255,7 +253,7 @@ export default class MetadataAdapter {
   static getSimilarMovies(tmdbId: Number): Promise {
     const {TMDb, state, Cache} = this
     const {similar} = state.media.lists.movies
-    const cacheId = `gsm-${tmdbId}`
+    const cacheId = `gsm-${tmdbId}-${state.saved.prefs.iso2}`
 
     return new Promise((resolve, reject) => {
       if (!similar.hasOwnProperty(tmdbId)) {
@@ -291,7 +289,7 @@ export default class MetadataAdapter {
   static getPopularShows(): Promise {
     const {TMDb, state, Cache} = this
     let {popular} = state.media.lists.shows
-    const cacheId = 'getPopularShows'
+    const cacheId = `gps-${state.saved.prefs.iso2}`
 
     return new Promise((resolve, reject) => {
       if (!popular.length) {
@@ -329,7 +327,7 @@ export default class MetadataAdapter {
   static getTopRatedShows(): Promise {
     const {TMDb, state, Cache} = this
     let {topRated} = state.media.lists.shows
-    const cacheId = 'getTopRatedShows'
+    const cacheId = `gtrs-${state.saved.prefs.iso2}`
 
     return new Promise((resolve, reject) => {
       if (!topRated.length) {
@@ -367,7 +365,7 @@ export default class MetadataAdapter {
   static getPopularMovies(): Promise {
     const {TMDb, state, Cache} = this
     let {popular} = state.media.lists.movies
-    const cacheId = 'getPopularMovies'
+    const cacheId = `gpm-${state.saved.prefs.iso2}`
 
     return new Promise((resolve, reject) => {
       if (!popular.length) {
@@ -405,7 +403,7 @@ export default class MetadataAdapter {
   static getTopRatedMovies(): Promise {
     const {TMDb, state, Cache} = this
     let {topRated} = state.media.lists.movies
-    const cacheId = 'getTopRatedMovies'
+    const cacheId = `gtrm-${state.saved.prefs.iso2}`
 
     return new Promise((resolve, reject) => {
       if (!topRated.length) {
@@ -450,7 +448,7 @@ export default class MetadataAdapter {
 
     return new Promise((resolve, reject) => {
       if (!movies.hasOwnProperty(tmdbId)) {
-        Cache.isNotExpiredThenRead(`movie-${tmdbId}`)
+        Cache.isNotExpiredThenRead(`movie-${tmdbId}-${state.saved.prefs.iso2}`)
           .then(data => {
             movies[tmdbId] = data
             resolve(data)
@@ -472,24 +470,29 @@ export default class MetadataAdapter {
 
   static checkShow(tmdbId: Object): Promise {
     const {state, TMDb, Cache} = this
+    const cacheId = `cs-${tmdbId}`
 
     return new Promise((resolve, reject) => {
-      TMDb.getShow(tmdbId)
-        .then(show => {
-          TorrentAdapter(undefined, 'shows', {
-            search: show.original_name,
-            season: 1,
-            episode: 1
-          })
-            .then(torrents => {
-              if (torrents) {
-                resolve(this.formatShowMetadata(show))
-              } else {
-                reject()
-              }
+      Cache.existsThenRead(cacheId)
+        .then(resolve)
+        .catch(() => {
+          TMDb.getShow(tmdbId)
+            .then(show => {
+              TorrentAdapter(undefined, 'shows', {
+                search: show.original_name,
+                season: 1,
+                episode: 1
+              })
+                .then(torrents => {
+                  if (torrents) {
+                    Cache.write(cacheId, this.formatShowMetadata(show, torrents), resolve)
+                  } else {
+                    reject()
+                  }
+                })
             })
+            .catch(reject)
         })
-        .catch(reject)
     })
   }
 
@@ -499,7 +502,7 @@ export default class MetadataAdapter {
 
     return new Promise((resolve, reject) => {
       if (!shows.hasOwnProperty(tmdbId)) {
-        Cache.existsThenRead(`show-${tmdbId}`)
+        Cache.existsThenRead(`show-${tmdbId}-${state.saved.prefs.iso2}`)
           .then(data => {
             shows[tmdbId] = data
             resolve(data)
@@ -520,7 +523,6 @@ export default class MetadataAdapter {
 
                     TMDb.getShowSeasonEpisode(tmdbId, season, episode)
                       .then(data => {
-                        console.log(data)
                         TorrentAdapter(undefined, 'shows', {
                           search: show.original_name,
                           season,

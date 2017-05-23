@@ -3,7 +3,8 @@ import axios from 'axios'
 import HTTP from '../../lib/http'
 import {
   encodeUri,
-  determineQuality
+  determineQuality,
+  constructMagnet
 } from './provider'
 
 export default class YtsTorrentProvider {
@@ -26,7 +27,7 @@ export default class YtsTorrentProvider {
     return {
       size: torrent.size,
       quality: torrent.quality,
-      magnet: this.constructMagnet(torrent.hash),
+      magnet: constructMagnet(torrent.hash),
       seeders: parseInt(torrent.seeds, 10),
       leechers: parseInt(torrent.peers, 10),
       metadata: (String(torrent.url) + String(torrent.hash)) || String(torrent.hash),
@@ -53,10 +54,6 @@ export default class YtsTorrentProvider {
       default:
         return []
     }
-  }
-
-  static constructMagnet(hash: String): String {
-    return `magnet:?xt=urn:btih:${hash}`
   }
 
   static formatApi(query: Object): String {

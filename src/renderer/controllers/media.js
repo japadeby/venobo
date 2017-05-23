@@ -78,8 +78,10 @@ export default class MediaController extends React.Component {
         }
       }
     }, (err, data) => {
-      console.log('fetching')
+      if (this.state.isMounted) return
       console.log(err)
+      console.log(data.media)
+
       this.setState({
         data: {
           type: type,

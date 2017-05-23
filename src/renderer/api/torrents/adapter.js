@@ -11,7 +11,8 @@ const providers = [
   require('./yify'),
   require('./kickass'),
   require('./rarbg'),
-  require('./piratebay')
+  require('./piratebay'),
+  //require('./idope')
 ]
 
 export default async function TorrentAdapter(imdbId: string,
@@ -96,7 +97,7 @@ function appendAttributes(providerResults: Array<any>) {
   const formattedResults = merge(providerResults).map((result: Object) => ({
     ...result,
     health: getHealth(result.seeders || 0, result.leechers || 0),
-    quality: 'quality' in result
+    quality: result.hasOwnProperty('quality')
                 ? result.quality
                 : determineQuality(result.magnet, result.metadata, result)
   }))

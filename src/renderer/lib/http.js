@@ -13,10 +13,12 @@ export default class HTTP {
 
   static Cache: Object
   static Limiter: Object
+  static state: Object
 
-  static setCache(cache) {
-    this.Limiter = new RateLimiter(25, 10000) // limit 2 requests every 1 second
-    this.Cache = cache
+  static setState(state) {
+    this.state = state
+    this.Limiter = new RateLimiter(3, 1000) // limit 3 requests every 1 second
+    this.Cache = state.cache
   }
 
   static get(url: String) {
@@ -65,7 +67,7 @@ export default class HTTP {
   }
 
   static fetchCache(url: String): Promise {
-    const {Cache} = this
+    const {Cache,} = this
 
     return new Promise((resolve, reject) => {
       Cache.isNotExpiredThenRead(url, config.CACHE_DURATION)

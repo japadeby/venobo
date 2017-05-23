@@ -1,8 +1,9 @@
 import React from 'react'
-import { NavLink } from 'react-router-dom'
+import {NavLink} from 'react-router-dom'
 
 import config from '../../config'
-import { withTranslate } from './react-multilingual'
+import {withTranslate} from './react-multilingual'
+import {dispatch} from '../lib/dispatcher'
 
 class Header extends React.Component {
 
@@ -82,8 +83,12 @@ class Header extends React.Component {
             </NavLink>
           </div>
           <nav className="sections">
-            <NavLink to="/series">{translate('nav.series')}</NavLink>
-            <NavLink to="/movies">{translate('nav.movies')}</NavLink>
+            <NavLink to="/series">
+              <span>{translate('nav.series')}</span>
+            </NavLink>
+            <NavLink to="/movies">
+              <span>{translate('nav.movies')}</span>
+            </NavLink>
           </nav>
           <div className="user" ref="user">
             <div className="details authenticated" onMouseEnter={this.userHover} onMouseLeave={this.userLeave}>
@@ -97,17 +102,17 @@ class Header extends React.Component {
                   <ul>
                     <li>
                       <NavLink to="/watched" className="icon watched">
-                        {translate('watched')}
+                        <span>{translate('watched')}</span>
                       </NavLink>
                     </li>
                     <li>
                       <NavLink to="/starred" className="icon starred">
-                        {translate('starred')}
+                        <span>{translate('starred')}</span>
                       </NavLink>
                     </li>
                     <li>
                       <NavLink to="/preferences" className="icon settings">
-                        {translate('preferences')}
+                        <span>{translate('preferences')}</span>
                       </NavLink>
                     </li>
                   </ul>
@@ -116,7 +121,7 @@ class Header extends React.Component {
                     <li><a href="http://kundeservice.viaplay.dk" className="customer-service">Kundeservice</a></li>
                   </ul>*/}
                   <ul className="footer">
-                    <li><a className="logout">{translate('logout')}</a></li>
+                    <li><a className="logout" onClick={() => dispatch('appQuit')}>Quit</a></li>
                   </ul>
                 </div>
               </div>

@@ -123,8 +123,10 @@ class Carousel extends React.Component {
             <CollectionHeader>
               {props.route ? (
                 <NavLink to={props.route}>
-                  <HeaderButton>{props.translate('show.more')}</HeaderButton>
-                  <h2>{props.title}</h2>
+                  <span>
+                    <HeaderButton>{props.translate('show.more')}</HeaderButton>
+                    <h2>{props.title}</h2>
+                  </span>
                 </NavLink>
               ) : (
                 <h2>{props.title}</h2>

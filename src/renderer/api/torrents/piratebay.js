@@ -11,16 +11,16 @@ import {
 
 export default class PirateBayTorrentProvider {
 
-  static endpoint = 'https://pirateproxy.cc' // proxy site
+  static endpoint = 'https://thehiddenbay.world' // proxy site || https://thehiddenbay.world/
   static provider = 'The Pirate Bay'
 
   static fetchMovies(query: String, page: Number = 0) {
-    return HTTP.fetchCache(`${this.endpoint}/search/${query}/0/99/207`)
+    return HTTP.fetchLimitCache(`${this.endpoint}/search/${query}/0/99/207`)
       .then(res => this.cheerio(res))
   }
 
   static fetchShows(query: String, page: Number = 0) {
-    return HTTP.fetchCache(`${this.endpoint}/search/${query}/0/99/208`)
+    return HTTP.fetchLimitCache(`${this.endpoint}/search/${query}/0/99/208`)
       .then(res => this.cheerio(res))
   }
 

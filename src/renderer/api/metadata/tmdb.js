@@ -29,28 +29,28 @@ export default class TMDbProvider {
   getSimilarShows(tmdbId: Number): Promise<Object> {
     const {api, uri} = this
 
-    return HTTP.fetchLimitCache(`${api}/tv/${tmdbId}/similar?${uri}`)
+    return HTTP.fetchLimit(`${api}/tv/${tmdbId}/similar?${uri}`)
       .then(data => data.results)
   }
 
   getShowRecommendations(tmdbId: Number): Promise<Object> {
     const {api, uri} = this
 
-    return HTTP.fetchLimitCache(`${api}/tv/${tmdbId}/recommendations?${uri}`)
+    return HTTP.fetchLimit(`${api}/tv/${tmdbId}/recommendations?${uri}`)
       .then(data => data.results)
   }
 
   getMovieRecommendations(tmdbId: Number): Promise<Object> {
     const {api, uri} = this
 
-    return HTTP.fetchLimitCache(`${api}/movie/${tmdbId}/recommendations?${uri}`)
+    return HTTP.fetchLimit(`${api}/movie/${tmdbId}/recommendations?${uri}`)
       .then(data => data.results)
   }
 
   getSimilarMovies(tmdbId: Number): Promise<Object> {
     const {api, uri} = this
 
-    return HTTP.fetchLimitCache(`${api}/movie/${tmdbId}/similar?${uri}`)
+    return HTTP.fetchLimit(`${api}/movie/${tmdbId}/similar?${uri}`)
       .then(data => data.results)
   }
 

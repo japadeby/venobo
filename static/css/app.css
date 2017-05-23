@@ -3964,13 +3964,12 @@ section[data-viaplay-module-id='SportSchedule'] {
   right: -65px; }
 
 .hero-wrapper img {
-  width: calc(1428px - 64px);
+  width: 1428px;
   height: 804px; }
 
 .hero-backdrop, .hero-vignette {
   position: absolute;
   top: 0;
-  right: -66px;
   width: 1430px;
   height: 806px; }
 
@@ -4946,7 +4945,7 @@ span.flags {
     -webkit-box-shadow: inset 300px 0 360px 0 #0f161a, inset -170px 0 180px 0 #0f161a, inset 0 -70px 80px 0 #0f161a;
     box-shadow: inset 300px 0 360px 0 #0f161a, inset -170px 0 180px 0 #0f161a, inset 0 -70px 80px 0 #0f161a; }
   .hero-wrapper img {
-    width: calc(1161px - 64px);
+    width: 1161px;
     height: 654px; }
   .hero-backdrop, .hero-vignette {
     width: 1163px;
@@ -5002,15 +5001,15 @@ span.flags {
     font-size: 4rem;
     line-height: 4.6rem; }
   .hero-wrapper img, .hero-backdrop, .hero-vignette {
-    width: calc(1024px - 64px);
+    width: 1024px;
     height: 576px; }
   .hero-wrapper {
     right: -60px; }
   .hero-backdrop, .hero-vignette {
     width: 1026px;
     height: 578px; }
-  .hero-backdrop, .hero-vignette {
-    right: -61px; }
+  /*.hero-backdrop, .hero-vignette {
+    right: -61px; }*/
   .hero-vignette {
     -moz-box-shadow: inset 290px 0 300px 0 #0f161a, inset -170px 0 180px 0 #0f161a, inset 0 -90px 110px 0 #0f161a;
     -webkit-box-shadow: inset 290px 0 300px 0 #0f161a, inset -170px 0 180px 0 #0f161a, inset 0 -90px 110px 0 #0f161a;
@@ -5465,7 +5464,7 @@ span.flags {
   .hero-wrapper {
     right: -70px; }
   .hero-wrapper img {
-    width: calc(768px - 64px);
+    width: 768px;
     height: 432px; }
   .hero-backdrop, .hero-vignette {
     right: -71px; }
@@ -5765,10 +5764,10 @@ span.flags {
   .hero-wrapper {
     right: -60px; }
   .hero-wrapper img {
-    width: calc(400px - 64px);
+    width: 400px;
     height: 226px; }
-  .hero-backdrop, .hero-vignette {
-    right: -61px; }
+  /*.hero-backdrop, .hero-vignette {
+    right: -61px; }*/
   .hero-backdrop, .hero-vignette {
     width: 402px;
     height: 228px; }

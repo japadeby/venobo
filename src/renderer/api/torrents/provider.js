@@ -14,6 +14,10 @@ export function timeout(promise, time: Number = 2500) {
   })
 }
 
+export function constructMagnet(hash: String): String {
+  return `magnet:?xt=urn:btih:${hash}`
+}
+
 /**
  * @param {String} metadata
  * @return {Boolean}

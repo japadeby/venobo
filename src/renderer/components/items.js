@@ -1,6 +1,5 @@
 import React from 'react'
 import classNames from 'classnames'
-import { NavLink } from 'react-router-dom'
 
 import {dispatch} from '../lib/dispatcher'
 import Footer from './footer'

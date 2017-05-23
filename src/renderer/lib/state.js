@@ -4,6 +4,7 @@ import cpFile from 'cp-file'
 import fs from 'fs'
 import debounce from 'debounce'
 import os from 'os'
+import LocalStorage from 'local-storage-es6'
 
 import config from '../../config'
 import migrate from './migrations'
@@ -77,7 +78,7 @@ function getDefaultState () {
       shows: [],
       episodes: []
     },
-    cache: {}, // cache module
+    cache: new LocalStorage(config.PATH.CACHE, config.APP.SECRET_KEY), // cache module
     metadata: {},
     modal: null, /* modal popover */
     errors: [], /* user-facing errors */
