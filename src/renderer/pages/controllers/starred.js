@@ -1,11 +1,11 @@
 import React from 'react'
 import async from 'async'
 
-import {ContentStarred, BlockCollection, Scaffold} from '../components/items'
+import {ContentStarred, BlockCollection, Scaffold} from '../../components/items'
 
-import MetadataAdapter from '../api/metadata/adapter'
+import MetadataAdapter from '../../api/metadata/adapter'
 
-import StarredPage from '../pages/starred'
+import StarredPage from '../starred'
 
 export default class StarredController extends React.Component {
 

@@ -112,10 +112,11 @@ export default class TMDbProvider {
     return HTTP.fetchLimit(`${api}/tv/${tmdbId}/external_ids?${uri}`)
   }
 
-  searchAll(query: String, page: Number = 0) {
+  searchAll(query: String, page: Number = 1) {
     const {api, uri} = this
 
-    return HTTP.fetchLimit(`${api}/search/multi?${uri}&page=${page}&include_adult=false&query=${encodeURIComponent(query)}`)
+    return HTTP.fetchLimit(`${api}/search/multi?${uri}&page=${page}&include_adult=false&query=${query}`)
+      .then(data => data.results)
   }
 
   getList(id: Number, page: Number = 1) {

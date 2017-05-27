@@ -61,9 +61,9 @@ export default class Main {
       torrent: createGetter(() => {
         return new TorrentController(state)
       }),
-      /*playback: createGetter(() => {
+      playback: createGetter(() => {
         return require('./controllers/playback')(state, config, () => this.update())
-      }),*/
+      }),
       subtitles: createGetter(() => {
         return require('./controllers/subtitles')(state)
       })
@@ -72,7 +72,7 @@ export default class Main {
     // Restart everything we were torrenting last time the app ran
     //this.resumeTorrents()
 
-    // Setup MetadataAdapter
+    // Setup MetadataAdapter and TorrentAdapter
     MetadataAdapter.setState(state)
 
     // Set HTTP state
@@ -173,6 +173,11 @@ export default class Main {
     const {state, controllers} = this
 
     const dispatchHandlers = {
+      // playback
+      playFile: (infoHash, index) =>
+        controllers.playback().playFile(infoHash, index),
+      playPause: () => controllers.playback().playPause(),
+
       appQuit: () => ipcRenderer.send('appQuit'),
       //ddTorrent: (id) => controllers.
 
@@ -360,10 +365,6 @@ export default class Main {
     state.window.isFocused = true
     state.dock.badge = 0
     //this.update()
-  }
-
-  onScroll() {
-    this.hideTooltip()
   }
 
   onBlur() {

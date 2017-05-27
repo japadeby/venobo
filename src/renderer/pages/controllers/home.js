@@ -1,13 +1,12 @@
 import React from 'react'
 import async from 'async'
 
-import HomePage from '../pages/home'
+import HomePage from '../home'
 
-import {ContentSection} from '../components/items'
+import {ContentSection} from '../../components/items'
 
-import {dispatch} from '../lib/dispatcher'
-import MetadataAdapter from '../api/metadata/adapter'
-import TorrentAdapter from '../api/torrents/adapter'
+import {dispatch} from '../../lib/dispatcher'
+import MetadataAdapter from '../../api/metadata/adapter'
 
 // Controls the Home page
 export default class HomeController extends React.Component {

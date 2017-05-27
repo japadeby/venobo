@@ -1,6 +1,7 @@
 import React from 'react'
 import randomString from 'crypto-random-string'
 import classNames from 'classnames'
+import {Link} from 'react-router-dom'
 
 import {dispatch} from '../lib/dispatcher'
 
@@ -57,13 +58,14 @@ export default class MediaPage extends React.Component {
   }
 
   renderEpisodes(season) {
-    const {media} = this.props.data
+    const {data, history} = this.props
+    const {media} = data
     const episodes = media.season_episodes[season]
 
     return Object.keys(episodes).map(episode => {
       const {poster, title, summary, voted, votes, torrents} = episodes[episode]
       return (
-        <div className="episode table" key={randomString(5)}>
+        <div className="episode table" key={randomString(5)} onClick={() => history.push(`/player/show/${media.tmdb}/${season}/${episode}`)}>
           <div className="front">
             <div>
               <h3>
@@ -141,7 +143,9 @@ export default class MediaPage extends React.Component {
           </Hero>
           <MovieProduct>
             <Scaffold>
-              <PlayerWrapper />
+              {media.type === 'movie' &&
+                <PlayerWrapper />
+              }
               <div className="metadata">
                 <div className="thumb portrait thumb-dk">
                   <img className="poster" src={media.poster} />

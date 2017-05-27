@@ -4,10 +4,11 @@ import {MemoryRouter as Router, Route, Redirect} from 'react-router-dom'
 import View from './components/view'
 import {IntlProvider, withTranslate} from './components/react-multilingual'
 
-import HomeController from './controllers/home'
-import PreferencesController from './controllers/preferences'
-import MediaController from './controllers/media'
-import StarredController from './controllers/starred'
+import HomeController from './pages/controllers/home'
+import PreferencesController from './pages/controllers/preferences'
+import MediaController from './pages/controllers/media'
+import StarredController from './pages/controllers/starred'
+//import PlayerController from './pages/controllers/player'
 
 import {dispatch} from './lib/dispatcher'
 
@@ -39,7 +40,8 @@ export default class App extends React.Component {
     '/media/:type/:tmdb': MediaController,
     //error: ['/error', ErrorController],
     '/preferences': PreferencesController,
-    '/starred': StarredController
+    '/starred': StarredController,
+    //'/player/:type/:tmdb': PlayerController
   }
 
   constructor(props) {
@@ -74,7 +76,6 @@ export default class App extends React.Component {
 
       return pathname
     } catch(e) {
-      console.log(e)
       // No match? Don't worry, just return the default home controller
       return '/home'
     }

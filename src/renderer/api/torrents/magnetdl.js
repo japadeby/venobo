@@ -9,40 +9,40 @@ import {
   timeout
 } from './provider'
 
-export default class PirateBayTorrentProvider {
+export default class MagnetDlTorrentProvider {
 
-  static endpoint = 'https://thehiddenbay.world' // proxy site || https://thehiddenbay.world/
-  static provider = 'The Pirate Bay'
+  static endpoint = 'https://magnetdl.unblocked.gold' // proxy
+  static provider = 'MagnetDL'
 
-  static fetchMovies(query: String, page: Number = 0) {
-    return HTTP.fetchLimitCache(`${this.endpoint}/search/${query}/0/99/207`)
-      .then(res => this.cheerio(res))
+  static fetch(query: String) {
+    query = query.replace(/[^a-zA-Z0-9]/, '').toLowerCase()
+    return HTTP.fetchCache(
+      `${this.endpoint}/${query.substring(0, 1)}/${query.split(' ').join('-')}/`
+    ).then(res => this.cheerio(res))
   }
 
-  static fetchShows(query: String, page: Number = 0) {
-    return HTTP.fetchLimitCache(`${this.endpoint}/search/${query}/0/99/208`)
-      .then(res => this.cheerio(res))
-  }
-
-  static cheerio(html): Object {
+  static cheerio(html: String) {
     let $ = cheerio.load(html)
-    const providerName = this.provider
 
-    const torrents = $("table#searchResult tr:not('.header')").map(function() {
+    const torrents = $("table.download tr:not('.header')").map(function() {
       const $td = $(this).find('td')
+      const providerName = this.provider
+
       return {
-        leechers: parseInt($td.eq(3).text(), 10),
-        seeders: parseInt($td.eq(2).text(), 10),
-        magnet: $td.eq(1).find('[title="Download this torrent using magnet"]').attr('href'),
-        metadata: $td.find('.detName .detLink').text(),
-        size: undefined,
-        uploader: $td.eq(1).find('.detDesc .detDesc').text(),
+        magnet: $td.eq(0).find('a').attr('href'),
+        metadata: $td.eq(1).find('a').text(),
+        size: $td.eq(5).text(),
+        seeders: $td.eq(6).text(),
+        leechers: $td.eq(7).text(),
         _provider: providerName
       }
     }).get()
 
+    console.log(torrents)
+
     return torrents
   }
+
 
   static getStatus(): Boolean {
     return axios.get(this.endpoint)
@@ -54,18 +54,15 @@ export default class PirateBayTorrentProvider {
     const {search} = extendedDetails
 
     switch (type) {
-      case 'movies': {
-        return timeout(
-          this.fetchMovies(imdbId || search)
-        ).catch(err => [])
-      }
+      case 'movies':
+        return timeout(this.fetch(search))
 
       case 'shows': {
         const {season, episode} = extendedDetails
 
-        return this.fetchShows(
+        return this.fetch(
           `${search} ${formatSeasonEpisodeToString(season, episode)}`
-        ).catch(err => [])
+        )
       }
 
       case 'season_complete': {

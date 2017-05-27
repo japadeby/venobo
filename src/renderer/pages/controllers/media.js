@@ -1,11 +1,11 @@
 import React from 'react'
 import async from 'async'
 
-import {dispatch} from '../lib/dispatcher'
+import {dispatch} from '../../lib/dispatcher'
 
-import {ContentSection} from '../components/items'
-import MediaPage from '../pages/media'
-import MetadataAdapter from '../api/metadata/adapter'
+import {ContentSection} from '../../components/items'
+import MediaPage from '../media'
+import MetadataAdapter from '../../api/metadata/adapter'
 
 export default class MediaController extends React.Component {
 

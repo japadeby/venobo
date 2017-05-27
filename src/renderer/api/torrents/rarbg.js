@@ -45,20 +45,24 @@ export default class RarbgTorrentProvider {
     let $ = cheerio.load(html)
     let providerName = this.provider
 
+    console.log(html)
+
     const torrents = $('table.lista2t tr.lista2').map(function() {
-      var $this = $(this).find('.lista')
-      var magnet = $this.eq(1).find('a').text()
+      const $td = $(this).find('.lista')
+      const magnet = $(this).eq(1).find('a').text()
 
       return {
-        leechers: parseInt($this.eq(5).text(), 10),
+        leechers: parseInt($td.eq(5).text(), 10),
         magnet,
         metadata: magnet,
-        seeders: parseInt($this.eq(4).text(), 10),
-        size: $this.eq(3).text(),
-        uploader: $this.eq(7).text(),
+        seeders: parseInt($td.eq(4).text(), 10),
+        size: $td.eq(3).text(),
+        uploader: $td.eq(7).text(),
         _provider: providerName
       }
     }).get()
+
+    console.log(torrents)
 
     return torrents
   }

@@ -40,7 +40,7 @@ module.exports = {
   PATH: {
     ROOT: path.join(__dirname, '..'),
     STATIC: STATIC_PATH,
-    CACHE: path.join(CONFIG_PATH, 'cache'),
+    CACHE: path.join(CONFIG_PATH, 'Cache'),
     DOWNLOAD: getDefaultDownloadPath(),
     CONFIG: CONFIG_PATH,
     PORTABLE: PORTABLE_PATH

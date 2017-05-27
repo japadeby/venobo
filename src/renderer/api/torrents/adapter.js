@@ -10,8 +10,10 @@ import {
 const providers = [
   require('./yify'),
   require('./kickass'),
-  require('./rarbg'),
+  //require('./rarbg'),
   require('./piratebay'),
+  //require('./magnetdl')
+  //require('./extratorrent')
   //require('./idope')
 ]
 

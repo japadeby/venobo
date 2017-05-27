@@ -31,7 +31,7 @@ export default class iDopeTorrentProvider {
     const provider = this.provider
 
     let i = -1
-    const torrents = $('div#div2child .resultdiv').map(function() {
+    const torrents = $('div#div2child .resultdiv').slice(0, 5).map(function() {
       i++
       return {
         metadata: String($(this).find('.resultdivtop .resultdivtopname').text()).trim(),

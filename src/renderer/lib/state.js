@@ -114,10 +114,11 @@ function getDefaultState () {
 /* Whenever we stop playing video or audio, here's what we reset state.playing to */
 function getDefaultPlayState () {
   return {
+    title: null, /* the title of the media we're playing */
     infoHash: null, /* the info hash of the torrent we're playing */
-    fileIndex: null, /* the zero-based index within the torrent */
+    fileIndex: null, /* the zero-based indsex within the torrent */
     location: 'local', /* 'local', 'chromecast', 'airplay' */
-    type: null, /* 'audio' or 'video', could be 'other' if ever support eg streaming to VLC */
+    //type: null, /* 'audio' or 'video', could be 'other' if ever support eg streaming to VLC */
     currentTime: 0, /* seconds */
     duration: 1, /* seconds */
     isReady: false,
@@ -145,7 +146,8 @@ function setupStateSaved (callback) {
       externalPlayerPath: null,
       startup: false,
       iso2: 'EN',
-      iso4: 'en-US'
+      iso4: 'en-US',
+      defaultQuality: '1080p'
     },
     history: {},
     starred: {

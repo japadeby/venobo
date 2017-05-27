@@ -563,30 +563,34 @@ export default class MetadataAdapter {
     let fetchedQueries = []
 
     return new Promise((resolve, reject) => {
-      TMDb.searchAll(encodeURIComponent(query))
+      TMDb.searchAll(query)
         .then(data => {
-          let searchResults = data.results.slice(0, limit)
+          const searchResults = data.slice(0, limit)
 
           async.each(searchResults, (res, next) => {
             if (res.media_type === 'movie') {
-              this.getMovieById(movie.id)
+              this.getMovieById(res.id)
                 .then(data => {
                   fetchedQueries.push(data)
                   next()
                 })
                 .catch(() => next())
             } else if(res.media_type === 'tv') {
-              this.getShowById(res.id)
+              this.checkShow(res.id)
                 .then(data => {
                   fetchedQueries.push(data)
                   next()
                 })
                 .catch(() => next())
             } else {
-              throw new Error('Wrong media_type')
+              next('Wrong media_type')
             }
           }, function(err) {
-            resolve(fetchedQueries)
+            if (err || !fetchedQueries.length) {
+              reject(err)
+            } else {
+              resolve(fetchedQueries)
+            }
           })
         })
         .catch(reject)

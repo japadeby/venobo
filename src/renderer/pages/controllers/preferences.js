@@ -1,10 +1,10 @@
 import {ipcRenderer} from 'electron'
 import React from 'react'
 
-import {dispatch} from '../lib/dispatcher'
+import {dispatch} from '../../lib/dispatcher'
 
-import {ContentSection} from '../components/items'
-import PreferencesPage from '../pages/preferences'
+import {ContentSection} from '../../components/items'
+import PreferencesPage from '../preferences'
 
 // Controls the Preferences page
 export default class PreferencesController extends React.Component {

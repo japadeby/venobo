@@ -1,11 +1,15 @@
 import React from 'react'
 import {NavLink} from 'react-router-dom'
+import debounce from 'debounce'
 
 import config from '../../config'
 import {withTranslate} from './react-multilingual'
 import {dispatch} from '../lib/dispatcher'
+import MetadataAdapter from '../api/metadata/adapter'
 
 class Header extends React.Component {
+
+  timer = null
 
   userHover = () => {
     $(this.refs.user).children('.details.authenticated').addClass('active-hover')
@@ -48,21 +52,12 @@ class Header extends React.Component {
   }
 
   search = (e) => {
-    this.throttle(() => {
+    const search = this.refs.searchPhrase.value
 
-    })
-  }
-
-  throttle(callback: Function, delay: Number = 2500) {
-    let timer = null
-
-    return function () {
-      var context = this, args = arguments
-      clearTimeout(timer)
-
-      timer = window.setTimeout(() => {
-        callback.apply(context, args)
-      }, delay)
+    if (search.length >= 4) {
+      MetadataAdapter.quickSearch(this.refs.searchPhrase.value, 5)
+        .then(console.log)
+        .catch(console.log)
     }
   }
 
