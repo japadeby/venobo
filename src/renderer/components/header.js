@@ -9,7 +9,17 @@ import MetadataAdapter from '../api/metadata/adapter'
 
 class Header extends React.Component {
 
-  timer = null
+  initialState = {
+    searchResults: null,
+    searchLoading: false
+  }
+
+  constructor(props) {
+    super(props)
+
+    this.debounceSearch = debounce(this.search, 1500)
+    this.state = this.initialState
+  }
 
   userHover = () => {
     $(this.refs.user).children('.details.authenticated').addClass('active-hover')
@@ -51,14 +61,36 @@ class Header extends React.Component {
     }
   }
 
-  search = (e) => {
-    const search = this.refs.searchPhrase.value
+  handleSearch = (e) => {
+    const searchQuery = this.refs.searchQuery.value
+    const {searchLoading} = this.state
+    const $s = $(this.refs.search)
 
-    if (search.length >= 4) {
-      MetadataAdapter.quickSearch(this.refs.searchPhrase.value, 5)
-        .then(console.log)
-        .catch(console.log)
+    if (!$s.hasClass('active')) {
+      $s.addClass('active')
+    } else if (searchQuery.length === 0) {
+      $s.removeClass('active')
+      this.setState(this.initialState)
     }
+
+    if (searchQuery.length !== 0) {
+      if (!searchLoading) this.setState({searchLoading: true})
+      this.debounceSearch()
+    }
+  }
+
+  search = () => {
+    console.log('searching')
+    const searchQuery = this.refs.searchQuery.value
+
+    MetadataAdapter.quickSearch(searchQuery, 5)
+      .then(searchResults => {
+        this.setState({
+          searchResults,
+          searchLoading: false
+        })
+      })
+      .catch(err => this.setState(this.initialState))
   }
 
   componentWillUnmount() {
@@ -68,6 +100,7 @@ class Header extends React.Component {
 
   render() {
     const {translate, state} = this.props
+    const {searchResults, searchLoading} = this.state
 
     return (
       <div className="block page-header">
@@ -123,12 +156,31 @@ class Header extends React.Component {
             </div>
           </div>
           <div className="search" ref="search" onMouseEnter={this.searchHover} onMouseLeave={this.searchLeave} onClick={this.searchFocus}>
-            <input className="searchfield" onKeyUp={this.search} autoComplete="off" ref="searchPhrase" placeholder={translate('nav.search')} type="search" />
-				    <div className="result dropdown">
-              <div className="list"></div>
-              <p className="empty-result">Intet resultat</p>
+            <input className="searchfield" onKeyUp={this.handleSearch} autoComplete="off" ref="searchQuery" placeholder={translate('nav.search')} type="search" />
+            <div className="result dropdown">
+              <div className="list">
+                {searchResults != null &&
+                  <ul>
+                    {Object.keys(searchResults).map(index => {
+                      const {title, type, genres, tmdb} = searchResults[index]
+                      return (
+                        <li key={index}>
+                    			<NavLink to={`/media/${type}/${tmdb}`}>
+                            <p className="type">{type}</p>
+                    					<h4>{title}</h4>
+                    				<p>
+                              {genres.join(' / ')}
+                    				</p>
+                    			</NavLink>
+                    		</li>
+                      )
+                    })}
+                  </ul>
+                }
+              </div>
+              <p className="empty-result" style={{display: searchResults == null && !searchLoading ? 'block' : 'none'}}>Intet resultat</p>
               <a href="" className="show-all">
-                <div className="loading load-spinner dark small">
+                <div className="loading load-spinner dark small" style={{display: searchLoading ? 'block' : 'none'}}>
                   <div className="spinner-container dark">
                     <div className="spinner-line line01"></div>
                     <div className="spinner-line line02"></div>
@@ -144,7 +196,7 @@ class Header extends React.Component {
                     <div className="spinner-line line12"></div>
                   </div>
                 </div>
-						    <p>Vis alle resultater</p>
+						    <p style={{display: searchResults != null || searchLoading ? 'block' : 'none'}}>Vis alle resultater</p>
               </a>
             </div>
             <button className="search-abort"></button>
