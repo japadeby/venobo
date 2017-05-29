@@ -15,6 +15,56 @@ export default class MetadataAdapter {
     this.TMDb = new TMDbProvider(state)
   }
 
+  static getMovieGenres() {
+    const {TMDb} = this
+
+    return TMDb.getMovieGenres()
+  }
+
+  static discoverMovies(args: Object, page: Number = 1) {
+    const {TMDb} = this
+
+    return new Promise((resolve, reject) => {
+      TMDb.discoverMovies(args, page)
+        .then(data => {
+          let fetchedResults = []
+
+          async.each(data.results, (movie, next) => {
+            this.getMovieById(movie.id)
+              .then(data => {
+                fetchedResults.push(data)
+                next()
+              })
+              .catch(() => next())
+          }, function(err) {
+            resolve(fetchedResults)
+          })
+        })
+    })
+  }
+
+  static discoverShows(args: Object, page: Number = 1) {
+    const {TMDb} = this
+
+    return new Promise((resolve, reject) => {
+      TMDb.discoverShows(args, page)
+        .then(data => {
+          let fetchedResults = []
+
+          async.each(data.results, (show, next) => {
+            this.checkShow(show.id)
+              .then(data => {
+                fetchedResults.push(data)
+                next()
+              })
+              .catch(() => next())
+          }, function(err) {
+            resolve(fetchedResults)
+          })
+        })
+    })
+  }
+
   static saveShowMetadata(data: Object, torrents: Object): Object {
     const {state, Cache} = this
 
@@ -538,7 +588,7 @@ export default class MetadataAdapter {
                       })
                       .catch(nextEpisode)
                   }, function(err, data) {
-                    nextSeason(err)
+                    nextSeason(err, data)
                   })
                 }, (err) => {
                   if (err) {
@@ -560,22 +610,21 @@ export default class MetadataAdapter {
     const {state, TMDb} = this
     const {shows, movies} = state.media
 
-    let fetchedQueries = []
-
     return new Promise((resolve, reject) => {
       TMDb.searchAll(query)
         .then(data => {
           const searchResults = data.slice(0, limit)
+          let fetchedQueries = []
 
           async.each(searchResults, (res, next) => {
-            if (res.media_type === 'movie') {
+            if (res.media_type == 'movie') {
               this.getMovieById(res.id)
                 .then(data => {
                   fetchedQueries.push(data)
                   next()
                 })
                 .catch(() => next())
-            } else if(res.media_type === 'tv') {
+            } else if (res.media_type == 'tv') {
               this.checkShow(res.id)
                 .then(data => {
                   fetchedQueries.push(data)
@@ -586,7 +635,7 @@ export default class MetadataAdapter {
               next('Wrong media_type')
             }
           }, function(err) {
-            if (err || !fetchedQueries.length) {
+            if (fetchedQueries.length == 0) {
               reject(err)
             } else {
               resolve(fetchedQueries)

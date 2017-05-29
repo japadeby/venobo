@@ -68,12 +68,12 @@ class Header extends React.Component {
 
     if (!$s.hasClass('active')) {
       $s.addClass('active')
-    } else if (searchQuery.length === 0) {
+    } else if (searchQuery == "") {
       $s.removeClass('active')
       this.setState(this.initialState)
     }
 
-    if (searchQuery.length !== 0) {
+    if (searchQuery != "") {
       if (!searchLoading) this.setState({searchLoading: true})
       this.debounceSearch()
     }
@@ -111,10 +111,10 @@ class Header extends React.Component {
             </NavLink>
           </div>
           <nav className="sections">
-            <NavLink to="/series">
+            <NavLink to="/discover/shows/all/popularity.desc">
               <span>{translate('nav.series')}</span>
             </NavLink>
-            <NavLink to="/movies">
+            <NavLink to="/discover/movies/all/popularity.desc">
               <span>{translate('nav.movies')}</span>
             </NavLink>
           </nav>
@@ -161,13 +161,13 @@ class Header extends React.Component {
               <div className="list">
                 {searchResults != null &&
                   <ul>
-                    {Object.keys(searchResults).map(index => {
-                      const {title, type, genres, tmdb} = searchResults[index]
+                    {searchResults.map(res => {
+                      const {title, type, genres, tmdb, year} = res
                       return (
-                        <li key={index}>
+                        <li key={tmdb}>
                     			<NavLink to={`/media/${type}/${tmdb}`}>
                             <p className="type">{type}</p>
-                    					<h4>{title}</h4>
+                    					<h4>{title} - {year}</h4>
                     				<p>
                               {genres.join(' / ')}
                     				</p>

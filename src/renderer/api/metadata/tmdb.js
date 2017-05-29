@@ -106,17 +106,30 @@ export default class TMDbProvider {
     return HTTP.fetchLimit(`${api}/tv/${tmdbId}/season/${season}/episode/${episode}?${uri}`)
   }
 
-  getShowExternalIds(tmdbId: Number) {
-    const {api, uri} = this
-
-    return HTTP.fetchLimit(`${api}/tv/${tmdbId}/external_ids?${uri}`)
-  }
-
   searchAll(query: String, page: Number = 1) {
     const {api, uri} = this
 
-    return HTTP.fetchLimit(`${api}/search/multi?${uri}&page=${page}&include_adult=false&query=${query}`)
+    return HTTP.fetchLimit(`${api}/search/multi?${uri}&page=${page}&query=${query}`)
       .then(data => data.results)
+  }
+
+  discoverMovies(args: Object, page: Number = 1) {
+    const {api, uri} = this
+
+    return HTTP.fetchLimit(`${api}/discover/movie?${uri}&page=${page}&sort_by=${args.sort_by}&with_genres=${args.with_genres}`)
+  }
+
+  discoverShows(args: Object, page: Number = 1) {
+    const {api, uri} = this
+
+    return HTTP.fetchLimit(`${api}/discover/tv?${uri}&page=${page}&sort_by=${args.sort_by}&with_genres=${args.with_genres}`)
+  }
+
+  getMovieGenres(): Promise {
+    const {api, uri} = this
+
+    return HTTP.fetchLimit(`${api}/genre/movie/list?${uri}`)
+      .then(data => data.genres)
   }
 
   getList(id: Number, page: Number = 1) {

@@ -60,6 +60,7 @@ function getDefaultState () {
       delay: config.TOOLTIP_DELAY
     },
     media: {
+      movieGenres: {},
       lists: {
         movies: {
           recommendations: {},

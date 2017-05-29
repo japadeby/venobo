@@ -4,13 +4,36 @@ import classNames from 'classnames'
 import {dispatch} from '../lib/dispatcher'
 import Footer from './footer'
 
+export function SectionMenu (props) {
+  return (
+    <secton className="block section-menu active">
+      {props.children}
+    </secton>
+  )
+}
+
+export function SectionWrapper (props) {
+  return (
+    <div className="section-wrapper">
+      {props.children}
+    </div>
+  )
+}
+
 function Content (props) {
   return (
     <div id="content" className={props.classNames}>
-      <div className="dockable"></div>
       {props.children}
       <Footer state={props.state} />
     </div>
+  )
+}
+
+export function ContentCategory (props) {
+  return (
+    <Content classNames={classNames('category', props.classNames)}>
+      {props.children}
+    </Content>
   )
 }
 
@@ -78,9 +101,8 @@ export function HeroWrapper (props) {
 }
 
 export function Scaffold (props) {
-  var styles = classNames('scaffold', props.classNames)
   return (
-    <div className={styles}>
+    <div className={classNames('scaffold', props.classNames)}>
       {props.children}
     </div>
   )
@@ -95,9 +117,8 @@ export function CollectionHeader (props) {
 }
 
 export function BlockCollection (props) {
-  var styles = classNames('block collection', props.classNames)
   return (
-    <section className={styles}>
+    <section className={classNames('block collection', props.classNames)}>
       {props.children}
     </section>
   )
@@ -110,9 +131,8 @@ export function HeaderButton (props) {
 }
 
 export function ReactGrid (props) {
-  var styles = classNames('react-grid', props.classNames)
   return (
-    <div className={styles}>
+    <div className={classNames('react-grid', props.classNames)}>
       <span>
         {props.children}
       </span>

@@ -8,6 +8,8 @@ import HomeController from './pages/controllers/home'
 import PreferencesController from './pages/controllers/preferences'
 import MediaController from './pages/controllers/media'
 import StarredController from './pages/controllers/starred'
+import DiscoverController from './pages/controllers/discover'
+//import ShowsController from './pages/controlers/shows'
 //import PlayerController from './pages/controllers/player'
 
 import {dispatch} from './lib/dispatcher'
@@ -36,6 +38,8 @@ const PropsRoute = ({ component, ...rest }) => {
 export default class App extends React.Component {
 
   controllers = {
+    '/discover/:type/:genre/:sortBy': DiscoverController,
+    //'/shows/:genre/:sort': ShowsController,
     '/home': HomeController,
     '/media/:type/:tmdb': MediaController,
     //error: ['/error', ErrorController],
@@ -61,7 +65,7 @@ export default class App extends React.Component {
               let Component = withTranslate(controllers[path])
 
               return (<div key={path}>
-                <PropsRoute path={path} component={Component} state={props.state} />
+                <PropsRoute exact path={path} component={Component} state={props.state} />
               </div>)
             })}
           </View>

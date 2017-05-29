@@ -2462,10 +2462,10 @@ section[data-viaplay-module-id="FeatureBox"] {
         padding-left: 0; }
       .section-menu .categories .dropdown li {
         padding: 7px 25px; }
-        .section-menu .categories .dropdown li.active a {
+        .section-menu .categories .dropdown li a.active {
           color: #ff4d4d;
           cursor: default; }
-        .section-menu .categories .dropdown li.active:not(:first-child):hover a:hover {
+        .section-menu .categories .dropdown li:not(:first-child):hover a.active:hover {
           color: #ff4d4d; }
       .section-menu .categories .dropdown li:not(:first-child):hover a:hover {
         color: #0077bb; }
