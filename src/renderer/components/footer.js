@@ -5,12 +5,12 @@ import config from '../../config'
 export default class Footer extends React.Component {
 
   componentWillMount() {
-    document.addEventListener('scroll', this.scrolledToBottom)
+    $('#content-wrapper').on('scroll', this.scrolledToBottom)
   }
 
   scrolledToBottom = () => {
     var $s = $(this.refs.scroll)
-    if(document.body.scrollHeight === document.body.scrollTop + window.innerHeight) {
+    if($('#content-wrapper')[0].scrollHeight === $('#content-wrapper').scrollTop() + $(window).height()) {
       $s.fadeIn()
     } else {
       $s.fadeOut()
@@ -19,11 +19,11 @@ export default class Footer extends React.Component {
 
   scrollToTop = () => {
     $(this.refs.scroll).hide()
-    $('html, body').animate({scrollTop: 0}, 600)
+    $('#content-wrapper').animate({scrollTop: 0}, 600)
   }
 
   componentWillUnmount() {
-    document.removeEventListener('scroll', this.scrolledToBottom)
+    $('#content-wrapper').off('scroll', this.scrolledToBottom)
   }
 
   render() {

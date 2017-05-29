@@ -64,66 +64,97 @@ export default class DiscoverController extends React.Component {
   sortBy = [
     'popularity.desc',
     'release_date.desc',
-    'vote_average.desc',
+    'vote_count.desc',
     'original_title.desc'
   ]
 
   initialState = {
     navDockable: false,
     isMounted: false,
-    items: {}
+    items: [],
+    page: 0
   }
 
   constructor(props) {
     super(props)
 
-    this.state = this.initialState
+    this.state = {
+      ...this.initialState,
+      params: props.match.params
+    }
   }
 
   componentWillReceiveProps(nextProps) {
-    const {params} = nextProps.match
+    this.setState({
+      ...this.initialState,
+      params: nextProps.match.params
+    }, () => this.setData())
+  }
 
-    this.setState(this.initialState)
-    this.setData(params)
+  componentWillUnmount() {
+    $('#content-wrapper').off('scroll', this.infiniteScroll)
+  }
+
+  infiniteScroll = () => {
+    if($('#content-wrapper')[0].scrollHeight === $('#content-wrapper').scrollTop() + $(window).height()) {
+      console.log('infiniteScroll')
+      this.setData()
+    }
   }
 
   componentDidMount() {
-    const {params} = this.props.match
+    $('#content-wrapper').on('scroll', this.infiniteScroll)
 
-    this.setData(params)
+    this.setData()
   }
 
-  setData(params) {
+  setData() {
+    const {params} = this.state
+
     if (params.sortBy) {
-      if (params.type === 'movies') {
-        MetadataAdapter.discoverMovies({
-            sort_by: params.sortBy,
-            with_genres: params.genre !== 'all'
-              ? params.genre
-              : ''
+      let {page, items} = this.state
+      page++
+      var itemsCount = 0
+
+      async.whilst(
+        function() { return itemsCount < 25 },
+        function(done) {
+          if (params.type === 'movies') {
+            MetadataAdapter.discoverMovies({
+                sort_by: params.sortBy,
+                with_genres: params.genre !== 'all'
+                  ? params.genre
+                  : ''
+              }, page)
+              .then(data => {
+                page++
+                itemsCount += data.length
+                done(null, items.concat(data))
+              })
+              .catch(done)
+          } else if(params.type === 'shows') {
+            MetadataAdapter.discoverShows({
+                sort_by: params.sortBy,
+                with_genres: params.genre !== 'all'
+                  ? params.genre
+                  : ''
+              }, page)
+              .then(data => {
+                console.log(data)
+                page++
+                itemsCount += data.length
+                done(null, items.concat(data))
+              })
+              .catch(done)
+          }
+        }, (err, data) => {
+          this.setState({
+            page,
+            items: data,
+            isMounted: true
           })
-          .then(items => {
-            this.setState({
-              items,
-              isMounted: true
-            })
-          })
-          .catch(console.log)
-      } else if (params.type === 'shows') {
-        MetadataAdapter.discoverShows({
-            sort_by: params.sortBy,
-            with_genres: params.genre !== 'all'
-              ? params.genre
-              : ''
-          })
-          .then(items => {
-            this.setState({
-              items,
-              isMounted: true
-            })
-          })
-          .catch(console.log)
-      }
+        }
+      )
     } else {
       this.setState({
         isMounted: true
@@ -140,11 +171,11 @@ export default class DiscoverController extends React.Component {
   }
 
   receiveNav() {
-    const {params} = this.props.match
-    let {genres, sortBy} = this
-    const {translate} = this.props
-    genres = genres[params.type]
+    let {genres, sortBy, state, props} = this
+    const {translate} = props
+    const {params} = state
 
+    genres = genres[params.type]
     const genresLength = Object.keys(genres).length
 
     return (
@@ -166,7 +197,7 @@ export default class DiscoverController extends React.Component {
                             {Object.keys(genres).slice(0, genresLength / 2).map(id => {
                               const name = genres[id]
                               return (
-                                <li key={randomString(3)}>
+                                <li key={randomString(5)}>
                                   <NavLink to={`/discover/${params.type}/${id}/popularity.desc`}>
                                     {name/*translate(`nav.genres.${name.toLowerCase()}`)*/}
                                   </NavLink>
@@ -179,7 +210,7 @@ export default class DiscoverController extends React.Component {
                             {Object.keys(genres).slice(genresLength / 2, genresLength).map(id => {
                               const name = genres[id]
                               return (
-                                <li key={randomString(3)}>
+                                <li key={randomString(5)}>
                                   <NavLink to={`/discover/${params.type}/${id}/popularity.desc`}>
                                     {name/*translate(`nav.genres.${name.toLowerCase()}`)*/}
                                   </NavLink>
@@ -201,7 +232,7 @@ export default class DiscoverController extends React.Component {
                       const isActive = classNames({active: key === params.sortBy})
 
                       return (
-                        <li key={randomString(3)} className={isActive}>
+                        <li key={randomString(5)} className={isActive}>
             							<NavLink to={`/discover/${params.type}/${params.genre}/${key}`}>{key}</NavLink>
                         </li>
                       )
@@ -218,6 +249,7 @@ export default class DiscoverController extends React.Component {
 
   render() {
     const {navDockable, isMounted, items} = this.state
+    const {genre, sortBy, type} = this.props.match.params
 
     return isMounted ? (
       <div>
@@ -226,14 +258,14 @@ export default class DiscoverController extends React.Component {
             {navDockable ? this.receiveNav() : ''}
           </div>
           {!navDockable ? this.receiveNav() : ''}
-          {Object.keys(items).length !== 0 &&
+          {items.length !== 0 &&
             <BlockCollection classNames="portrait">
               <Scaffold>
                 <CollectionHeader>
-                  <h2>test</h2>
+                  <h2>{this.genres[type][genre]} sorted by {sortBy}</h2>
                 </CollectionHeader>
                 <ReactGrid>
-                  <Poster items={items} state={this.props.state} />
+                  <Poster key={randomString(5)} items={items} state={this.props.state} />
                 </ReactGrid>
               </Scaffold>
             </BlockCollection>
