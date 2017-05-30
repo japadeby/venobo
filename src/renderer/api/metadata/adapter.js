@@ -8,69 +8,68 @@ export default class MetadataAdapter {
   static Cache: Object
   static TMDb: Object
   static state: Object
+  static iso: String
 
   static setState(state: Object) {
+    this.iso = state.saved.prefs.iso2
     this.state = state
     this.Cache = state.cache
     this.TMDb = new TMDbProvider(state)
   }
 
-  static getMovieGenres() {
-    const {TMDb} = this
-
-    return TMDb.getMovieGenres()
+  static formatReleaseYear(date: String): String {
+    return date
+      ? date.substring(0, 4)
+      : 'Unknown'
   }
 
-  static discoverMovies(args: Object, page: Number = 1) {
-    const {TMDb} = this
+  static discover(type: String, args: Object) {
+    const {TMDb, Cache, state, iso} = this
+    const {discover} = state.media.lists.movies
+
+    const key = JSON.stringify({type, args})
+    const cacheId = `discover-${key}-${iso}`
+
+    const method = type === 'shows'
+      ? 'checkShow'
+      : 'getMovieById'
 
     return new Promise((resolve, reject) => {
-      TMDb.discoverMovies(args, page)
-        .then(data => {
-          let fetchedResults = []
-
-          async.each(data.results, (movie, next) => {
-            this.getMovieById(movie.id)
-              .then(data => {
-                fetchedResults.push(data)
-                next()
-              })
-              .catch(() => next())
-          }, function(err) {
-            resolve(fetchedResults)
+      if (!discover.hasOwnProperty(key)) {
+        discover[key] = []
+        Cache.isNotExpiredThenRead(cacheId)
+          .then(data => {
+            discover[key] = data
+            resolve(data)
           })
-        })
-    })
-  }
-
-  static discoverShows(args: Object, page: Number = 1) {
-    const {TMDb} = this
-
-    return new Promise((resolve, reject) => {
-      TMDb.discoverShows(args, page)
-        .then(data => {
-          let fetchedResults = []
-
-          async.each(data.results, (show, next) => {
-            this.checkShow(show.id)
+          .catch(() => {
+            TMDb.discover(type, args)
               .then(data => {
-                fetchedResults.push(data)
-                next()
+                async.each(data.results, (tmdb, next) => {
+                  this[method].call(this, tmdb.id)
+                    .then(data => {
+                      discover[key].push(data)
+                      next()
+                    })
+                    .catch(() => next())
+                }, function(err) {
+                  Cache.write(cacheId, discover[key], resolve)
+                })
               })
-              .catch(() => next())
-          }, function(err) {
-            resolve(fetchedResults)
+              .catch(reject)
           })
-        })
+      } else {
+        resolve(discover[key])
+      }
     })
   }
 
   static saveShowMetadata(data: Object, torrents: Object): Object {
-    const {state, Cache} = this
+    const {state, Cache, iso} = this
 
     const formattedData = state.media.shows[data.id] = this.formatShowMetadata(data, torrents)
 
-    Cache.writeSync(`show-${data.id}-${state.saved.prefs.iso2}`, formattedData)
+    Cache.writeSync(`show-${data.id}-${iso}`, formattedData)
 
     return formattedData
   }
@@ -106,7 +105,7 @@ export default class MetadataAdapter {
       popularity: data.popularity,
       tmdb: data.id,
       //imdb: data.imdb_id,
-      year: data.first_air_date.substring(0, 4),
+      year: this.formatReleaseYear(data.first_air_date),
       release_date: data.first_air_date,
       voted: data.vote_average,
       votes: data.vote_count,
@@ -117,11 +116,11 @@ export default class MetadataAdapter {
   }
 
   static saveMovieMetadata(data: Object, torrents: Object): Object {
-    const {state, Cache} = this
+    const {state, Cache, iso} = this
 
     const formattedData = state.media.movies[data.id] = this.formatMovieMetadata(data, torrents)
 
-    Cache.writeSync(`movie-${data.id}-${state.saved.prefs.iso2}`, formattedData)
+    Cache.writeSync(`movie-${data.id}-${iso}`, formattedData)
 
     return formattedData
   }
@@ -142,7 +141,7 @@ export default class MetadataAdapter {
       popularity: data.popularity,
       tmdb: data.id,
       imdb: data.imdb_id,
-      year: data.release_date.substring(0, 4),
+      year: this.formatReleaseYear(data.release_date),
       release_date: data.release_date,
       voted: data.vote_average,
       votes: data.vote_count,
@@ -183,10 +182,14 @@ export default class MetadataAdapter {
     })
   }
 
-  static getSimilarShows(tmdbId: Number): Promise {
-    const {TMDb, state, Cache} = this
-    const {similar} = state.media.lists.shows
-    const cacheId = `gss-${tmdbId}-${state.saved.prefs.iso2}`
+  static getSimilar(type: String, tmdbId: Number): Promise<Array> {
+    const {TMDb, state, Cache, iso} = this
+    const {similar} = state.media.lists[`${type}s`]
+    const cacheId = `gs${type}-${tmdbId}-${iso}`
+
+    const method = type === 'show'
+      ? 'checkShow'
+      : 'getMovieById'
 
     return new Promise((resolve, reject) => {
       if (!similar.hasOwnProperty(tmdbId)) {
@@ -197,16 +200,16 @@ export default class MetadataAdapter {
             resolve(data)
           })
           .catch(() => {
-            TMDb.getSimilarShows(tmdbId)
-              .then(shows => {
-                async.each(shows, (show, next) => {
-                  this.checkShow(show.id)
+            TMDb.getSimilar(type, tmdbId)
+              .then(media => {
+                async.each(media, (tmdb, next) => {
+                  this[method].call(this, tmdb.id)
                     .then(data => {
                       similar[tmdbId].push(data)
                       next()
                     })
                     .catch(() => next())
-                }, (err) => {
+                }, function(err) {
                   if (err) {
                     reject(err)
                   } else {
@@ -222,10 +225,14 @@ export default class MetadataAdapter {
     })
   }
 
-  static getShowRecommendations(tmdbId: Number): Promise {
-    const {TMDb, state, Cache} = this
-    const {recommendations} = state.media.lists.shows
-    const cacheId = `gsr-${tmdbId}-${state.saved.prefs.iso2}`
+  static getRecommendations(type: String, tmdbId: Number): Promise<Array> {
+    const {TMDb, state, Cache, iso} = this
+    const {recommendations} = state.media.lists[`${type}s`]
+    const cacheId = `g${type}r-${tmdbId}-${iso}`
+
+    const method = type === 'show'
+      ? 'checkShow'
+      : 'getMovieById'
 
     return new Promise((resolve, reject) => {
       if (!recommendations.hasOwnProperty(tmdbId)) {
@@ -236,10 +243,10 @@ export default class MetadataAdapter {
             resolve(data)
           })
           .catch(() => {
-            TMDb.getShowRecommendations(tmdbId)
-              .then(shows => {
-                async.each(shows, (show, next) => {
-                  this.checkShow(show.id)
+            TMDb.getRecommendations(type, tmdbId)
+              .then(data => {
+                async.each(data, (tmdb, next) => {
+                  this[method].call(this, tmdb.id)
                     .then(data => {
                       recommendations[tmdbId].push(data)
                       next()
@@ -257,92 +264,17 @@ export default class MetadataAdapter {
           })
       } else {
         resolve(recommendations[tmdbId])
-      }
-    })
-  }
-
-  static getMovieRecommendations(tmdbId: Number): Promise {
-    const {TMDb, state, Cache} = this
-    const {recommendations} = state.media.lists.movies
-    const cacheId = `gmr-${tmdbId}-${state.saved.prefs.iso2}`
-
-    return new Promise((resolve, reject) => {
-      if (!recommendations.hasOwnProperty(tmdbId)) {
-        recommendations[tmdbId] = []
-        Cache.existsThenRead(cacheId)
-          .then(data => {
-            recommendations[tmdbId] = data
-            resolve(data)
-          })
-          .catch(() => {
-            TMDb.getMovieRecommendations(tmdbId)
-              .then(movies => {
-                async.each(movies, (movie, next) => {
-                  this.getMovieById(movie.id)
-                    .then(data => {
-                      recommendations[tmdbId].push(data)
-                      next()
-                    })
-                    .catch(() => next())
-                }, (err) => {
-                  if (err) {
-                    reject(err)
-                  } else {
-                    Cache.write(cacheId, recommendations[tmdbId], resolve)
-                  }
-                })
-              })
-              .catch(reject)
-          })
-      } else {
-        resolve(recommendations[tmdbId])
-      }
-    })
-  }
-
-  static getSimilarMovies(tmdbId: Number): Promise {
-    const {TMDb, state, Cache} = this
-    const {similar} = state.media.lists.movies
-    const cacheId = `gsm-${tmdbId}-${state.saved.prefs.iso2}`
-
-    return new Promise((resolve, reject) => {
-      if (!similar.hasOwnProperty(tmdbId)) {
-        similar[tmdbId] = []
-        Cache.existsThenRead(cacheId)
-          .then(data => {
-            similar[tmdbId] = data
-          })
-        TMDb.getSimilarMovies(tmdbId)
-          .then(movies => {
-            async.each(movies, (movie, next) => {
-              this.getMovieById(movie.id)
-                .then(data => {
-                  similar[tmdbId].push(data)
-                  next()
-                })
-                .catch(() => next())
-            }, (err) => {
-              if (err) {
-                reject(err)
-              } else {
-                Cache.write(cacheId, similar[tmdbId], resolve)
-              }
-            })
-          })
-          .catch(reject)
-      } else {
-        resolve(similar[tmdbId])
       }
     })
   }
 
   static getPopularShows(): Promise {
-    const {TMDb, state, Cache} = this
+    const {TMDb, state, Cache, iso} = this
     let {popular} = state.media.lists.shows
-    const cacheId = `gps-${state.saved.prefs.iso2}`
+    const cacheId = `gps-${iso}`
 
     return new Promise((resolve, reject) => {
-      if (!popular.length) {
+      if (popular.length === 0) {
         Cache.isNotExpiredThenRead(cacheId)
           .then(data => {
             popular = data
@@ -375,12 +307,12 @@ export default class MetadataAdapter {
   }
 
   static getTopRatedShows(): Promise {
-    const {TMDb, state, Cache} = this
+    const {TMDb, state, Cache, iso} = this
     let {topRated} = state.media.lists.shows
-    const cacheId = `gtrs-${state.saved.prefs.iso2}`
+    const cacheId = `gtrs-${iso}`
 
     return new Promise((resolve, reject) => {
-      if (!topRated.length) {
+      if (topRated.length === 0) {
         Cache.isNotExpiredThenRead(cacheId)
           .then(data => {
             topRated = data
@@ -413,9 +345,9 @@ export default class MetadataAdapter {
   }
 
   static getPopularMovies(): Promise {
-    const {TMDb, state, Cache} = this
+    const {TMDb, state, Cache, iso} = this
     let {popular} = state.media.lists.movies
-    const cacheId = `gpm-${state.saved.prefs.iso2}`
+    const cacheId = `gpm-${iso}`
 
     return new Promise((resolve, reject) => {
       if (!popular.length) {
@@ -451,9 +383,9 @@ export default class MetadataAdapter {
   }
 
   static getTopRatedMovies(): Promise {
-    const {TMDb, state, Cache} = this
+    const {TMDb, state, Cache, iso} = this
     let {topRated} = state.media.lists.movies
-    const cacheId = `gtrm-${state.saved.prefs.iso2}`
+    const cacheId = `gtrm-${iso}`
 
     return new Promise((resolve, reject) => {
       if (!topRated.length) {
@@ -493,12 +425,12 @@ export default class MetadataAdapter {
    * @return {Promise}
    */
   static getMovieById(tmdbId: Number): Promise {
-    const {state, TMDb, Cache} = this
+    const {state, TMDb, Cache, iso} = this
     const {movies} = state.media
 
     return new Promise((resolve, reject) => {
       if (!movies.hasOwnProperty(tmdbId)) {
-        Cache.isNotExpiredThenRead(`movie-${tmdbId}-${state.saved.prefs.iso2}`)
+        Cache.isNotExpiredThenRead(`movie-${tmdbId}-${iso}`)
           .then(data => {
             movies[tmdbId] = data
             resolve(data)
@@ -546,13 +478,21 @@ export default class MetadataAdapter {
     })
   }
 
+  static getMediaById(type: String, tmdbId: Number): Promise {
+    type = type.charAt(0).toUpperCase() + type.slice(1)
+
+    console.log(`getBy${type}Id`)
+
+    return this[`getBy${type}Id`].call(this, tmdbId)
+  }
+
   static getShowById(tmdbId: Number): Promise {
-    const {state, TMDb, Cache} = this
+    const {state, TMDb, Cache, iso} = this
     const {shows} = state.media
 
     return new Promise((resolve, reject) => {
       if (!shows.hasOwnProperty(tmdbId)) {
-        Cache.existsThenRead(`show-${tmdbId}-${state.saved.prefs.iso2}`)
+        Cache.existsThenRead(`show-${tmdbId}-${iso}`)
           .then(data => {
             shows[tmdbId] = data
             resolve(data)
@@ -617,23 +557,16 @@ export default class MetadataAdapter {
           let fetchedQueries = []
 
           async.each(searchResults, (res, next) => {
-            if (res.media_type == 'movie') {
-              this.getMovieById(res.id)
-                .then(data => {
-                  fetchedQueries.push(data)
-                  next()
-                })
-                .catch(() => next())
-            } else if (res.media_type == 'tv') {
-              this.checkShow(res.id)
-                .then(data => {
-                  fetchedQueries.push(data)
-                  next()
-                })
-                .catch(() => next())
-            } else {
-              next('Wrong media_type')
-            }
+            const method = res.media_type === 'tv'
+              ? 'checkShow'
+              : 'getMovieById'
+
+            this[method].call(this, res.id)
+              .then(data => {
+                fetchedQueries.push(data)
+                next()
+              })
+              .catch(() => next())
           }, function(err) {
             if (fetchedQueries.length == 0) {
               reject(err)

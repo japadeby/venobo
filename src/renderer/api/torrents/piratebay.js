@@ -11,7 +11,7 @@ import {
 
 export default class PirateBayTorrentProvider {
 
-  static endpoint = 'https://thehiddenbay.world' // proxy site || https://thehiddenbay.world/
+  static endpoint = 'https://pirateproxy.cc' // https://pirateproxy.cc || https://thehiddenbay.world
   static provider = 'The Pirate Bay'
 
   static fetchMovies(query: String, page: Number = 0) {
@@ -28,7 +28,7 @@ export default class PirateBayTorrentProvider {
     let $ = cheerio.load(html)
     const providerName = this.provider
 
-    const torrents = $("table#searchResult tr:not('.header')").map(function() {
+    const torrents = $("table#searchResult tr:not('.header')").slice(0, 10).map(function() {
       const $td = $(this).find('td')
       return {
         leechers: parseInt($td.eq(3).text(), 10),

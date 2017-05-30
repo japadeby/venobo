@@ -39,6 +39,12 @@ export default class MediaController extends React.Component {
   setData(tmdb, type) {
     async.parallel({
       media: (done) => {
+        /*MetadataAdapter.getMediaById(type, tmdb)
+          .then(media => {
+            dispatch('setTitle', media.title)
+            done(null, media)
+          })
+          .catch(done)*/
         if (type === 'movie') {
           MetadataAdapter.getMovieById(tmdb)
             .then(movie => {
@@ -56,18 +62,24 @@ export default class MediaController extends React.Component {
         }
       },
       similar: (done) => {
-        if (type === 'movie') {
+        MetadataAdapter.getSimilar(type, tmdb)
+          .then(media => done(null, media))
+          .catch(done)
+        /*if (type === 'movie') {
           MetadataAdapter.getSimilarMovies(tmdb)
             .then(movies => done(null, movies))
-            .catch(done)
+            .catch(() => done())
         } else if (type === 'show') {
           MetadataAdapter.getSimilarShows(tmdb)
             .then(shows => done(null, shows))
-            .catch(err => done('similar: ' + err))
-        }
+            .catch(() => done())
+        }*/
       },
       recommended: (done) => {
-        if (type === 'movie') {
+        MetadataAdapter.getRecommendations(type, tmdb)
+          .then(media => done(null, media))
+          .catch(done)
+        /*if (type === 'movie') {
           MetadataAdapter.getMovieRecommendations(tmdb)
             .then(movies => done(null, movies))
             .catch(done)
@@ -75,12 +87,10 @@ export default class MediaController extends React.Component {
           MetadataAdapter.getShowRecommendations(tmdb)
             .then(shows => done(null, shows))
             .catch(err => done('recommended: ' + err))
-        }
+        }*/
       }
     }, (err, data) => {
-      if (this.state.isMounted) return
-      console.log(err)
-      console.log(data.media)
+      console.log(err, data)
 
       this.setState({
         data: {

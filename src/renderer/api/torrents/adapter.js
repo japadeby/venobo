@@ -9,12 +9,12 @@ import {
 
 const providers = [
   require('./yify'),
-  require('./kickass'),
+  //require('./kickass'),
   //require('./rarbg'),
-  require('./piratebay'),
+  //require('./piratebay'),
   //require('./magnetdl')
   //require('./extratorrent')
-  //require('./idope')
+  require('./idope')
 ]
 
 export default async function TorrentAdapter(imdbId: string,

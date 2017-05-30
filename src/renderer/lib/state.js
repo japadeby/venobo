@@ -63,12 +63,14 @@ function getDefaultState () {
       movieGenres: {},
       lists: {
         movies: {
+          discover: {},
           recommendations: {},
           similar: {},
           popular: [],
           topRated: []
         },
         shows: {
+          discover: {},
           recommendations: {},
           similar: {},
           popular: [],

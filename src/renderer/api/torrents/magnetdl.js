@@ -15,7 +15,7 @@ export default class MagnetDlTorrentProvider {
   static provider = 'MagnetDL'
 
   static fetch(query: String) {
-    query = query.replace(/[^a-zA-Z0-9]/, '').toLowerCase()
+    query = query.replace(/[^a-zA-Z0-9]/, '-').toLowerCase()
     return HTTP.fetchCache(
       `${this.endpoint}/${query.substring(0, 1)}/${query.split(' ').join('-')}/`
     ).then(res => this.cheerio(res))

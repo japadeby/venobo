@@ -65,7 +65,7 @@ export default class App extends React.Component {
               let Component = withTranslate(controllers[path])
 
               return (<div key={path}>
-                <PropsRoute exact path={path} component={Component} state={props.state} />
+                <PropsRoute path={path} component={Component} state={props.state} />
               </div>)
             })}
           </View>

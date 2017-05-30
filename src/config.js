@@ -76,7 +76,8 @@ module.exports = {
   },
   DELAYED_INIT: 3000, // 3 seconds
   TOOLTIP_DELAY: 400,
-  CACHE_DURATION: 3 * 60 // 3 hours cache duration
+  CACHE_DURATION: 3 * 60, // 3 hours cache duration,
+  AXIOS_TIMEOUT: 5000 // in ms
 }
 
 function getConfigPath () {

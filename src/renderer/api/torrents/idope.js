@@ -30,20 +30,16 @@ export default class iDopeTorrentProvider {
     let $ = cheerio.load(html)
     const provider = this.provider
 
-    let i = -1
-    const torrents = $('div#div2child .resultdiv').slice(0, 5).map(function() {
-      i++
+    const torrents = $('div#div2child .resultdiv').slice(0, 10).map(function() {
       return {
         metadata: String($(this).find('.resultdivtop .resultdivtopname').text()).trim(),
         size: $(this).find('.resultdivbotton .resultdivbottonlength').text(),
         seeds: $(this).find('.resultdivbotton .resultdivbottonseed').text(),
         leechers: undefined,
-        magnet: constructMagnet($(this).find(`.resultdivbotton #hideinfohash${i}`).text()),
+        magnet: constructMagnet($(this).find('.resultdivbotton .hideinfohash').first().text()),
         _provider: provider
       }
     }).get()
-
-    console.log(torrents)
 
     return torrents
   }

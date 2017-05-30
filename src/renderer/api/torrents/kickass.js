@@ -12,11 +12,11 @@ import {
 
 export default class KatTorrentProvider {
 
-  static endpoint = 'https://kickassto.org'
+  static endpoint = 'https://kat.how'
   static provider = 'Kickass'
 
   static fetch(query: String): Promise {
-    return HTTP.fetchCache(`${this.endpoint}/usearch/${encodeURIComponent(query)}/?field=seeders&sorder=desc`)
+    return HTTP.fetchLimitCache(`${this.endpoint}/usearch/${encodeURIComponent(query)}/?field=seeders&sorder=desc`)
       .then(res => this.cheerio(res))
       .catch(err => [])
   }
@@ -25,7 +25,7 @@ export default class KatTorrentProvider {
     let $ = cheerio.load(html)
     const provider = this.provider
 
-    const torrents = $("table.data tr:not('.firstr')").map(function() {
+    const torrents = $("table.data tr:not('.firstr')").slice(0, 10).map(function() {
       return {
         leechers: parseInt($(this).find('.red.lasttd.center').text(), 10),
         magnet: $(this).find('[title="Torrent magnet link"]').attr('href'),

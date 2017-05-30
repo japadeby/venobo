@@ -168,11 +168,15 @@ export function hasSubtitles(metadata: String): Boolean {
   return metadata.includes('sub')
 }
 
-export function hasNonNativeCodec(metadata: String) {
+export function hasNonNativeCodec(metadata: String): Boolean {
   return (
     metadata.includes('avi') ||
     metadata.includes('mkv')
   )
+}
+
+export function sortTorrentsByTeam(torrents: Array<any>) {
+
 }
 
 export function sortTorrentsBySeeders(torrents: Array<any>) {

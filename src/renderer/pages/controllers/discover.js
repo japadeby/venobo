@@ -71,6 +71,7 @@ export default class DiscoverController extends React.Component {
   initialState = {
     navDockable: false,
     isMounted: false,
+    isFetching: true,
     items: [],
     page: 0
   }
@@ -85,6 +86,8 @@ export default class DiscoverController extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    window.scrollTo(0, 0)
+
     this.setState({
       ...this.initialState,
       params: nextProps.match.params
@@ -92,18 +95,26 @@ export default class DiscoverController extends React.Component {
   }
 
   componentWillUnmount() {
-    $('#content-wrapper').off('scroll', this.infiniteScroll)
+    $('#content-wrapper').off('scroll', this.onScroll)
   }
 
-  infiniteScroll = () => {
+  onScroll = () => {
+    const {navDockable, isFetching} = this.state
+
     if($('#content-wrapper')[0].scrollHeight === $('#content-wrapper').scrollTop() + $(window).height()) {
       console.log('infiniteScroll')
-      this.setData()
+      if (!isFetching) this.setData()
+    }
+
+    if ($('#content-wrapper').scrollTop() >= 66) {
+      if (!navDockable) this.setState({navDockable: true})
+    } else {
+      if (navDockable) this.setState({navDockable: false})
     }
   }
 
   componentDidMount() {
-    $('#content-wrapper').on('scroll', this.infiniteScroll)
+    $('#content-wrapper').on('scroll', this.onScroll)
 
     this.setData()
   }
@@ -117,39 +128,25 @@ export default class DiscoverController extends React.Component {
       var itemsCount = 0
 
       async.whilst(
-        function() { return itemsCount < 25 },
+        function() { return itemsCount < 20 },
         function(done) {
-          if (params.type === 'movies') {
-            MetadataAdapter.discoverMovies({
-                sort_by: params.sortBy,
-                with_genres: params.genre !== 'all'
-                  ? params.genre
-                  : ''
-              }, page)
-              .then(data => {
-                page++
-                itemsCount += data.length
-                done(null, items.concat(data))
-              })
-              .catch(done)
-          } else if(params.type === 'shows') {
-            MetadataAdapter.discoverShows({
-                sort_by: params.sortBy,
-                with_genres: params.genre !== 'all'
-                  ? params.genre
-                  : ''
-              }, page)
-              .then(data => {
-                console.log(data)
-                page++
-                itemsCount += data.length
-                done(null, items.concat(data))
-              })
-              .catch(done)
-          }
+          MetadataAdapter.discover(params.type, {
+            page,
+            sort_by: params.sortBy,
+            with_genres: params.genre !== 'all'
+              ? params.genre
+              : ''
+          })
+          .then(data => {
+            page++
+            itemsCount += data.length
+            done(null, items = items.concat(data))
+          })
+          .catch(() => done())
         }, (err, data) => {
           this.setState({
             page,
+            isFetching: false,
             items: data,
             isMounted: true
           })
@@ -157,6 +154,7 @@ export default class DiscoverController extends React.Component {
       )
     } else {
       this.setState({
+        isFetching: false,
         isMounted: true
       })
     }
@@ -252,26 +250,24 @@ export default class DiscoverController extends React.Component {
     const {genre, sortBy, type} = this.props.match.params
 
     return isMounted ? (
-      <div>
-        <ContentCategory>
-          <div className="dockable">
-            {navDockable ? this.receiveNav() : ''}
-          </div>
-          {!navDockable ? this.receiveNav() : ''}
-          {items.length !== 0 &&
-            <BlockCollection classNames="portrait">
-              <Scaffold>
-                <CollectionHeader>
-                  <h2>{this.genres[type][genre]} sorted by {sortBy}</h2>
-                </CollectionHeader>
-                <ReactGrid>
-                  <Poster key={randomString(5)} items={items} state={this.props.state} />
-                </ReactGrid>
-              </Scaffold>
-            </BlockCollection>
-          }
-        </ContentCategory>
-      </div>
+      <ContentCategory>
+        <div className="dockable" ref="dockable">
+          {navDockable ? this.receiveNav() : ''}
+        </div>
+        {!navDockable ? this.receiveNav() : (<div style={{height: '66px'}}></div>)}
+        {items.length !== 0 &&
+          <BlockCollection classNames="portrait">
+            <Scaffold>
+              <CollectionHeader>
+                <h2>{this.genres[type][genre]} sorted by {sortBy}</h2>
+              </CollectionHeader>
+              <ReactGrid>
+                <Poster key={randomString(5)} items={items} state={this.props.state} />
+              </ReactGrid>
+            </Scaffold>
+          </BlockCollection>
+        }
+      </ContentCategory>
     ) : (<div></div>)
   }
 

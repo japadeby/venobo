@@ -2,6 +2,7 @@ import axios from 'axios'
 
 import HTTP from '../../lib/http'
 import config from '../../../config'
+import {encodeUri} from '../torrents/provider'
 
 export default class TMDbProvider {
 
@@ -26,6 +27,22 @@ export default class TMDbProvider {
     return `${config.TMDB.POSTER}${path}`
   }
 
+  getSimilar(type: String, tmdbId: Number): Promise<Object> {
+    const {api, uri} = this
+
+    type = type === 'shows' ? 'tv' : 'movie'
+
+    return HTTP.fetchLimit(`${api}/${type}/${tmdbId}/similar?${uri}`)
+      .then(data => data.results)
+  }
+
+  getSimilarMovies(tmdbId: Number): Promise<Object> {
+    const {api, uri} = this
+
+    return HTTP.fetchLimit(`${api}/movie/${tmdbId}/similar?${uri}`)
+      .then(data => data.results)
+  }
+
   getSimilarShows(tmdbId: Number): Promise<Object> {
     const {api, uri} = this
 
@@ -33,7 +50,16 @@ export default class TMDbProvider {
       .then(data => data.results)
   }
 
-  getShowRecommendations(tmdbId: Number): Promise<Object> {
+  getRecommendations(type: String, tmdbId: Number): Promise<Array> {
+    const {api, uri} = this
+
+    type = type === 'show' ? 'tv' : 'movie'
+
+    return HTTP.fetchLimit(`${api}/${type}/${tmdbId}/recommendations?${uri}`)
+      .then(data => data.results)
+  }
+
+  /*getShowRecommendations(tmdbId: Number): Promise<Object> {
     const {api, uri} = this
 
     return HTTP.fetchLimit(`${api}/tv/${tmdbId}/recommendations?${uri}`)
@@ -45,14 +71,7 @@ export default class TMDbProvider {
 
     return HTTP.fetchLimit(`${api}/movie/${tmdbId}/recommendations?${uri}`)
       .then(data => data.results)
-  }
-
-  getSimilarMovies(tmdbId: Number): Promise<Object> {
-    const {api, uri} = this
-
-    return HTTP.fetchLimit(`${api}/movie/${tmdbId}/similar?${uri}`)
-      .then(data => data.results)
-  }
+  }*/
 
   getPopularMovies(): Promise<Object> {
     const {api, uri} = this
@@ -113,29 +132,12 @@ export default class TMDbProvider {
       .then(data => data.results)
   }
 
-  discoverMovies(args: Object, page: Number = 1) {
+  discover(type: String, args: Object): Promise<Object> {
     const {api, uri} = this
 
-    return HTTP.fetchLimit(`${api}/discover/movie?${uri}&page=${page}&sort_by=${args.sort_by}&with_genres=${args.with_genres}`)
-  }
+    type = type === 'shows' ? 'tv' : 'movie'
 
-  discoverShows(args: Object, page: Number = 1) {
-    const {api, uri} = this
-
-    return HTTP.fetchLimit(`${api}/discover/tv?${uri}&page=${page}&sort_by=${args.sort_by}&with_genres=${args.with_genres}`)
-  }
-
-  getMovieGenres(): Promise {
-    const {api, uri} = this
-
-    return HTTP.fetchLimit(`${api}/genre/movie/list?${uri}`)
-      .then(data => data.genres)
-  }
-
-  getList(id: Number, page: Number = 1) {
-    const {api4, uri} = this
-
-    return HTTP.fetchLimit(`${api4}/list/${id}?${uri}&page=${page}`)
+    return HTTP.fetchLimitCache(`${api}/discover/${type}?${uri}&${encodeUri(args)}`)
   }
 
 }
