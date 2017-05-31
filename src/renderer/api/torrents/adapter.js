@@ -9,7 +9,7 @@ import {
 
 const providers = [
   require('./yify'),
-  //require('./kickass'),
+  require('./kickass'),
   //require('./rarbg'),
   //require('./piratebay'),
   //require('./magnetdl')

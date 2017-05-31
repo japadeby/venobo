@@ -36,20 +36,6 @@ export default class TMDbProvider {
       .then(data => data.results)
   }
 
-  getSimilarMovies(tmdbId: Number): Promise<Object> {
-    const {api, uri} = this
-
-    return HTTP.fetchLimit(`${api}/movie/${tmdbId}/similar?${uri}`)
-      .then(data => data.results)
-  }
-
-  getSimilarShows(tmdbId: Number): Promise<Object> {
-    const {api, uri} = this
-
-    return HTTP.fetchLimit(`${api}/tv/${tmdbId}/similar?${uri}`)
-      .then(data => data.results)
-  }
-
   getRecommendations(type: String, tmdbId: Number): Promise<Array> {
     const {api, uri} = this
 
@@ -58,20 +44,6 @@ export default class TMDbProvider {
     return HTTP.fetchLimit(`${api}/${type}/${tmdbId}/recommendations?${uri}`)
       .then(data => data.results)
   }
-
-  /*getShowRecommendations(tmdbId: Number): Promise<Object> {
-    const {api, uri} = this
-
-    return HTTP.fetchLimit(`${api}/tv/${tmdbId}/recommendations?${uri}`)
-      .then(data => data.results)
-  }
-
-  getMovieRecommendations(tmdbId: Number): Promise<Object> {
-    const {api, uri} = this
-
-    return HTTP.fetchLimit(`${api}/movie/${tmdbId}/recommendations?${uri}`)
-      .then(data => data.results)
-  }*/
 
   getPopularMovies(): Promise<Object> {
     const {api, uri} = this

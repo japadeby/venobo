@@ -11,12 +11,14 @@ import MetadataAdapter from '../../api/metadata/adapter'
 // Controls the Home page
 export default class HomeController extends React.Component {
 
+  initialState = {
+    isMounted: false
+  }
+
   constructor(props) {
     super(props)
 
-    this.state = {
-      isMounted: false
-    }
+    this.state = this.initialState
   }
 
   componentDidMount() {

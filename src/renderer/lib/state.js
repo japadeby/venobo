@@ -152,8 +152,7 @@ function setupStateSaved (callback) {
     history: {},
     starred: {
       movies: [],
-      shows: [],
-      episodes: {}
+      shows: []
     },
     username: os.hostname(),
     torrents: [],

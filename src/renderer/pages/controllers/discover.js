@@ -57,7 +57,7 @@ export default class DiscoverController extends React.Component {
   }
 
   onScroll = () => {
-    const {navDockable, isFetching} = this.state
+    const {navDockable} = this.state
     const {scrollTop, scrollHeight} = $('#content-wrapper')[0]
 
     if (scrollTop > this.lastScrollTop) {
@@ -87,11 +87,10 @@ export default class DiscoverController extends React.Component {
 
   setData() {
     var {params, page, items} = this.state
-    var {isFetching} = this
 
-    if (params && !isFetching) {
+    if (params && !this.isFetching) {
       var itemsCount = 0
-      isFetching = true
+      this.isFetching = true
 
       async.whilst(
         function() { return itemsCount < 20 },
@@ -114,7 +113,7 @@ export default class DiscoverController extends React.Component {
             done()
           })
         }, (err, items) => {
-          isFetching = false
+          this.isFetching = false
 
           this.setState({
             page,

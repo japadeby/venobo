@@ -9,12 +9,17 @@ import MetadataAdapter from '../../api/metadata/adapter'
 
 export default class MediaController extends React.Component {
 
+  initialState = {
+    data: {},
+    isMounted: false
+  }
+
   constructor(props) {
     super(props)
 
     this.state = {
-      data: {},
-      isMounted: false
+      ...this.initialState,
+      tmdb: props.match.params.tmdb
     }
   }
 
@@ -23,8 +28,8 @@ export default class MediaController extends React.Component {
 
     if (tmdb !== this.state.tmdb) {
       this.setState({
-        isMounted: false,
-        data: {}
+        ...this.initialState,
+        tmdb
       })
       this.setData(tmdb, type)
     }
@@ -39,12 +44,6 @@ export default class MediaController extends React.Component {
   setData(tmdb, type) {
     async.parallel({
       media: (done) => {
-        /*MetadataAdapter.getMediaById(type, tmdb)
-          .then(media => {
-            dispatch('setTitle', media.title)
-            done(null, media)
-          })
-          .catch(done)*/
         if (type === 'movie') {
           MetadataAdapter.getMovieById(tmdb)
             .then(movie => {
@@ -58,43 +57,24 @@ export default class MediaController extends React.Component {
               dispatch('setTitle', show.title)
               done(null, show)
             })
-            .catch(err => done('media: ' + err))
+            .catch(done)
         }
       },
       similar: (done) => {
         MetadataAdapter.getSimilar(type, tmdb)
           .then(media => done(null, media))
           .catch(done)
-        /*if (type === 'movie') {
-          MetadataAdapter.getSimilarMovies(tmdb)
-            .then(movies => done(null, movies))
-            .catch(() => done())
-        } else if (type === 'show') {
-          MetadataAdapter.getSimilarShows(tmdb)
-            .then(shows => done(null, shows))
-            .catch(() => done())
-        }*/
       },
       recommended: (done) => {
         MetadataAdapter.getRecommendations(type, tmdb)
           .then(media => done(null, media))
           .catch(done)
-        /*if (type === 'movie') {
-          MetadataAdapter.getMovieRecommendations(tmdb)
-            .then(movies => done(null, movies))
-            .catch(done)
-        } else if (type === 'show') {
-          MetadataAdapter.getShowRecommendations(tmdb)
-            .then(shows => done(null, shows))
-            .catch(err => done('recommended: ' + err))
-        }*/
       }
     }, (err, data) => {
       console.log(err, data)
 
       this.setState({
         data: {
-          type: type,
           media: data.media,
           similar: data.similar,
           recommended: data.recommended
