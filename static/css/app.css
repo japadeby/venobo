@@ -2439,12 +2439,21 @@ section[data-viaplay-module-id="FeatureBox"] {
       line-height: normal; }
       .section-menu .details .dropdown .box-shadow {
         border-top: solid 1px #dcddde;
+        box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.2);
+        margin: 0 7px 8px 7px;
+        background: #ffffff;
+        border-radius: 0 0 4px 4px;
+        padding: 20px 30px 25px;
+        overflow: hidden;
+      }
+      /*.section-menu .details .dropdown .box-shadow {
+        border-top: solid 1px #dcddde;
         margin: 0 7px 8px 7px;
         background: #ffffff;
         padding: 20px 30px 25px;
         box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.05);
         overflow: hidden;
-        border-radius: 0 0 4px 4px; }
+        border-radius: 0 0 4px 4px; }*/
         .section-menu .details .dropdown .box-shadow > * {
           vertical-align: middle; }
       .section-menu .details .dropdown li {

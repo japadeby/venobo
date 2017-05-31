@@ -25,7 +25,7 @@ export default class MetadataAdapter {
 
   static discover(type: String, args: Object) {
     const {TMDb, Cache, state, iso} = this
-    const {discover} = state.media.lists.movies
+    const {discover} = state.media.lists
 
     const key = JSON.stringify({type, args})
     const cacheId = `discover-${key}-${iso}`
@@ -62,16 +62,6 @@ export default class MetadataAdapter {
         resolve(discover[key])
       }
     })
-  }
-
-  static saveShowMetadata(data: Object, torrents: Object): Object {
-    const {state, Cache, iso} = this
-
-    const formattedData = state.media.shows[data.id] = this.formatShowMetadata(data, torrents)
-
-    Cache.writeSync(`show-${data.id}-${iso}`, formattedData)
-
-    return formattedData
   }
 
   static formatShowEpisodeMetadata(data: Object, torrents: Object): Object {
@@ -121,6 +111,16 @@ export default class MetadataAdapter {
     const formattedData = state.media.movies[data.id] = this.formatMovieMetadata(data, torrents)
 
     Cache.writeSync(`movie-${data.id}-${iso}`, formattedData)
+
+    return formattedData
+  }
+
+  static saveShowMetadata(data: Object, torrents: Object): Object {
+    const {state, Cache, iso} = this
+
+    const formattedData = state.media.shows[data.id] = this.formatShowMetadata(data, torrents)
+
+    Cache.writeSync(`show-${data.id}-${iso}`, formattedData)
 
     return formattedData
   }

@@ -10,7 +10,7 @@ export default class Footer extends React.Component {
 
   scrolledToBottom = () => {
     var $s = $(this.refs.scroll)
-    if($('#content-wrapper')[0].scrollHeight === $('#content-wrapper').scrollTop() + $(window).height()) {
+    if($(window).height() < $('#content-wrapper').scrollTop() + $(window).height()) {
       $s.fadeIn()
     } else {
       $s.fadeOut()
@@ -18,7 +18,6 @@ export default class Footer extends React.Component {
   }
 
   scrollToTop = () => {
-    $(this.refs.scroll).hide()
     $('#content-wrapper').animate({scrollTop: 0}, 600)
   }
 

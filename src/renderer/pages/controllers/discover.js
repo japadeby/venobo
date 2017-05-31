@@ -3,6 +3,7 @@ import async from 'async'
 import {NavLink} from 'react-router-dom'
 import randomString from 'crypto-random-string'
 import classNames from 'classnames'
+import debounce from 'debounce'
 
 import MetadataAdapter from '../../api/metadata/adapter'
 
@@ -73,11 +74,17 @@ export default class DiscoverController extends React.Component {
     isMounted: false,
     isFetching: true,
     items: [],
-    page: 0
+    page: 1,
+    lastScrollTop: 0
   }
+
+  isFetching: Boolean = true
+  lastScrollTop: Number = 0
 
   constructor(props) {
     super(props)
+
+    this.debounceOnScroll = debounce(this.onScroll, 100)
 
     this.state = {
       ...this.initialState,
@@ -87,6 +94,10 @@ export default class DiscoverController extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     window.scrollTo(0, 0)
+
+    // reset
+    this.isFetching = true
+    this.lastScrollTop = 0
 
     this.setState({
       ...this.initialState,
@@ -100,17 +111,25 @@ export default class DiscoverController extends React.Component {
 
   onScroll = () => {
     const {navDockable, isFetching} = this.state
+    const {scrollTop, scrollHeight} = $('#content-wrapper')[0]
 
-    if($('#content-wrapper')[0].scrollHeight === $('#content-wrapper').scrollTop() + $(window).height()) {
-      console.log('infiniteScroll')
-      if (!isFetching) this.setData()
+    if (scrollTop > this.lastScrollTop) {
+      if (scrollTop >= (scrollHeight - $(window).height() - 250)) {
+        if (!this.isFetching) this.setData()
+      }
+      this.lastScrollTop = scrollTop
     }
 
-    if ($('#content-wrapper').scrollTop() >= 66) {
+    if (scrollTop >= 66) {
       if (!navDockable) this.setState({navDockable: true})
     } else {
       if (navDockable) this.setState({navDockable: false})
     }
+
+    /*if($('#content-wrapper')[0].scrollHeight === $('#content-wrapper').scrollTop() + $(window).height()) {
+      console.log('infiniteScroll')
+      if (!isFetching) this.setData()
+    }*/
   }
 
   componentDidMount() {
@@ -124,8 +143,9 @@ export default class DiscoverController extends React.Component {
 
     if (params.sortBy) {
       let {page, items} = this.state
-      page++
       var itemsCount = 0
+
+      this.isFetching = true
 
       async.whilst(
         function() { return itemsCount < 20 },
@@ -138,15 +158,20 @@ export default class DiscoverController extends React.Component {
               : ''
           })
           .then(data => {
+            console.log(page)
             page++
             itemsCount += data.length
             done(null, items = items.concat(data))
           })
-          .catch(() => done())
+          .catch(() =>  {
+            page++
+            done()
+          })
         }, (err, data) => {
+          this.isFetching = false
+
           this.setState({
             page,
-            isFetching: false,
             items: data,
             isMounted: true
           })

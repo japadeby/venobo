@@ -60,17 +60,15 @@ function getDefaultState () {
       delay: config.TOOLTIP_DELAY
     },
     media: {
-      movieGenres: {},
       lists: {
+        discover: {},
         movies: {
-          discover: {},
           recommendations: {},
           similar: {},
           popular: [],
           topRated: []
         },
         shows: {
-          discover: {},
           recommendations: {},
           similar: {},
           popular: [],
@@ -78,8 +76,7 @@ function getDefaultState () {
         }
       },
       movies: [],
-      shows: [],
-      episodes: []
+      shows: []
     },
     cache: new LocalStorage(config.PATH.CACHE, config.APP.SECRET_KEY), // cache module
     metadata: {},
