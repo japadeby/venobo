@@ -50,7 +50,54 @@ module.exports = {
     KEY: '56dc6f8e86f739bbce37281a8ad47641',
     POSTER: 'https://image.tmdb.org/t/p/w300_and_h450_bestv2',
     BACKDROP: 'https://image.tmdb.org/t/p/original',
-    STILL: 'https://image.tmdb.org/t/p/w227_and_h127_bestv2'
+    STILL: 'https://image.tmdb.org/t/p/w227_and_h127_bestv2',
+    GENRES: {
+      MOVIES: {
+        28: 'Action',
+        12: 'Adventure',
+        16: 'Animation',
+        35: 'Comedy',
+        80: 'Crime',
+        99: 'Documentary',
+        18: 'Drama',
+        10751: 'Family',
+        14: 'Fantasy',
+        36: 'History',
+        27: 'Horror',
+        10402: 'Music',
+        9648: 'Mystery',
+        10749: 'Romance',
+        878: 'Science Fiction',
+        10770: 'TV Movie',
+        53: 'Thriller',
+        10752: 'War',
+        37: 'Western'
+      },
+      SHOWS: {
+        10759: 'Action & Adventure',
+        16: 'Animation',
+        35: 'Comedy',
+        80: 'Crime',
+        99: 'Documentary',
+        18: 'Drama',
+        10751: 'Family',
+        10762: 'Kids',
+        9648: 'Mystery',
+        10763: 'News',
+        10764: 'Reality',
+        10765: 'Sci-Fi & Fantasy',
+        10766: 'Soap',
+        10767: 'Talk',
+        10768: 'War & Politics',
+        37: 'Western'
+      }
+    },
+    SORT_BY: [
+      'popularity.desc',
+      'release_date.desc',
+      'vote_count.desc',
+      'original_title.desc'
+    ]
   },
   GITHUB: {
     URL: 'https://github.com/venobo/app',

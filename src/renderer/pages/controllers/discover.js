@@ -3,7 +3,7 @@ import async from 'async'
 import {NavLink} from 'react-router-dom'
 import randomString from 'crypto-random-string'
 import classNames from 'classnames'
-import debounce from 'debounce'
+import config from '../../../config'
 
 import MetadataAdapter from '../../api/metadata/adapter'
 
@@ -20,71 +20,18 @@ import Poster from '../../components/poster'
 
 export default class DiscoverController extends React.Component {
 
-  genres = {
-    movies: {
-      28: 'Action',
-      12: 'Adventure',
-      16: 'Animation',
-      35: 'Comedy',
-      80: 'Crime',
-      99: 'Documentary',
-      18: 'Drama',
-      10751: 'Family',
-      14: 'Fantasy',
-      36: 'History',
-      27: 'Horror',
-      10402: 'Music',
-      9648: 'Mystery',
-      10749: 'Romance',
-      878: 'Science Fiction',
-      10770: 'TV Movie',
-      53: 'Thriller',
-      10752: 'War',
-      37: 'Western'
-    },
-    shows: {
-      10759: 'Action & Adventure',
-      16: 'Animation',
-      35: 'Comedy',
-      80: 'Crime',
-      99: 'Documentary',
-      18: 'Drama',
-      10751: 'Family',
-      10762: 'Kids',
-      9648: 'Mystery',
-      10763: 'News',
-      10764: 'Reality',
-      10765: 'Sci-Fi & Fantasy',
-      10766: 'Soap',
-      10767: 'Talk',
-      10768: 'War & Politics',
-      37: 'Western'
-    }
-  }
-
-  sortBy = [
-    'popularity.desc',
-    'release_date.desc',
-    'vote_count.desc',
-    'original_title.desc'
-  ]
-
   initialState = {
     navDockable: false,
     isMounted: false,
-    isFetching: true,
     items: [],
-    page: 1,
-    lastScrollTop: 0
+    page: 1
   }
 
-  isFetching: Boolean = true
+  isFetching: Boolean = false
   lastScrollTop: Number = 0
 
   constructor(props) {
     super(props)
-
-    this.debounceOnScroll = debounce(this.onScroll, 100)
 
     this.state = {
       ...this.initialState,
@@ -96,7 +43,7 @@ export default class DiscoverController extends React.Component {
     window.scrollTo(0, 0)
 
     // reset
-    this.isFetching = true
+    //this.isFetching = false
     this.lastScrollTop = 0
 
     this.setState({
@@ -115,7 +62,7 @@ export default class DiscoverController extends React.Component {
 
     if (scrollTop > this.lastScrollTop) {
       if (scrollTop >= (scrollHeight - $(window).height() - 250)) {
-        if (!this.isFetching) this.setData()
+        this.setData()
       }
       this.lastScrollTop = scrollTop
     }
@@ -139,13 +86,12 @@ export default class DiscoverController extends React.Component {
   }
 
   setData() {
-    const {params} = this.state
+    var {params, page, items} = this.state
+    var {isFetching} = this
 
-    if (params.sortBy) {
-      let {page, items} = this.state
+    if (params && !isFetching) {
       var itemsCount = 0
-
-      this.isFetching = true
+      isFetching = true
 
       async.whilst(
         function() { return itemsCount < 20 },
@@ -167,22 +113,21 @@ export default class DiscoverController extends React.Component {
             page++
             done()
           })
-        }, (err, data) => {
-          this.isFetching = false
+        }, (err, items) => {
+          isFetching = false
 
           this.setState({
             page,
-            items: data,
+            items,
             isMounted: true
           })
         }
       )
-    } else {
-      this.setState({
-        isFetching: false,
-        isMounted: true
-      })
     }
+    //  this.setState({
+    //    isMounted: true
+    //  })
+    //}
   }
 
   categoriesHover = () => {
@@ -194,11 +139,11 @@ export default class DiscoverController extends React.Component {
   }
 
   receiveNav() {
-    let {genres, sortBy, state, props} = this
-    const {translate} = props
-    const {params} = state
+    const {translate} = this.props
+    const {params} = this.state
 
-    genres = genres[params.type]
+    const sortBy = config.TMDB.SORT_BY
+    const genres = config.TMDB.GENRES[params.type.toUpperCase()]
     const genresLength = Object.keys(genres).length
 
     return (
@@ -280,11 +225,11 @@ export default class DiscoverController extends React.Component {
           {navDockable ? this.receiveNav() : ''}
         </div>
         {!navDockable ? this.receiveNav() : (<div style={{height: '66px'}}></div>)}
-        {items.length !== 0 &&
+        {items &&
           <BlockCollection classNames="portrait">
             <Scaffold>
               <CollectionHeader>
-                <h2>{this.genres[type][genre]} sorted by {sortBy}</h2>
+                <h2>{config.TMDB.GENRES[type.toUpperCase()][genre]} sorted by {sortBy}</h2>
               </CollectionHeader>
               <ReactGrid>
                 <Poster key={randomString(5)} items={items} state={this.props.state} />
