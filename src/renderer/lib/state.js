@@ -47,7 +47,6 @@ function getDefaultState () {
       isFullScreen: false,
       title: config.APP_WINDOW_TITLE
     },
-    location: {},
     history: {},
     selectedInfoHash: null, /* the torrent we've selected to view details. see state.torrents */
     playing: getDefaultPlayState(), /* the media (audio or video) that we're currently playing */
@@ -147,9 +146,14 @@ function setupStateSaved (callback) {
       startup: false,
       iso2: 'EN',
       iso4: 'en-US',
-      defaultQuality: '1080p'
+      defaultQuality: '1080p',
+      shouldSaveHistory: true
     },
-    history: {},
+    history: {
+      location: {
+        pathname: '/home'
+      }
+    },
     starred: {
       movies: [],
       shows: []

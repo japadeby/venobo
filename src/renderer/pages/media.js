@@ -219,8 +219,10 @@ export default class MediaPage extends React.Component {
             </section>
           </div>
         }
-        <Carousel title={"Lignende film"} items={similar} state={props.state} />
-        <Carousel title={"Recomendations"} items={recommended} state={props.state} />
+        {similar.length !== 0 &&
+          <Carousel title={"Lignende film"} items={similar} state={props.state} />}
+        {recommended.length !== 0 &&
+          <Carousel title={"Recomendations"} items={recommended} state={props.state} />}
       </ContentProduct>
     )
   }

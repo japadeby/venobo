@@ -171,6 +171,9 @@ export default class Main {
   // Setup dispatch handlers
   dispatchHandlers(action) {
     const {state, controllers} = this
+    const stateHistory = state.history
+    const savedHistory = state.saved.history
+    const {shouldSaveHistory} = state.saved.prefs
 
     const dispatchHandlers = {
       // playback
@@ -197,11 +200,21 @@ export default class Main {
       escapeBack: () => this.escapeBack(),
       back: () => {
         this.hideTooltip()
-        state.saved.history.goBack()
+
+        if (shouldSaveHistory) {
+          savedHistory.goBack()
+        } else {
+          stateHistory.goBack()
+        }
       },
       forward: () => {
         this.hideTooltip()
-        state.saved.history.goForward()
+
+        if (shouldSaveHistory) {
+          savedHistory.goForward()
+        } else {
+          stateHistory.goForward()
+        }
       },
       openUrl: (url) => ipcRenderer.send('openExternal', url),
 
@@ -210,7 +223,11 @@ export default class Main {
       toggleFullScreen: (setTo) => ipcRenderer.send('toggleFullScreen', setTo),
       setTitle: (title) => { state.window.title = title },
       setHistory : (history) => {
-        state.saved.history = Object.assign(history, state.saved.history)
+        if (shouldSaveHistory) {
+          state.saved.history = Object.assign(history, savedHistory)
+        } else {
+          state.history = Object.assign(history, stateHistory)
+        }
       },
       setLocation: (location) => { state.location = location },
       addStarredMovie: (tmdbId) => {

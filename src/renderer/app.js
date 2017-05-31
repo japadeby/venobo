@@ -60,13 +60,18 @@ export default class App extends React.Component {
       <IntlProvider translations={translation} locale={locale}>
         <Router onUpdate={() => window.scrollTo(0, 0)}>
           <View state={props.state}>
-            <Route exact path="/" render={() => <Redirect to={this.getLastRoute()} />} />
+            <Route exact path="/" render={() => <Redirect to={this.getIndex()} />} />
             {Object.keys(controllers).map(path => {
               let Component = withTranslate(controllers[path])
 
-              return (<div key={path}>
-                <PropsRoute path={path} component={Component} state={props.state} />
-              </div>)
+              return (
+                <PropsRoute
+                  key={path}
+                  path={path}
+                  component={Component}
+                  state={props.state}
+                />
+              )
             })}
           </View>
         </Router>
@@ -74,15 +79,15 @@ export default class App extends React.Component {
     )
   }
 
-  getLastRoute() {
-    try {
-      const {pathname} = this.props.state.saved.history.location
+  getIndex() {
+    const {saved} = this.props.state
+    const {pathname} = saved.history.location
 
+    if (saved.prefs.saveHistory) {
       return pathname
-    } catch(e) {
-      // No match? Don't worry, just return the default home controller
-      return '/home'
     }
+
+    return '/home'
   }
 
 }

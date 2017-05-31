@@ -10,6 +10,12 @@ export default class MetadataAdapter {
   static state: Object
   static iso: String
 
+  static objectFilter(obj: Object, predicate: Function) {
+    return Object.keys(obj)
+      .filter(key => predicate(obj[key]))
+      .reduce((res, key) => (res[key] = obj[key], res), {})
+  }
+
   static setState(state: Object) {
     this.iso = state.saved.prefs.iso2
     this.state = state
@@ -438,6 +444,8 @@ export default class MetadataAdapter {
           .catch(() => {
             TMDb.getMovie(tmdbId)
               .then(data => {
+                if (data.status !== "Released") return reject()
+
                 this.addMovieTorrents(data)
                   .then(resolve)
                   .catch(reject)
