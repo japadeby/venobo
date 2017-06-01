@@ -145,8 +145,11 @@ export class StarredIcon extends React.Component {
   constructor(props) {
     super(props)
 
+    const type = props.data.type === 'show' ? 'shows' : 'movies'
+
     this.state = {
-      active: props.state.saved.starred.movies.includes(props.tmdb)
+      type,
+      active: props.state.saved.starred[type].includes(props.data.tmdb)
     }
   }
 
@@ -154,16 +157,18 @@ export class StarredIcon extends React.Component {
     const {state, props} = this
 
     if (!state.active) {
-      dispatch('addStarredMovie', props.tmdb)
+      dispatch('addStarred', state.type, props.data.tmdb)
     } else {
-      dispatch('delStarredMovie', props.tmdb)
+      dispatch('delStarred', state.type, props.data.tmdb)
     }
 
     e.preventDefault()
 
-    this.setState({
-      active: !state.active
-    })
+    if (props.state.starredAction) {
+      props.state.starredAction(state.type, props.data.tmdb, !state.active)
+    }
+
+    this.setState({ active: !state.active })
   }
 
   render() {

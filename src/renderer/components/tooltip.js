@@ -52,16 +52,14 @@ class Tooltip extends React.Component {
     if (!tooltip.poster) {
       tooltip.enabled = false
 
-      this.setState({
-        enabled: false
-      })
+      this.setState({ enabled: false })
     }
   }
 
   render() {
     const {state} = this.props
     const {tooltip} = state
-    const {data, enabled, summaryMaxLength} = this.state
+    const {data, enabled} = this.state
 
     {/*tooltip left*/}
     return (
@@ -93,7 +91,7 @@ class Tooltip extends React.Component {
                     {data.voted}
                   </a>
                 </div>
-                <StarredIcon type="button" key={data.tmdb} tmdb={data.tmdb} state={state} />
+                <StarredIcon type="button" key={data.tmdb} data={data} state={state} />
               </div>
               <p className="group synopsis">
           			<span>{data.summary}</span>

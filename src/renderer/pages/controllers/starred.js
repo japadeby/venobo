@@ -1,5 +1,6 @@
 import React from 'react'
 import async from 'async'
+import randomString from 'crypto-random-string'
 
 import {ContentStarred, BlockCollection, Scaffold} from '../../components/items'
 
@@ -9,77 +10,88 @@ import StarredPage from '../starred'
 
 export default class StarredController extends React.Component {
 
+  initialState = {
+    items: {
+      movies: [],
+      shows: []
+    },
+    isMounted: false
+  }
+
   constructor(props) {
     super(props)
 
-    this.state = {
-      items: {},
-      empty: false,
-      isMounted: false
-    }
+    this.state = this.initialState
+  }
+
+  onUnstar = (type, tmdb) => {
+    var {items} = this.state
+
+    items[type] = items[type].filter(
+      media => media.tmdb !== tmdb
+    )
+
+    console.log('unStar')
+
+    this.props.state.tooltip.toggle()
+
+    this.setState({ ...items })
+  }
+
+  get(type, done) {
+    const {starred} = this.props.state.saved
+
+    const method = type === 'shows'
+      ? 'checkShow'
+      : 'getMovieById'
+
+    var media = []
+
+    async.each(starred[type], (tmdbId, next) => {
+      MetadataAdapter[method].call(MetadataAdapter, tmdbId)
+        .then(metadata => {
+          media.push(metadata)
+          next(null)
+        })
+        .catch(next)
+    }, function (err) {
+      done(err, media)
+    })
+  }
+
+  componentWillUnmount() {
+    this.props.state.starredAction = undefined
   }
 
   componentDidMount() {
     const {props, state} = this
     const {starred} = props.state.saved
 
-    let movies = []
+    props.state.starredAction = this.onUnstar
 
-    async.each(starred.movies, (tmdbId, next) => {
-      MetadataAdapter.getMovieById(tmdbId)
-        .then(movie => {
-          movies.push(movie)
-          next(null)
-        })
-        .catch(next)
-    }, function(err) {
-      console.log(movies)
-    })
-
-    /*if (countMovies || countShows) {
+    if (starred.movies || starred.shows) {
       async.parallel({
-        movies: (done) => {
-          let movies = []
-
-          if (countMovies) {
-            async.each(starred.movies, (tmdbId, next) => {
-              MetadataAdapter.getMovieById(tmdbId)
-                .then(movie => {
-                  movies.push(movie)
-                  next()
-                })
-                .catch(next)
-            }, function(err) {
-              done(err, movies)
-            })
-          } else {
-            done(null, movies)
-          }
-        },
-        shows: (done) => done()
-      }, (err, res) => {
-        console.log(err, res)
-
+        movies: (done) => this.get('movies', done),
+        shows: (done) => this.get('shows', done)
+      }, (err, items) => {
         this.setState({
-          isMounted: true
+          isMounted: true,
+          items
         })
       })
     } else {
-      this.setState({
-        empty: true,
-        isMounted: true
-      })
-    }*/
+      this.setState({ isMounted: true })
+    }
   }
 
   render() {
     const {props, state} = this
 
     return state.isMounted ? (
-      <ContentStarred>
-        <BlockCollection classNames="empty-container starred-list"><Scaffold><div className="empty-content-icon"><span className="title">Stjernemærket</span><span className="text">Stjernemærk det, som du er interesseret i at se. Så har du altid en liste til rådighed, når du har lyst – på alle dine Viaplay-enheder!</span><div className="starred-list-icon"></div><span className="info">Du har ikke stjernemærket noget endnu.</span></div></Scaffold></BlockCollection>
-      </ContentStarred>
-    ) : (
+        <ContentStarred>
+          <StarredPage key={randomString(5)} {...props} items={state.items} />
+        </ContentStarred>
+      ) : (
       <div>Some loading content</div>
     )
   }

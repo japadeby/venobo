@@ -178,7 +178,7 @@ export default class MediaPage extends React.Component {
                     {/*{translate('torrent.votes', {votes: media.votes})}*/}
                     <a className="tmdb-link">{media.voted} <span className="tmdb-votes">baseret på {media.votes} brugere</span></a>
                   </div>
-                  <StarredIcon tmdb={media.tmdb} state={props.state} />
+                  <StarredIcon data={media} state={props.state} />
                 </div>
                 <span></span>
                 <div className="group">

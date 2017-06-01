@@ -230,21 +230,21 @@ export default class Main {
         }
       },
       setLocation: (location) => { state.location = location },
-      addStarredMovie: (tmdbId) => {
-        const {movies} = state.saved.starred
-        if(!movies.includes(tmdbId)) {
-          movies.push(tmdbId)
+      addStarred: (type, tmdbId) => {
+        const list = state.saved.starred[type]
+        if(!list.includes(tmdbId)) {
+          list.push(tmdbId)
 
           State.save(state)
         }
       },
-      delStarredMovie: (tmdbId) => {
-        const {movies} = state.saved.starred
+      delStarred: (type, tmdbId) => {
+        const list = state.saved.starred[type]
 
         /**
          * @HACK - Use Array.prototype.splice instead of delete as it replaces the key with null
          */
-        movies.splice(movies.indexOf(tmdbId), 1)
+        list.splice(list.indexOf(tmdbId), 1)
 
         State.save(state)
       },
