@@ -3,7 +3,10 @@ import async from 'async'
 
 import {dispatch} from '../../lib/dispatcher'
 
-import {ContentSection} from '../../components/items'
+import {
+  ContentSection,
+  Loader
+} from '../../components/items'
 import MediaPage from '../media'
 import MetadataAdapter from '../../api/metadata/adapter'
 
@@ -90,7 +93,7 @@ export default class MediaController extends React.Component {
     return state.isMounted ? (
       <MediaPage {...props} data={state.data} />
     ) : (
-      <ContentSection>Some loading page here</ContentSection>
+      <Loader spinner="dark" container="dark" top="250px" />
     )
   }
 

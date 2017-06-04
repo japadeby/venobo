@@ -197,6 +197,8 @@ export default class Main {
       skipVersion: (version) => controllers.update().skipVersion(version),
 
       // State locations
+      exitSearchMount: () => this.exitSearchMount(),
+      hideTooltip: () => this.hideTooltip(),
       escapeBack: () => this.escapeBack(),
       back: () => {
         this.hideTooltip()
@@ -335,12 +337,21 @@ export default class Main {
     state.tooltip.toggle()
   }
 
+  exitSearchMount() {
+    const {state} = this
+
+    if (!state.search.enabled) return
+    state.search.toggle()
+  }
+
   // Quits modals, full screen, or goes back. Happens when the user hits ESC
   escapeBack () {
     const {state} = this
 
     if (state.modal) {
       this.dispatch('exitModal')
+    } else if (state.search.enabled) {
+      this.dispatch('exitSearchMount')
     } else if (state.window.isFullScreen) {
       this.dispatch('toggleFullScreen')
     } else {

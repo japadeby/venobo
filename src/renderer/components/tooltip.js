@@ -7,18 +7,20 @@ import {withTranslate} from './react-multilingual'
 
 class Tooltip extends React.Component {
 
+  initialState = {
+    data: {},
+    enabled: false
+  }
+
   constructor(props) {
     super(props)
 
-    props.state.tooltip.toggle = this.toggle.bind(this)
+    props.state.tooltip.toggle = this.toggle
 
-    this.state = {
-      data: {},
-      enabled: false
-    }
+    this.state = this.initialState
   }
 
-  toggle(state, data: Object = {}) {
+  toggle = (state, data: Object = {}) => {
     const {tooltip} = this.props.state
     const {enabled} = this.state
 

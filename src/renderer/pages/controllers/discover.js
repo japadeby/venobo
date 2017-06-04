@@ -8,6 +8,7 @@ import config from '../../../config'
 import MetadataAdapter from '../../api/metadata/adapter'
 
 import {
+  Loader,
   SectionMenu,
   ContentCategory,
   Scaffold,
@@ -93,7 +94,7 @@ export default class DiscoverController extends React.Component {
       this.isFetching = true
 
       async.whilst(
-        function() { return itemsCount < 20 },
+        function() { return itemsCount < 15 },
         function(done) {
           MetadataAdapter.discover(params.type, {
             page,
@@ -237,7 +238,9 @@ export default class DiscoverController extends React.Component {
           </BlockCollection>
         }
       </ContentCategory>
-    ) : (<div></div>)
+    ) : (
+      <Loader spinner="dark" container="dark" top="250px" />
+    )
   }
 
 }

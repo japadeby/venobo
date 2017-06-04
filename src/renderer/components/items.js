@@ -142,6 +142,10 @@ export function ReactGrid (props) {
 
 export class StarredIcon extends React.Component {
 
+  static defaultProps = {
+    withText: true
+  }
+
   constructor(props) {
     super(props)
 
@@ -178,15 +182,104 @@ export class StarredIcon extends React.Component {
       active: state.active
     })
 
+    const starredText = props.withText ? state.active ? 'Stjernemærket' : 'Stjernemærk' : ''
+
     return props.type === 'button' ? (
       <button className={buttonStarred} onClick={this.action}>
-        {state.active ? 'Stjernemærket' : 'Stjernemærk'}
+        {starredText}
       </button>
     ) : (
       <a className={buttonStarred} onClick={this.action}>
-        <span className="button-text">{state.active ? 'Stjernemærket' : 'Stjernemærk'}</span>
+        <span className="button-text">{starredText}</span>
       </a>
     )
   }
 
+}
+
+export class Loader extends React.Component {
+
+  initialState = {
+    prevItem:  0,
+    itemText: undefined
+  }
+
+  constructor(props) {
+    super(props)
+
+    this.state = this.initialState
+  }
+
+  getSpinner() {
+    const {container, spinner, items} = this.props
+
+    const searchSpinner = classNames('search-spinner load-spinner no-query', spinner)
+    const spinnerContainer = classNames('spinner-container', container)
+
+    return (
+      <div>
+        <div className={searchSpinner}>
+          <div className={spinnerContainer}>
+            <div className="spinner-line line01"></div>
+            <div className="spinner-line line02"></div>
+            <div className="spinner-line line03"></div>
+            <div className="spinner-line line04"></div>
+            <div className="spinner-line line05"></div>
+            <div className="spinner-line line06"></div>
+            <div className="spinner-line line07"></div>
+            <div className="spinner-line line08"></div>
+            <div className="spinner-line line09"></div>
+            <div className="spinner-line line10"></div>
+            <div className="spinner-line line11"></div>
+            <div className="spinner-line line12"></div>
+          </div>
+        </div>
+        {items &&
+          <p style={{textAlign: 'center'}}>
+            {this.state.itemText}
+          </p>
+        }
+      </div>
+    )
+  }
+
+  randomItem = () => {
+    const {items} = this.props
+    const {prevItem} = this.state
+
+    const randomNumber = randNum(0, items.length)
+    console.log(randomNumber, items.length)
+
+    const itemValue = items[randomNumber]
+
+    console.log(itemValue)
+
+    this.setState({
+      prevItem: randomNumber,
+      itemText: itemValue
+    })
+  }
+
+  componentDidMount() {
+    if (this.props.items) {
+      this.randomItem()
+      this.interval = window.setInterval(this.randomItem, 1000)
+    }
+  }
+
+  componentWillUnmount() {
+    window.clearInterval(this.interval)
+  }
+
+  render() {
+    const {top} = this.props
+
+    return top ? (
+      <div style={{marginTop: top}}>
+        {this.getSpinner()}
+      </div>
+    ) : (
+      this.getSpinner()
+    )
+  }
 }

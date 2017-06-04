@@ -55,6 +55,12 @@ function getDefaultState () {
       badge: 0,
       progress: 0
     },
+    starredAction: undefined,
+    search: {
+      mount: undefined,
+      enabled: false,
+      toggle: undefined
+    },
     tooltip: {
       delay: config.TOOLTIP_DELAY
     },
@@ -77,8 +83,13 @@ function getDefaultState () {
       movies: [],
       shows: []
     },
-    cache: new LocalStorage(config.PATH.CACHE, config.APP.SECRET_KEY), // cache module
-    metadata: {},
+    cache: new LocalStorage({
+      path: config.PATH.CACHE,
+      key: config.APP.SECRET_KEY,
+      mkdir: true,
+      encryptFileName: true,
+      encryptFileContent: false
+    }), // cache module
     modal: null, /* modal popover */
     errors: [], /* user-facing errors */
     nextTorrentKey: 1, /* identify torrents for IPC between the main and webtorrent windows */

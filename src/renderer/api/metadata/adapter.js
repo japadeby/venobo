@@ -554,7 +554,7 @@ export default class MetadataAdapter {
     })
   }
 
-  static quickSearch(query: String, limit: Number = 15): Promise {
+  static quickSearch(query: String, limit: Number = 100): Promise {
     const {state, TMDb} = this
     const {shows, movies} = state.media
 

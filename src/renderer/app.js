@@ -27,7 +27,8 @@ const renderMergedProps = (component, ...rest) => {
 const PropsRoute = ({ component, ...rest }) => {
   return (
     <Route {...rest} render={routeProps => {
-      //dispatch('setLocation', routeProps.location)
+      dispatch('exitSearchMount')
+      dispatch('hideTooltip')
       dispatch('setHistory', routeProps.history)
 
       return renderMergedProps(component, routeProps, rest)
@@ -39,6 +40,7 @@ export default class App extends React.Component {
 
   controllers = {
     '/discover/:type/:genre/:sortBy': DiscoverController,
+    //'/discover/:type': DiscoverController,
     //'/shows/:genre/:sort': ShowsController,
     '/home': HomeController,
     '/media/:type/:tmdb': MediaController,
@@ -58,7 +60,7 @@ export default class App extends React.Component {
 
     return (
       <IntlProvider translations={translation} locale={locale}>
-        <Router onUpdate={() => window.scrollTo(0, 0)}>
+        <Router>
           <View state={props.state}>
             <Route exact path="/" render={() => <Redirect to={this.getIndex()} />} />
             {Object.keys(controllers).map(path => {

@@ -2,7 +2,12 @@ import React from 'react'
 import async from 'async'
 import randomString from 'crypto-random-string'
 
-import {ContentStarred, BlockCollection, Scaffold} from '../../components/items'
+import {
+  ContentStarred,
+  BlockCollection,
+  Scaffold,
+  Loader
+} from '../../components/items'
 
 import MetadataAdapter from '../../api/metadata/adapter'
 
@@ -92,7 +97,7 @@ export default class StarredController extends React.Component {
           <StarredPage key={randomString(5)} {...props} items={state.items} />
         </ContentStarred>
       ) : (
-      <div>Some loading content</div>
+      <Loader spinner="dark" container="dark" />
     )
   }
 

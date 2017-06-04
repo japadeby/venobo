@@ -3,7 +3,7 @@ import async from 'async'
 
 import HomePage from '../home'
 
-import {ContentSection} from '../../components/items'
+import {ContentSection, Loader} from '../../components/items'
 
 import {dispatch} from '../../lib/dispatcher'
 import MetadataAdapter from '../../api/metadata/adapter'
@@ -72,7 +72,7 @@ export default class HomeController extends React.Component {
         <HomePage {...props} media={state.media} />
       </ContentSection>
     ) : (
-      <ContentSection>Some loading page</ContentSection>
+      <Loader spinner="dark" container="dark" top="250px" />
     )
   }
 

@@ -12,7 +12,9 @@
 
   <div id="content-wrapper"></div>
 
+	<script type="text/javascript" src="./utils"></script>
 	<script type="text/javascript">
+    require('./utils')
     window.$ = require('jquery')
 
 		const IS_DEV = process.env.NODE_ENV === 'development'
