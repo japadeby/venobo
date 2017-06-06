@@ -51,8 +51,6 @@ class SearchMount extends React.Component {
 
     if (!loading) this.setState({ loading: true })
 
-    console.log(this.state)
-
     MetadataAdapter.quickSearch(searchQuery)
       .then(res => {
         const results = {
@@ -67,6 +65,7 @@ class SearchMount extends React.Component {
 
         this.setState({
           results,
+          filter: 'all',
           resultsEmpty: false,
           loading: false
         })
@@ -77,13 +76,13 @@ class SearchMount extends React.Component {
       }))
   }
 
-  setSearchFilter(filter, disabled) {
+  setResultsFilter(filter, disabled) {
     if (this.state.filter !== filter && !disabled) {
       this.setState({filter})
     }
   }
 
-  renderSearchFilters() {
+  renderResultsFilters() {
     const {results, filter, resultsEmpty, loading} = this.state
 
     return resultsEmpty === false && !loading ? (
@@ -98,20 +97,12 @@ class SearchMount extends React.Component {
 
             return (
               <li className={className} key={type}>
-                <a href="#" onClick={() => this.setSearchFilter(type, disabled)}>{type}</a>
+                <a href="#" onClick={() => this.setResultsFilter(type, disabled)}>{type}</a>
               </li>
             )
           })}
         </ul>
       </div>
-    ) : (<div></div>)
-  }
-
-  renderLoader() {
-    const {loading} = this.state
-
-    return loading ? (
-      <Loader spinner="dark" container="light" />
     ) : (<div></div>)
   }
 
@@ -145,9 +136,9 @@ class SearchMount extends React.Component {
               </div>
             }
             <BlockCollection classNames="search-result portrait">
-              {this.renderSearchFilters()}
+              {this.renderResultsFilters()}
               <Scaffold>
-                {this.renderLoader()}
+                {loading && <Loader spinner="dark" container="light" />}
                 {resultsEmpty === false && !loading &&
                   <ReactGrid classNames="result">
                     <Poster key={randomString(5)} items={results[filter]} state={props.state} />

@@ -23,10 +23,13 @@ class Header extends React.Component {
 
   toggleSearchMount = () => {
     const $search = $(this.refs.search)
+    const $header = $('#content-wrapper .page-header')
     if (!$search.hasClass('active')) {
       $search.addClass('active')
+      $header.addClass('active-search')
     } else {
       $search.removeClass('active')
+      $header.removeClass('active-search')
     }
     this.props.state.search.mount()
   }

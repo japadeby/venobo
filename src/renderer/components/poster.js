@@ -8,6 +8,10 @@ export default class Poster extends React.Component {
 
   constructor (props) {
     super(props)
+
+    this.state = {
+      items: []
+    }
   }
 
   showTooltip = (e) => {
@@ -67,7 +71,7 @@ export default class Poster extends React.Component {
     }, tooltip.delay)
   }
 
-  componentWillMount() {
+  componentDidMount() {
     const items = this.props.items.map((item, index) => {
       return (
         <div className="react-item movie" key={randomString(10)} data-tooltip={index}>
@@ -86,7 +90,7 @@ export default class Poster extends React.Component {
       )
     })
 
-    this.setState({items: items})
+    this.setState({items})
   }
 
   render () {

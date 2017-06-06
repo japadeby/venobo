@@ -3,7 +3,10 @@ import async from 'async'
 
 import HomePage from '../home'
 
-import {ContentSection, Loader} from '../../components/items'
+import {
+  ContentSection,
+  Loader
+} from '../../components/items'
 
 import {dispatch} from '../../lib/dispatcher'
 import MetadataAdapter from '../../api/metadata/adapter'

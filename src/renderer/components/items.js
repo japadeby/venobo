@@ -160,11 +160,9 @@ export class StarredIcon extends React.Component {
   action = (e) => {
     const {state, props} = this
 
-    if (!state.active) {
-      dispatch('addStarred', state.type, props.data.tmdb)
-    } else {
-      dispatch('delStarred', state.type, props.data.tmdb)
-    }
+    const action = state.active ? 'delStarred' : 'addStarred'
+
+    dispatch(action, state.type, props.data.tmdb)
 
     e.preventDefault()
 
