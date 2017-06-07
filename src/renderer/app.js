@@ -1,16 +1,24 @@
 import React from 'react'
-import {MemoryRouter as Router, Route, Redirect} from 'react-router-dom'
+import {
+  MemoryRouter as Router,
+  Route,
+  Redirect,
+  Switch
+} from 'react-router-dom'
 
 import View from './components/view'
-import {IntlProvider, withTranslate} from './components/react-multilingual'
+import {
+  IntlProvider,
+  withTranslate
+} from './components/react-multilingual'
 
 import HomeController from './pages/controllers/home'
 import PreferencesController from './pages/controllers/preferences'
 import MediaController from './pages/controllers/media'
 import StarredController from './pages/controllers/starred'
 import DiscoverController from './pages/controllers/discover'
+import PlayerController from './pages/controllers/player'
 //import ShowsController from './pages/controlers/shows'
-//import PlayerController from './pages/controllers/player'
 
 import {dispatch} from './lib/dispatcher'
 
@@ -46,8 +54,7 @@ export default class App extends React.Component {
     '/media/:type/:tmdb': MediaController,
     //error: ['/error', ErrorController],
     '/preferences': PreferencesController,
-    '/starred': StarredController,
-    //'/player/:type/:tmdb': PlayerController
+    '/starred': StarredController
   }
 
   constructor(props) {
@@ -61,21 +68,24 @@ export default class App extends React.Component {
     return (
       <IntlProvider translations={translation} locale={locale}>
         <Router>
-          <View state={props.state}>
-            <Route exact path="/" render={() => <Redirect to={this.getIndex()} />} />
-            {Object.keys(controllers).map(path => {
-              let Component = withTranslate(controllers[path])
+          <Switch>
+            <PropsRoute path="/player/:type/:tmdb" component={withTranslate(PlayerController)} state={props.state} />
+            <View state={props.state}>
+              <Route exact path="/" render={() => <Redirect to={this.getIndex()} />} />
+              {Object.keys(controllers).map(path => {
+                let Component = withTranslate(controllers[path])
 
-              return (
-                <PropsRoute
-                  key={path}
-                  path={path}
-                  component={Component}
-                  state={props.state}
-                />
-              )
-            })}
-          </View>
+                return (
+                  <PropsRoute exact
+                    key={path}
+                    path={path}
+                    component={Component}
+                    state={props.state}
+                  />
+                )
+              })}
+            </View>
+          </Switch>
         </Router>
       </IntlProvider>
     )

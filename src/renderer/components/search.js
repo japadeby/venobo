@@ -80,6 +80,7 @@ class SearchMount extends React.Component {
     if (this.state.filter !== filter && !disabled) {
       this.setState({filter})
     }
+    return false // prevent scrolling up
   }
 
   renderResultsFilters() {

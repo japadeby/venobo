@@ -144,7 +144,7 @@ export default class MediaPage extends React.Component {
           <MovieProduct>
             <Scaffold>
               {media.type === 'movie' &&
-                <PlayerWrapper />
+                <PlayerWrapper onClick={() => props.history.push(`/player/movie/${media.tmdb}`)} />
               }
               <div className="metadata">
                 <div className="thumb portrait thumb-dk">
