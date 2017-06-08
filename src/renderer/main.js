@@ -18,6 +18,7 @@ import MetadataAdapter from './api/metadata/adapter'
 
 // Controllers
 import TorrentController from './controllers/torrent'
+import PlaybackController from './controllers/playback'
 //import StarredController from './controllers'
 
 export default class Main {
@@ -62,7 +63,7 @@ export default class Main {
         return new TorrentController(state)
       }),
       playback: createGetter(() => {
-        return require('./controllers/playback')(state, config, () => this.update())
+        return new PlayBackController(state, config)
       }),
       subtitles: createGetter(() => {
         return require('./controllers/subtitles')(state)
@@ -179,7 +180,8 @@ export default class Main {
       // playback
       playFile: (infoHash, index) =>
         controllers.playback().playFile(infoHash, index),
-      playPause: () => controllers.playback().playPause(),
+      playPause: (mediaTag) =>
+        controllers.playback().playPause(mediaTag),
 
       appQuit: () => ipcRenderer.send('appQuit'),
       //ddTorrent: (id) => controllers.
@@ -190,7 +192,6 @@ export default class Main {
       // Preferences
       updatePreferences: (key, value) => controllers.preferences().update(key, value),
       checkDownloadPath: () => this.checkDownloadPath(),
-      setIso: (iso2, iso4) => this.renderMain(iso2, iso4),
 
       // Updates
       updateAvailable: (version) => controllers.update().updateAvailable(version),
@@ -201,6 +202,7 @@ export default class Main {
       hideTooltip: () => this.hideTooltip(),
       escapeBack: () => this.escapeBack(),
       back: () => {
+        this.exitSearchMount()
         this.hideTooltip()
 
         if (shouldSaveHistory) {
@@ -210,6 +212,7 @@ export default class Main {
         }
       },
       forward: () => {
+        this.exitSearchMount()
         this.hideTooltip()
 
         if (shouldSaveHistory) {

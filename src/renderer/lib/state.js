@@ -169,6 +169,10 @@ function setupStateSaved (callback) {
       movies: [],
       shows: []
     },
+    watched: {
+      movies: {},
+      shows: {}
+    }
     username: os.hostname(),
     torrents: [],
     torrentsToResume: [],
