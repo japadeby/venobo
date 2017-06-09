@@ -42,7 +42,7 @@ export default class PlayerPage extends React.Component {
 
     const hasFinishedWatching = currentTime === duration
     currentTime = hasFinishedWatching ? 0 : duration - currentTime
-    seekerPercentage = (seekerFraction && !hasFinishedWatching ? 100 * seekerFraction / duration : '0') + '%'
+    seekerPercentage = seekerFraction && !hasFinishedWatching ? 100 * seekerFraction / duration : 0
     const timeLeft = hasFinishedWatching ? duration : currentTime
 
     this.state = {
@@ -116,8 +116,8 @@ export default class PlayerPage extends React.Component {
   }
 
   hideUi = () => {
-    const {uiShown, isPaused} = this.state
-    if (!uiShown && !isPaused) return
+    const {uiShown, isPaused, isDragging} = this.state
+    if (!uiShown && !isPaused || isDragging) return
 
     this.setState({ uiShown: false })
   }
@@ -163,7 +163,7 @@ export default class PlayerPage extends React.Component {
       timeLeft: this.duration - position,
       isDragging: false,
       scrubbingLabel: null,
-      seekerPercentage: (100 * position / this.duration) + '%'
+      seekerPercentage: 100 * position / this.duration
     })
     dispatch('skipTo', position)
   }
@@ -182,13 +182,19 @@ export default class PlayerPage extends React.Component {
     this.setState({
       isDragging: true,
       scrubbingLabel: this.scrubbingLabel(position),
-      seekerPercentage: (100 * position / this.duration) + '%'
+      seekerPercentage: 100 * position / this.duration
     })
   }
 
   seeker = () => {
     const {props, state, mediaTag} = this
     const {playing} = props.state
+
+    if (playing.isPaused && !mediaTag.paused) {
+      mediaTag.pause()
+    } else if (!playing.isPaused && mediaTag.paused) {
+      mediaTag.play()
+    }
 
     if (!playing.isPaused) {
       const hasFinished = playing.currentTime >= this.duration
@@ -203,7 +209,7 @@ export default class PlayerPage extends React.Component {
 
         //if (state.uiShown) {
           if (!state.isDragging) {
-            newState.seekerPercentage = (100 * position / this.duration) + '%'
+            newState.seekerPercentage = 100 * position / this.duration
           }
           this.setState(newState)
         //}
@@ -222,7 +228,7 @@ export default class PlayerPage extends React.Component {
   }
 
   playPause = (e) => {
-    const {state, props} = this
+    const {state, props, mediaTag} = this
     const {playing} = props.state
 
     if (!state.isMounted) return
@@ -234,11 +240,14 @@ export default class PlayerPage extends React.Component {
     if (!state.isPaused) newState.uiShown = true
 
     if (playing.currentTime >= this.duration) {
+      playing.seekerPos = $(this.refs.seekSlider).position().left
       playing.currentTime = 0
+      playing.seekerPercentage = 0
+      mediaTag.currentTime = 0
 
       newState.currentTime = 0
       newState.timeLeft = this.duration
-      newState.seekerPercentage = '0%'
+      newState.seekerPercentage = 0
     }
 
     this.setState(newState)
@@ -313,8 +322,8 @@ export default class PlayerPage extends React.Component {
                     <div className="ui-cell timeline">
                       <div className="timeline-mask">
                         <div ref="seekSlider" onClick={this.handleScrub} className={createStyle('slider horizontal')}>
-                          <div className="primary" style={{width: seekerPercentage}}></div>
-                          <button ref="seekHandle" className="target-btn" style={{left: seekerPercentage}}>
+                          <div className="primary" style={{width: `${seekerPercentage}%`}}></div>
+                          <button ref="seekHandle" className="target-btn" style={{left: `${seekerPercentage}%`}}>
                             <div className="handle"
                               draggable="true"
                               onDragStart={this.handleDragStart}
@@ -322,7 +331,7 @@ export default class PlayerPage extends React.Component {
                               onDragEnd={this.handleScrub} />
                           </button>
                         </div>
-                        <div className={classNames('timeline-tooltip vod', {scrubbing: isDragging})} style={{left: seekerPercentage}}>{/*scrubbing*/}
+                        <div className={classNames('timeline-tooltip vod', {scrubbing: isDragging})} style={{left: `${seekerPercentage}%`}}>{/*scrubbing*/}
                           <label className="ui-cell time-label">{scrubbingLabel}</label>
                         </div>
                       </div>

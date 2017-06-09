@@ -7,7 +7,7 @@
 if (process.env.NODE_ENV === 'development') {
   require('electron-reload')(__dirname + '/src')
   require('babel-register')
-  require('./src/main')
+  new (require('./src/main'))
 } else {
-  require('./build/main')
+  new (require('./build/main'))
 }

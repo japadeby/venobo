@@ -11,9 +11,9 @@ export default class Main {
   static win: Object
 
   static init(state, options) {
-    if(this.win) return this.win.show()
+    if (this.win) return this.win.show()
 
-    let win = this.win = new BrowserWindow({
+    const win = this.win = new BrowserWindow({
       backgroundThrottling: false, // do not throttle animations/timers when page is background
       icon: this.getIconPath(), // Window icon (Windows, Linux)
       minHeight: WINDOW.MIN.HEIGHT,
@@ -26,9 +26,7 @@ export default class Main {
 
     win.loadURL(WINDOW.INDEX.MAIN)
 
-    win.once('ready-to-show', () => {
-      if(!options.hidden) win.show()
-    })
+    win.once('ready-to-show', win.show)
 
     win.webContents.on('dom-ready', () => {
       Menu.onToggleFullScreen(win.isFullScreen())
