@@ -130,7 +130,7 @@ function getDefaultPlayState () {
     location: 'local', /* 'local', 'chromecast', 'airplay' */
     //type: null, /* 'audio' or 'video', could be 'other' if ever support eg streaming to VLC */
     currentTime: 0, /* seconds */
-    duration: 1, /* seconds */
+    duration: 120, /* seconds */
     isReady: false,
     isPaused: true,
     isStalled: false,
@@ -143,7 +143,9 @@ function getDefaultPlayState () {
       selectedIndex: -1, /* current subtitle track */
       showMenu: false /* popover menu, above the video */
     },
-    aspectRatio: 0 /* aspect ratio of the video */
+    aspectRatio: 0, /* aspect ratio of the video */
+    seekerPos: undefined,
+    seekerFraction: undefined
   }
 }
 
@@ -172,7 +174,7 @@ function setupStateSaved (callback) {
     watched: {
       movies: {},
       shows: {}
-    }
+    },
     username: os.hostname(),
     torrents: [],
     torrentsToResume: [],

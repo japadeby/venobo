@@ -5,11 +5,17 @@ export default class PlaybackController {
 
   state: Object
   config: Object
+  mediaTag: Object
   initialized: Boolean = false
 
   constructor(state, config) {
     this.state = state
     this.config = config
+  }
+
+  // Set the current media tag
+  setMediaTag(mediaTag) {
+    this.mediaTag = mediaTag
   }
 
   // Play a file in a torrent.
@@ -149,8 +155,8 @@ export default class PlaybackController {
 
   // Toggle (play or pause) the currently playing media
 
-  playPause(mediaTag) {
-    const {state} = this
+  playPause() {
+    const {state, mediaTag} = this
 
     if (state.window.isVisible && mediaTag) {
       if (state.playing.isPaused) mediaTag.play()
@@ -193,8 +199,12 @@ export default class PlaybackController {
       return console.trace()
     }
 
-    if (isCasting(this.state)) Cast.seek(time)
-    else this.state.playing.jumpToTime = time
+    if (isCasting(this.state)) {
+      Cast.seek(time)
+    } else {
+      this.state.playing.currentTime = time
+      this.mediaTag.currentTime = time
+    }
   }
 
   changePlaybackRate(direction) {

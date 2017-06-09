@@ -63,7 +63,7 @@ export default class Main {
         return new TorrentController(state)
       }),
       playback: createGetter(() => {
-        return new PlayBackController(state, config)
+        return new PlaybackController(state, config)
       }),
       subtitles: createGetter(() => {
         return require('./controllers/subtitles')(state)
@@ -178,10 +178,16 @@ export default class Main {
 
     const dispatchHandlers = {
       // playback
-      playFile: (infoHash, index) =>
-        controllers.playback().playFile(infoHash, index),
-      playPause: (mediaTag) =>
-        controllers.playback().playPause(mediaTag),
+      setMediaTag: (mediaTag) => controllers.playback().setMediaTag(mediaTag),
+      playFile: (infoHash, index) => controllers.playback().playFile(infoHash, index),
+      playPause: () => controllers.playback().playPause(),
+      nextTrack: () => controllers.playback().nextTrack(),
+      previousTrack: () => controllers.playback().previousTrack(),
+      skip: (time) => controllers.playback().skip(time),
+      skipTo: (time) => controllers.playback().skipTo(time),
+      changePlaybackRate: (dir) => controllers.playback().changePlaybackRate(dir),
+      changeVolume: (delta) => controllers.playback().changeVolume(delta),
+      setVolume: (vol) => controllers.playback().setVolume(vol),
 
       appQuit: () => ipcRenderer.send('appQuit'),
       //ddTorrent: (id) => controllers.
@@ -308,8 +314,8 @@ export default class Main {
 
     ipc.on('dispatch', (e, ...args) => this.dispatch(...args))
 
-    //ipc.on('fullscreenChanged', (e, ...args) => this.onFullscreenChanged(e, ...args))
-    //ipc.on('windowBoundsChanged', (e, ...args) => this.onWindowBoundsChanged(e, ...args))
+    ipc.on('fullscreenChanged', (e, ...args) => this.onFullscreenChanged(e, ...args))
+    ipc.on('windowBoundsChanged', (e, ...args) => this.onWindowBoundsChanged(e, ...args))
 
     const tc = controllers.torrent()
     ipc.on('wt-infohash', (e, ...args) => tc.torrentInfoHash(...args))
@@ -350,6 +356,8 @@ export default class Main {
   // Quits modals, full screen, or goes back. Happens when the user hits ESC
   escapeBack () {
     const {state} = this
+
+    console.log(state.window.isFullScreen)
 
     if (state.modal) {
       this.dispatch('exitModal')
