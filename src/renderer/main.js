@@ -19,7 +19,6 @@ import MetadataAdapter from './api/metadata/adapter'
 // Controllers
 import TorrentController from './controllers/torrent'
 import PlaybackController from './controllers/playback'
-//import StarredController from './controllers'
 
 export default class Main {
 

@@ -10,7 +10,8 @@ export default class PlayerPage extends React.Component {
     uiShown: true,
     isTest: false,
     isDragging: false,
-    scrubbingLabel: null
+    scrubbingLabel: null,
+    showAudioMenu: false
   }
 
   videoStyle = {
@@ -36,21 +37,30 @@ export default class PlayerPage extends React.Component {
 
     this.debounceHideUi = debounce(this.hideUi, 3000)
 
-    var {isFullScreen, isPaused, duration, currentTime, seekerFraction, seekerPercentage} = props.state.playing
+    var {
+      isFullScreen,
+      isPaused,
+      duration,
+      currentTime,
+      seekerFraction,
+      videoSeekerPercentage,
+      volume
+    } = props.state.playing
 
     this.duration = duration
 
     const hasFinishedWatching = currentTime === duration
     currentTime = hasFinishedWatching ? 0 : duration - currentTime
-    seekerPercentage = seekerFraction && !hasFinishedWatching ? 100 * seekerFraction / duration : 0
+    videoSeekerPercentage = seekerFraction && !hasFinishedWatching ? 100 * seekerFraction / duration : 0
     const timeLeft = hasFinishedWatching ? duration : currentTime
 
     this.state = {
+      isMuted: volume === 0,
       isMounted: props.isMounted,
       isLoading: !props.isMounted,
       isFullScreen: props.state.window.isFullScreen,
       isPaused,
-      seekerPercentage,
+      videoSeekerPercentage,
       timeLeft,
       currentTime,
       ...this.initialState
@@ -76,7 +86,7 @@ export default class PlayerPage extends React.Component {
     // If media has already been played, start from where we left off
     if (playing.currentTime !== 0) mediaTag.currentTime = playing.currentTime
 
-    this.seekerInterval = setInterval(this.seeker, 1000)
+    this.videoSeekerInterval = setInterval(this.videoSeeker, 1000)
 
     // event listeners
     $(window).on('keypress', this.onKeyPress)
@@ -84,7 +94,7 @@ export default class PlayerPage extends React.Component {
 
   componentWillUnmount() {
     $(window).off('keypress', this.onKeyPress)
-    clearInterval(this.seekerInterval)
+    clearInterval(this.videoSeekerInterval)
   }
 
   onKeyPress = (e) => {
@@ -96,10 +106,20 @@ export default class PlayerPage extends React.Component {
     return false
   }
 
-  createStyle = (classes) => {
+  isDisabledStyle = (classes) => {
     return classNames(classes, {
       disabled: !this.state.isMounted
     })
+  }
+
+  showAudioMenu = (e) => {
+    if (!this.state.isMounted) return
+
+    this.setState({ showAudioMenu: true })
+  }
+
+  hideAudioMenu = (e) => {
+    this.setState({ showAudioMenu: false })
   }
 
   handleVolumeWheel = (e) => {
@@ -119,10 +139,13 @@ export default class PlayerPage extends React.Component {
     const {uiShown, isPaused, isDragging} = this.state
     if (!uiShown && !isPaused || isDragging) return
 
-    this.setState({ uiShown: false })
+    this.setState({
+      uiShown: false,
+      showAudioMenu: false
+    })
   }
 
-  calculateSeekerPos = (e) => {
+  calculateVideoSeekerPos = (e) => {
     const {playing} = this.props.state
 
     const $seeker = $(this.refs.seekSlider)
@@ -143,7 +166,7 @@ export default class PlayerPage extends React.Component {
     }
   }
 
-  isSeekerStartOrEnd(e) {
+  isVideoSeekerStartOrEnd(e) {
     const $seeker = $(this.refs.seekSlider)
     const seekerWidth = $seeker.outerWidth()
     const seekerPos = $seeker.position().left
@@ -154,39 +177,50 @@ export default class PlayerPage extends React.Component {
     return !e.clientX || isSeekerStart || isSeekerEnd
   }
 
-  handleScrub = (e) => {
-    if (this.isSeekerStartOrEnd(e)) return
-
-    const {position} = this.calculateSeekerPos(e.clientX)
+  handleVideoScrub = (e) => {
+    const {position} = this.calculateVideoSeekerPos(e)
 
     this.setState({
       timeLeft: this.duration - position,
       isDragging: false,
       scrubbingLabel: null,
-      seekerPercentage: 100 * position / this.duration
+      videoSeekerPercentage: 100 * position / this.duration
     })
     dispatch('skipTo', position)
   }
 
   handleDragStart = (e) => {
     // Prevent the cursor from changing, eg to a green + icon on Mac
+    // And prevent a ghost image of the handle to appear
     const dt = e.dataTransfer
-    if (dt) dt.effectAllowed = 'none'
+    if (dt) this.setFakeDragIcon(dt)
   }
 
-  handleSleekSlider = (e) => {
-    if (this.isSeekerStartOrEnd(e)) return
+  /**
+  * Solution to remove the ghost image when dragging
+  * @author <https://stackoverflow.com/a/19601254/7933677>
+  */
+  setFakeDragIcon = (dt) => {
+    const dragIcon = document.createElement('img')
+    dragIcon.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAAL‌​AAAAAABAAEAAAIBRAA7"
 
-    const {position} = this.calculateSeekerPos(e.clientX)
+    dt.setDragImage(dragIcon, -99999, -99999)
+    dt.effectAllowed = 'none'
+  }
+
+  handleVideoSeeker = (e) => {
+    if (this.isVideoSeekerStartOrEnd(e)) return
+
+    const {position} = this.calculateVideoSeekerPos(e)
 
     this.setState({
       isDragging: true,
       scrubbingLabel: this.scrubbingLabel(position),
-      seekerPercentage: 100 * position / this.duration
+      videoSeekerPercentage: 100 * position / this.duration
     })
   }
 
-  seeker = () => {
+  videoSeeker = () => {
     const {props, state, mediaTag} = this
     const {playing} = props.state
 
@@ -203,13 +237,13 @@ export default class PlayerPage extends React.Component {
         const timeLeft = this.duration - currentTime
 
         const calculateSecondToPercentage = $(this.refs.seekSlider).outerWidth() / this.duration
-        const {position} = this.calculateSeekerPos(playing.seekerPos + calculateSecondToPercentage)
+        const {position} = this.calculateVideoSeekerPos(playing.seekerPos + calculateSecondToPercentage)
 
         const newState = { timeLeft }
 
         //if (state.uiShown) {
           if (!state.isDragging) {
-            newState.seekerPercentage = 100 * position / this.duration
+            newState.videoSeekerPercentage = 100 * position / this.duration
           }
           this.setState(newState)
         //}
@@ -242,12 +276,12 @@ export default class PlayerPage extends React.Component {
     if (playing.currentTime >= this.duration) {
       playing.seekerPos = $(this.refs.seekSlider).position().left
       playing.currentTime = 0
-      playing.seekerPercentage = 0
+      playing.videoSeekerPercentage = 0
       mediaTag.currentTime = 0
 
       newState.currentTime = 0
       newState.timeLeft = this.duration
-      newState.seekerPercentage = 0
+      newState.videoSeekerPercentage = 0
     }
 
     this.setState(newState)
@@ -262,19 +296,24 @@ export default class PlayerPage extends React.Component {
     dispatch('toggleFullScreen')
   }
 
+  isMutedStyle = (classes) => {
+    return classNames(classes, { muted: this.state.isMuted })
+  }
+
   render() {
     const {
       isLoading,
       duration,
       uiShown,
-      seekerPercentage,
+      videoSeekerPercentage,
       isDragging,
       scrubbingLabel,
       isPaused,
       isFullScreen,
-      timeLeft
+      timeLeft,
+      showAudioMenu
     } = this.state
-    const {createStyle, props} = this
+    const {isDisabledStyle, props, isMutedStyle} = this
     const {media} = props
     const {location} = props.state.playing
 
@@ -284,7 +323,7 @@ export default class PlayerPage extends React.Component {
     const isPausedBtn = isPaused ? 'play' : 'pause'
 
     return (
-      <div ref="videoPlayer" onClick={this.hideUi} style={this.videoPlayerStyle} onWheel={this.handleVolumeWheel} onMouseMove={this.mediaMouseMoved}>
+      <div ref="videoPlayer" style={this.videoPlayerStyle} onWheel={this.handleVolumeWheel} onMouseMove={this.mediaMouseMoved}>
         <video ref="video" style={this.videoStyle} src="https://static.videezy.com/system/resources/previews/000/002/180/original/Bee-is-collecting-honey.mp4">
         </video>
         <div className="vask-container">
@@ -317,37 +356,54 @@ export default class PlayerPage extends React.Component {
                   </div>
                   <div className="ui-row playback-controls">
                     <div className={classNames('ui-cell control-btn', isPausedBtn)}>
-                      <button className={createStyle(isPausedBtn)} onClick={this.playPause}></button>
+                      <button className={isDisabledStyle(isPausedBtn)} onClick={this.playPause}></button>
                     </div>
                     <div className="ui-cell timeline">
                       <div className="timeline-mask">
-                        <div ref="seekSlider" onClick={this.handleScrub} className={createStyle('slider horizontal')}>
-                          <div className="primary" style={{width: `${seekerPercentage}%`}}></div>
-                          <button ref="seekHandle" className="target-btn" style={{left: `${seekerPercentage}%`}}>
+                        <div ref="seekSlider" onClick={this.handleVideoScrub} className={isDisabledStyle('slider horizontal')}>
+                          <div className="primary" style={{width: `${videoSeekerPercentage}%`}}></div>
+                          <button ref="seekHandle" className="target-btn" style={{left: `${videoSeekerPercentage}%`}}>
                             <div className="handle"
                               draggable="true"
                               onDragStart={this.handleDragStart}
-                              onDrag={this.handleSleekSlider}
-                              onDragEnd={this.handleScrub} />
+                              onDrag={this.handleVideoSeeker}
+                              onDragEnd={this.handleVideoScrub} />
                           </button>
                         </div>
-                        <div className={classNames('timeline-tooltip vod', {scrubbing: isDragging})} style={{left: `${seekerPercentage}%`}}>{/*scrubbing*/}
+                        <div className={classNames('timeline-tooltip vod', {scrubbing: isDragging})} style={{left: `${videoSeekerPercentage}%`}}>{/*scrubbing*/}
                           <label className="ui-cell time-label">{scrubbingLabel}</label>
                         </div>
                       </div>
                     </div>
                     <label className="ui-cell time-label">{this.scrubbingLabel(timeLeft)}</label>
                     <div className="ui-cell control-btn language subtitlesAvailable">
-                      <button ref="subtitles" className={createStyle('language subtitlesAvailable')}></button>
+                      <button ref="subtitles" className={isDisabledStyle('language subtitlesAvailable')}></button>
                     </div>
-                    <div className="ui-cell control-btn audio-control">
-                      <button ref="audio" className={createStyle('audio-control')}></button>
+                    <div className={isMutedStyle('ui-cell control-btn audio-control')}>
+                      {showAudioMenu &&
+                        <span ref="audioSlider">
+                          <div className="audio-slider" onMouseLeave={this.hideAudioMenu}>
+                            <div className="slider vertical" onClick={this.handleAudioScrub}>
+                              <div className="primary" style={{height: `${audioSliderPercentage}%`}}>
+                                <button className="target-btn" style={{bottom: `${audioSliderPercentage}%`}}>
+                                  <div className="handle"
+                                    draggable="true"
+                                    onDragStart={this.handleDragStart}
+                                    onDrag={this.handleAudioSeeker}
+                                    onDragEnd={this.handleAudioScrub} />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </span>
+                      }
+                      <button ref="audioBtn" onClick={this.muteUnmute} onMouseEnter={this.showAudioMenu} className={isDisabledStyle(isMutedStyle('audio-control'))}></button>
                     </div>
                     <div className="ui-cell control-btn quality auto highest">
-                      <button ref="cast" className={createStyle('quality auto highest')}></button>
+                      <button ref="cast" className={isDisabledStyle('quality auto highest')}></button>
                     </div>
                     <div className={classNames('ui-cell control-btn', fullScreenBtn)}>
-                      <button onClick={this.toggleFullScreen} className={createStyle(fullScreenBtn)}></button>
+                      <button onClick={this.toggleFullScreen} className={isDisabledStyle(fullScreenBtn)}></button>
                     </div>
                   </div>
                 </div>

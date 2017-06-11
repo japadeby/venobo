@@ -4,11 +4,11 @@
  * @author Marcus S. Abildskov
  */
 
-const pckg = require('../package.json')
-const path = require('path')
-const electron = require('electron')
-const arch = require('arch')
-const fs = require('fs')
+import pckg from '../package.json'
+import path from 'path'
+import electron from 'electron'
+import arch from 'arch'
+import fs from 'fs'
 const appConfig = require('application-config')('Venobo')
 
 const APP_TEAM = pckg.productName + ' Dev'
@@ -124,7 +124,8 @@ module.exports = {
   DELAYED_INIT: 3000, // 3 seconds
   TOOLTIP_DELAY: 400,
   CACHE_DURATION: 3 * 60, // 3 hours cache duration,
-  AXIOS_TIMEOUT: 5000 // in ms
+  AXIOS_TIMEOUT: 5000, // in ms
+  SAVE_DEBOUNCE_INTERVAL: 1000
 }
 
 function getConfigPath () {
