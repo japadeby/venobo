@@ -11,7 +11,8 @@ export default class PlayerPage extends React.Component {
     isTest: false,
     isDragging: false,
     scrubbingLabel: null,
-    showAudioMenu: false
+    showAudioMenu: false,
+    audioSliderPercentage: 80
   }
 
   videoStyle = {
@@ -166,6 +167,29 @@ export default class PlayerPage extends React.Component {
     }
   }
 
+  calculateAudioSliderValues = (e) => {
+    const {playing} = this.props.state
+
+    const $slider = $(this.refs.audioSlider)
+    const sliderHeight = $slider.outerHeight()
+    const sliderPos = $slider.offset().top
+    const viewportHeight = $(window).height()
+
+    const verticalAxis = typeof e === 'number' ? e : e.clientY
+    playing.audioSeekerPos = verticalAxis
+
+    const volume = Number((Math.abs(verticalAxis - sliderPos) / sliderHeight).toFixed(1))
+
+    const percentage = volume * 100
+
+    playing.audioSeekerFraction = percentage
+
+    return {
+      percentage,
+      volume
+    }
+  }
+
   isVideoSeekerStartOrEnd(e) {
     const $seeker = $(this.refs.seekSlider)
     const seekerWidth = $seeker.outerWidth()
@@ -175,6 +199,16 @@ export default class PlayerPage extends React.Component {
     const isSeekerEnd = e.clientX >= seekerWidth + seekerPos
 
     return !e.clientX || isSeekerStart || isSeekerEnd
+  }
+
+  handleAudioScrub = (e) => {
+    const {percentage, volume} = this.calculateAudioSliderValues(e)
+
+    console.log(percentage, volume)
+
+    this.setState({ audioSliderPercentage: percentage })
+
+    dispatch('setVolume', volume)
   }
 
   handleVideoScrub = (e) => {
@@ -311,7 +345,8 @@ export default class PlayerPage extends React.Component {
       isPaused,
       isFullScreen,
       timeLeft,
-      showAudioMenu
+      showAudioMenu,
+      audioSliderPercentage
     } = this.state
     const {isDisabledStyle, props, isMutedStyle} = this
     const {media} = props
@@ -381,16 +416,15 @@ export default class PlayerPage extends React.Component {
                     </div>
                     <div className={isMutedStyle('ui-cell control-btn audio-control')}>
                       {showAudioMenu &&
-                        <span ref="audioSlider">
+                        <span>
                           <div className="audio-slider" onMouseLeave={this.hideAudioMenu}>
-                            <div className="slider vertical" onClick={this.handleAudioScrub}>
+                            <div className="slider vertical" onClick={this.handleAudioScrub} ref="audioSlider">
                               <div className="primary" style={{height: `${audioSliderPercentage}%`}}>
                                 <button className="target-btn" style={{bottom: `${audioSliderPercentage}%`}}>
                                   <div className="handle"
                                     draggable="true"
                                     onDragStart={this.handleDragStart}
-                                    onDrag={this.handleAudioSeeker}
-                                    onDragEnd={this.handleAudioScrub} />
+                                    onDrag={this.handleAudioScrub} />
                                 </button>
                               </div>
                             </div>

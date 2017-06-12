@@ -207,7 +207,7 @@ export default class PlaybackController {
     }
   }
 
-  changePlaybackRate(direction) {
+  /*changePlaybackRate(direction) {
     const {state} = this
     let rate = state.playing.playbackRate
 
@@ -227,7 +227,7 @@ export default class PlaybackController {
     }
     // Wait a bit before we hide the controls and header again
     state.playing.mouseStationarySince = new Date().getTime()
-  }
+  }*/
 
   // Change the volume, in range [0, 1], by some amount
   // For example, volume muted (0), changeVolume (0.3) increases to 30% volume
@@ -241,8 +241,12 @@ export default class PlaybackController {
     // check if its in [0.0 - 1.0] range
     volume = Math.max(0, Math.min(1, volume))
 
-    if (isCasting(state)) Cast.setVolume(volume)
-    else state.playing.setVolume = volume
+    if (isCasting(state)) {
+      Cast.setVolume(volume)
+    } else {
+      this.mediaTag.volume = volume
+      state.playing.volume = volume
+    }
   }
 
   // Hide player controls while playing video, if the mouse stays still for a while
