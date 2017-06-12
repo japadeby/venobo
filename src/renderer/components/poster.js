@@ -71,7 +71,7 @@ export default class Poster extends React.Component {
     }, tooltip.delay)
   }
 
-  componentDidMount() {
+  render () {
     const items = this.props.items.map((item, index) => {
       return (
         <div className="react-item movie" key={randomString(10)} data-tooltip={index}>
@@ -90,13 +90,9 @@ export default class Poster extends React.Component {
       )
     })
 
-    this.setState({items})
-  }
-
-  render () {
     return (
       <div>
-        {this.state.items}
+        {items}
       </div>
     )
   }

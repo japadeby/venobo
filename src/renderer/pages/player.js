@@ -8,10 +8,10 @@ export default class PlayerPage extends React.Component {
 
   initialState = {
     uiShown: true,
-    isTest: false,
+    isTest: true,
     isDragging: false,
     scrubbingLabel: null,
-    showAudioMenu: false,
+    showAudioMenu: true,
     audioSliderPercentage: 80
   }
 
@@ -162,27 +162,40 @@ export default class PlayerPage extends React.Component {
     playing.seekerFraction = position
 
     return {
-      fraction,
+      percentage: 100 / position / this.duration,
       position
     }
+  }
+
+  isAudioSliderStartOrEnd = (e) => {
+    const viewport = $(window).height()
+    const $slider = $(this.refs.audioSlider)
+    const sliderHeight = $slider.outerHeight(true)
+    const sliderPosTop = $slider.offset().top
+
+    const sliderPosBottom = viewport - sliderPosTop
+    const mousePosBottom = viewport - e.clientY + sliderHeight
+
+    const isSliderEnd = mousePosBottom >= sliderHeight + sliderPosBottom
+    const isSliderStart = mousePosBottom <= sliderPosBottom
+
+    return !e.clientY || isSliderStart || isSliderEnd
   }
 
   calculateAudioSliderValues = (e) => {
     const {playing} = this.props.state
 
+    const viewport = $(window).height()
     const $slider = $(this.refs.audioSlider)
-    const sliderHeight = $slider.outerHeight()
-    const sliderPos = $slider.offset().top
-    const viewportHeight = $(window).height()
 
-    const verticalAxis = typeof e === 'number' ? e : e.clientY
-    playing.audioSeekerPos = verticalAxis
+    const sliderHeight = $slider.outerHeight(true)
+    const sliderPosTop = $slider.offset().top
 
-    const volume = Number((Math.abs(verticalAxis - sliderPos) / sliderHeight).toFixed(1))
+    const sliderPosBottom = viewport - sliderPosTop
+    const mousePosBottom = viewport - e.clientY + sliderHeight
 
+    const volume = Math.abs(mousePosBottom - sliderPosBottom) / sliderHeight
     const percentage = volume * 100
-
-    playing.audioSeekerFraction = percentage
 
     return {
       percentage,
@@ -195,30 +208,52 @@ export default class PlayerPage extends React.Component {
     const seekerWidth = $seeker.outerWidth()
     const seekerPos = $seeker.position().left
 
-    const isSeekerStart = e.clientX <= seekerPos
-    const isSeekerEnd = e.clientX >= seekerWidth + seekerPos
+    const isSeekerStart = e.clientX < seekerPos
+    const isSeekerEnd = e.clientX > seekerWidth + seekerPos
 
     return !e.clientX || isSeekerStart || isSeekerEnd
   }
 
+  muteUnmute = () => {
+    const {volume, lastVolume} = this.props.state.playing
+
+    const setVolume = volume === 0
+      ? lastVolume !== 0
+        ? lastVolume
+        : 0.8
+      : 0
+
+    dispatch('setVolume', setVolume)
+    this.setState({
+      isMuted: setVolume === 0,
+      audioSliderPercentage: 100 * setVolume
+    })
+  }
+
   handleAudioScrub = (e) => {
+    const {lastVolume} = this.props.state.playing
+    if (this.isAudioSliderStartOrEnd(e)) return
+
     const {percentage, volume} = this.calculateAudioSliderValues(e)
 
-    console.log(percentage, volume)
+    if (volume === lastVolume) return
 
-    this.setState({ audioSliderPercentage: percentage })
+    this.setState({
+      audioSliderPercentage: percentage,
+      isMuted: volume === 0
+    })
 
     dispatch('setVolume', volume)
   }
 
   handleVideoScrub = (e) => {
-    const {position} = this.calculateVideoSeekerPos(e)
+    const {position, percentage} = this.calculateVideoSeekerPos(e)
 
     this.setState({
       timeLeft: this.duration - position,
       isDragging: false,
       scrubbingLabel: null,
-      videoSeekerPercentage: 100 * position / this.duration
+      videoSeekerPercentage: percentage
     })
     dispatch('skipTo', position)
   }
@@ -236,7 +271,7 @@ export default class PlayerPage extends React.Component {
   */
   setFakeDragIcon = (dt) => {
     const dragIcon = document.createElement('img')
-    dragIcon.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAAL‌​AAAAAABAAEAAAIBRAA7"
+    dragIcon.src = "" //"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAAL‌​AAAAAABAAEAAAIBRAA7"
 
     dt.setDragImage(dragIcon, -99999, -99999)
     dt.effectAllowed = 'none'
@@ -245,12 +280,12 @@ export default class PlayerPage extends React.Component {
   handleVideoSeeker = (e) => {
     if (this.isVideoSeekerStartOrEnd(e)) return
 
-    const {position} = this.calculateVideoSeekerPos(e)
+    const {position, percentage} = this.calculateVideoSeekerPos(e)
 
     this.setState({
       isDragging: true,
       scrubbingLabel: this.scrubbingLabel(position),
-      videoSeekerPercentage: 100 * position / this.duration
+      videoSeekerPercentage: percentage
     })
   }
 
@@ -420,8 +455,8 @@ export default class PlayerPage extends React.Component {
                           <div className="audio-slider" onMouseLeave={this.hideAudioMenu}>
                             <div className="slider vertical" onClick={this.handleAudioScrub} ref="audioSlider">
                               <div className="primary" style={{height: `${audioSliderPercentage}%`}}>
-                                <button className="target-btn" style={{bottom: `${audioSliderPercentage}%`}}>
-                                  <div className="handle"
+                                <button className="target-btn">
+                                  <div className="handle" style={{bottom: `${audioSliderPercentage}%`}}
                                     draggable="true"
                                     onDragStart={this.handleDragStart}
                                     onDrag={this.handleAudioScrub} />
@@ -448,8 +483,4 @@ export default class PlayerPage extends React.Component {
     )
   }
 
-}
-
-function _(e) {
-  return document.querySelector(e)
 }

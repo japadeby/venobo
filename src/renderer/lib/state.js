@@ -31,13 +31,14 @@ class State extends EventEmitter {
       isStalled: false,
       playbackRate: 1,
       volume: 1,
+      lastVolume: 1,
       subtitles: {
         tracks: [], /* subtitle tracks, each {label, language, ...} */
         selectedIndex: -1 /* current subtitle track */
       },
       aspectRatio: 0, /* aspect ratio of the video */
-      seekerPos: undefined,
-      seekerFraction: undefined
+      /*seekerPos: undefined,
+      seekerFraction: undefined*/
     }
   }
 

@@ -1,4 +1,5 @@
 import React from 'react'
+import ReactDOM from 'react-dom'
 import classNames from 'classnames'
 import { NavLink } from 'react-router-dom'
 
@@ -23,15 +24,15 @@ class Carousel extends React.Component {
     }
 
     componentWillUnmount() {
-      window.removeEventListener("resize", this.updateCarousel, false)
+      $(window).off("resize", this.updateCarousel)
     }
 
     updateCarousel = () => {
       const {state} = this
-      const $reactItems = $(this.refs.items).children().children('.react-item')
+      const $reactItems = $(this.refs.items).find('.react-item')
       const maxw = $(this.refs.wrapper).width()
 
-      let itemsFitSlide = $reactItems.filter(function() {
+      const itemsFitSlide = $reactItems.filter(function() {
         return $(this).position().left < maxw
       }).length
 
@@ -51,7 +52,7 @@ class Carousel extends React.Component {
 
     componentDidMount() {
       this.updateCarousel()
-      window.addEventListener("resize", this.updateCarousel, false)
+      $(window).on("resize", this.updateCarousel)
     }
 
     handleNext = (e) => {
@@ -59,14 +60,14 @@ class Carousel extends React.Component {
 
       var innerWidth = -Math.abs(state.innerWidth - (state.itemWidth * state.itemsFitSlide))
 
-      var itemsLeft = state.itemsLength - state.itemsShownTotal
-      var lastSlide = state.itemsFitSlide > itemsLeft
+      const itemsLeft = state.itemsLength - state.itemsShownTotal
+      const lastSlide = state.itemsFitSlide > itemsLeft
 
-      if(lastSlide) {
+      if (lastSlide) {
         innerWidth = -Math.abs(state.innerWidth - (state.itemWidth * itemsLeft))
       }
 
-      var itemsShownTotal = (lastSlide)
+      const itemsShownTotal = lastSlide
         ? state.itemsShownTotal + itemsLeft
         : state.itemsShownTotal + state.itemsFitSlide
 
@@ -83,7 +84,7 @@ class Carousel extends React.Component {
 
       var innerWidth = state.innerWidth + (state.itemWidth * state.itemsFitSlide)
 
-      var itemsLeft = +Math.abs(state.itemsFitSlide - state.itemsShownTotal)
+      const itemsLeft = +Math.abs(state.itemsFitSlide - state.itemsShownTotal)
 
       var firstSlide = false
       if(itemsLeft <= state.itemsFitSlide) {
@@ -91,7 +92,7 @@ class Carousel extends React.Component {
         innerWidth = state.startPoint
       }
 
-      var itemsShownTotal = (firstSlide)
+      const itemsShownTotal = (firstSlide)
         ? state.itemsFitSlide
         : state.itemsShownTotal - state.itemsFitSlide
 
@@ -134,9 +135,9 @@ class Carousel extends React.Component {
             </CollectionHeader>
             <div className="carousel-wrapper" ref="wrapper">
               <div className="carousel-inner use-transition" style={{transform: `translateX(${state.innerWidth}px)`}}>
-                <span ref="items">
+                <div ref="items">
                   <Poster items={props.items} state={props.state} />
-                </span>
+                </div>
               </div>
             </div>
           </Scaffold>

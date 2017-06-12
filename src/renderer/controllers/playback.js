@@ -244,6 +244,7 @@ export default class PlaybackController {
     if (isCasting(state)) {
       Cast.setVolume(volume)
     } else {
+      state.playing.lastVolume = volume
       this.mediaTag.volume = volume
       state.playing.volume = volume
     }
