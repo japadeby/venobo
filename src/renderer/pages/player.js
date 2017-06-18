@@ -8,10 +8,10 @@ export default class PlayerPage extends React.Component {
 
   initialState = {
     uiShown: true,
-    isTest: true,
+    isTest: false,
     isDragging: false,
     scrubbingLabel: null,
-    showAudioMenu: true,
+    showAudioMenu: false,
     audioSliderPercentage: 80
   }
 
@@ -41,31 +41,49 @@ export default class PlayerPage extends React.Component {
     var {
       isFullScreen,
       isPaused,
-      duration,
-      currentTime,
       seekerFraction,
+      duration,
       videoSeekerPercentage,
       volume
     } = props.state.playing
 
     this.duration = duration
 
-    const hasFinishedWatching = currentTime === duration
-    currentTime = hasFinishedWatching ? 0 : duration - currentTime
-    videoSeekerPercentage = seekerFraction && !hasFinishedWatching ? 100 * seekerFraction / duration : 0
-    const timeLeft = hasFinishedWatching ? duration : currentTime
-
     this.state = {
       isMuted: volume === 0,
-      isMounted: props.isMounted,
-      isLoading: !props.isMounted,
+      isReady: props.isReady,
+      isLoading: !props.isReady,
       isFullScreen: props.state.window.isFullScreen,
       isPaused,
-      videoSeekerPercentage,
-      timeLeft,
-      currentTime,
+      videoSeekerPercentage: this.videoSeekerPercentage(),
+      timeLeft: this.videoTimeLeft(),
+      currentTime: this.videoCurrentTime(),
       ...this.initialState
     }
+  }
+
+  videoSeekerPercentage() {
+    const {seekerFraction} = this.props.state.playing
+
+    return seekerFraction && !this.videoHasFinishedWatching()
+      ? 100 * seekerFraction / this.duration
+      : 0
+  }
+
+  videoTimeLeft() {
+    return this.videoHasFinishedWatching()
+      ? this.duration
+      : this.props.state.playing.currentTime
+  }
+
+  videoCurrentTime() {
+    return this.videoHasFinishedWatching()
+      ? 0
+      : this.duration - this.props.state.playing.currentTime
+  }
+
+  videoHasFinishedWatching() {
+    return this.props.state.playing.currentTime === this.duration
   }
 
   componentDidMount() {
@@ -76,16 +94,23 @@ export default class PlayerPage extends React.Component {
     const mediaTag = this.mediaTag = $(this.refs.video).get(0)
     dispatch('setMediaTag', mediaTag)
 
+    mediaTag.addEventListener('durationchange', () => {
+      console.log('Video duration: ' + mediaTag.duration)
+      this.duration = playing.duration = mediaTag.duration
+    })
+
     if (playing.isPaused && !mediaTag.paused) {
       mediaTag.pause()
     } else if (!playing.isPaused && mediaTag.paused) {
       mediaTag.play()
     }
 
-    if (!playing.seekerPos) playing.seekerPos = $seeker.position().left //$(this.refs.seekHandle).position().left
+    if (!playing.seekerPos)
+        playing.seekerPos = $seeker.position().left
 
     // If media has already been played, start from where we left off
-    if (playing.currentTime !== 0) mediaTag.currentTime = playing.currentTime
+    if (playing.currentTime !== 0)
+        mediaTag.currentTime = playing.currentTime
 
     this.videoSeekerInterval = setInterval(this.videoSeeker, 1000)
 
@@ -109,12 +134,12 @@ export default class PlayerPage extends React.Component {
 
   isDisabledStyle = (classes) => {
     return classNames(classes, {
-      disabled: !this.state.isMounted
+      disabled: !this.state.isReady
     })
   }
 
   showAudioMenu = (e) => {
-    if (!this.state.isMounted) return
+    if (!this.state.isReady) return
 
     this.setState({ showAudioMenu: true })
   }
@@ -128,9 +153,9 @@ export default class PlayerPage extends React.Component {
   }
 
   mediaMouseMoved = (e) => {
-    const {isMounted, isTest, uiShown} = this.state
+    const {isReady, isTest, uiShown} = this.state
 
-    if (isMounted && !isTest) {
+    if (isReady && !isTest) {
       if (!uiShown) this.setState({ uiShown: true })
       this.debounceHideUi()
     }
@@ -162,7 +187,7 @@ export default class PlayerPage extends React.Component {
     playing.seekerFraction = position
 
     return {
-      percentage: 100 / position / this.duration,
+      percentage: 100 * position / this.duration,
       position
     }
   }
@@ -334,7 +359,7 @@ export default class PlayerPage extends React.Component {
     const {state, props, mediaTag} = this
     const {playing} = props.state
 
-    if (!state.isMounted) return
+    if (!state.isReady) return
 
     const newState = {
       isPaused: !playing.isPaused
@@ -359,7 +384,7 @@ export default class PlayerPage extends React.Component {
 
   toggleFullScreen = (e) => {
     const {state, props} = this
-    if (!state.isMounted) return
+    if (!state.isReady) return
 
     this.setState({ isFullScreen: !props.state.window.isFullScreen })
     dispatch('toggleFullScreen')
@@ -384,7 +409,7 @@ export default class PlayerPage extends React.Component {
       audioSliderPercentage
     } = this.state
     const {isDisabledStyle, props, isMutedStyle} = this
-    const {media} = props
+    const {media, mediaUrl, posterPath} = props
     const {location} = props.state.playing
 
     const showVideo = location !== 'local'
@@ -393,14 +418,14 @@ export default class PlayerPage extends React.Component {
     const isPausedBtn = isPaused ? 'play' : 'pause'
 
     return (
-      <div ref="videoPlayer" style={this.videoPlayerStyle} onWheel={this.handleVolumeWheel} onMouseMove={this.mediaMouseMoved}>
-        <video ref="video" style={this.videoStyle} src="https://static.videezy.com/system/resources/previews/000/002/180/original/Bee-is-collecting-honey.mp4">
+      <div ref="videoPlayer" onDoubleClick={this.toggleFullScreen} style={this.videoPlayerStyle} onWheel={this.handleVolumeWheel} onMouseMove={this.mediaMouseMoved}>
+        <video ref="video" style={this.videoStyle} src={mediaUrl}>
         </video>
         <div className="vask-container">
           <div className="content-wrapper">
               {isLoading &&
                 <div className="curtain">
-                  <div className="product-image" style={{backgroundImage: "url(https://i-viaplay-com.akamaized.net/scandi/Viaplay_Prod_-_Scandi/306/852/1480085375-1a7421d29517b24486a64619e05f76ea581aa5f6.jpg?width=1280)"}}>
+                  <div className="product-image" style={{backgroundImage: `url(${media.backdrop})`}}>
                     <div id="vp-spinner-sheet-container">
                       <div className="sheet-container"></div>
                     </div>
@@ -420,7 +445,7 @@ export default class PlayerPage extends React.Component {
                     <div className="text">
                       <div className="text-container">
                         <h1 className="title">{media.title}</h1>
-                        <p className="synopsis">{media.summary}</p>
+                        {/*<p className="synopsis">{media.summary}</p>*/}
                       </div>
                     </div>
                   </div>

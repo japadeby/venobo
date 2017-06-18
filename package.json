@@ -21,6 +21,7 @@
     "arch": "^2.1.0",
     "auto-launch": "^5.0.1",
     "axios": "*",
+    "capture-frame": "^1.0.1",
     "cheerio": "^0.22.0",
     "chromecasts": "*",
     "classnames": "^2.2.5",

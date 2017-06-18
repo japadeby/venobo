@@ -1,26 +1,79 @@
 import path from 'path'
 import {ipcRenderer} from 'electron'
+import Promise from 'bluebird'
+import torrentWorker from 'torrent-worker'
+import getPort from 'get-port'
 
-import TorrentSummary from '../lib/torrent-summary'
+import config from '../../config'
+//import TorrentSummary from '../lib/torrent-summary'
 import sound from '../lib/sound'
 import {dispatch} from '../lib/dispatcher'
 
 export default class TorrentController {
 
   state: Object
+  streams: Object
 
   constructor(state) {
     this.state = state
   }
 
-  addTorrent(torrentMagnet) { // magnet URI
-    const torrentKey = this.state.nextTorrentKey++
-    const path = this.state.saved.prefs.downloadPath
+  add(torrent) { // magnet URI
+    return new Promise((resolve, reject) => {
+      Promise.all([this.read(torrent.trim()), getPort()])
+        .spread((torrentInfo, port) => {
+          const opts = {
+            tracker: true,
+            port,
+            tmp: config.PATH.TEMP,
+            buffer: (1.5 * 1024 * 1024).toString(),
+            //connections: maxPeers
+            withResume: true,
+            torFile: torrent,
+            path: this.state.saved.prefs.downloadPath
+          }
 
-    ipcRenderer.send('wt-start-torrenting', torrentKey, torrentMagnet.trim(), path)
+          const worker = new torrentWorker()
+          const engine = worker.process(torrentInfo, opts)
+
+          engine.on('listening', () => {
+            sound('ADD')
+            this.streams[engine.infoHash]['stream-port'] = engine.server.address().port
+          })
+
+          engine.on('ready', () => {
+            this.streams[engine.infoHash] = engine
+            resolve(engine)
+          })
+        })
+    })
   }
 
-  pauseTorrent(torrentSummary, playSound) {
+  read(torrent) {
+    return new Promise((resolve, reject) => {
+      readTorrent(torrent, (err, parsedTorrent) =>
+        (err || parsedTorrent) ? reject(err) : resolve(parsedTorrent))
+    })
+  }
+
+  destroy(infoHash) {
+    const stream = this.streams[infoHash]
+
+    if (stream) {
+      if (stream.server._handle) stream.server.close()
+      stream.destroy()
+    }
+  }
+
+  setPulse(infoHash, pulse) {
+    this.streams[infoHash].setPulse(pulse)
+  }
+
+  flood(infoHash) {
+    this.streams[infoHash].flood()
+  }
+
+  /*pauseTorrent(torrentSummary, playSound) {
     torrentSummary.status = 'paused'
     ipcRenderer.send('wt-stop-torrenting', torrentSummary.infohash)
   }
@@ -212,6 +265,6 @@ export default class TorrentController {
 
     // Only play notification sound if player is inactive
     if (this.state.playing.isPaused) sound('DONE')
-  }
+  }*/
 
 }

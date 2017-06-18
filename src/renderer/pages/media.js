@@ -128,6 +128,7 @@ export default class MediaPage extends React.Component {
   render() {
     const {props, state} = this
     const {similar, media, recommended} = props.data
+    const {defaultQuality} = props.state.saved.prefs
 
     return (
       <ContentProduct>
@@ -144,7 +145,7 @@ export default class MediaPage extends React.Component {
           <MovieProduct>
             <Scaffold>
               {media.type === 'movie' &&
-                <PlayerWrapper onClick={() => props.history.push(`/player/movie/${media.tmdb}`)} />
+                <PlayerWrapper onClick={() => props.history.push(`/player/movie/${media.tmdb}/${defaultQuality}`)} />
               }
               <div className="metadata">
                 <div className="thumb portrait thumb-dk">

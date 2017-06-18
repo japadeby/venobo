@@ -10,6 +10,7 @@ import path from 'path'
 import WebTorrent from 'webtorrent'
 import zeroFill from 'zero-fill'
 
+import torrentPoster from './lib/torrent-poster'
 import crashReporter from '../crash-reporter'
 import config from '../config'
 
@@ -53,6 +54,8 @@ export default class WebTorrentClient {
       this.stopServer())
     ipc.on('wt-select-files', (e, ...args) =>
       this.selectFiles(...args))
+    ipc.on('wt-generate-torrent-poster', (e, torrentKey) =>
+      this.generateTorrentPoster(torrentKey))
 
     ipc.send('ipcReadyWebTorrent')
 
@@ -74,10 +77,10 @@ export default class WebTorrentClient {
 
   // Starts a given TorrentID from a magnet URI
   // Returns a WebTorrent object. See https://git.io/vik9M
-  startTorrenting(torrentKey, torrentID, path, fileModTimes, selections) {
+  startTorrenting(torrentKey, torrentId, path, fileModTimes, selections) {
     console.log('starting torrent %s: %s', torrentKey, torrentId)
 
-    const torrent = this.client.add(torrentID, {
+    const torrent = this.client.add(torrentId, {
       path: path,
       fileModTimes: fileModTimes
     })
@@ -117,14 +120,17 @@ export default class WebTorrentClient {
 
   torrentReady(torrent) {
     const info = this.getTorrentInfo(torrent)
-    ipc.send('wt-ready', torrent.key, info)
-    ipc.send(`wt-ready-${torrent.infoHash}`, torrent.key, torrent.infoHash)
+    ipc.send('wt-ready', torrent.infoHash)
+    //ipc.send('wt-ready', torrent.key, info)
+    //ipc.send(`wt-ready-${torrent.infoHash}`, torrent.key, torrent.infoHash)
+
+    //this.startServer(torrent.infoHash)
 
     this.updateTorrentProgress()
   }
 
   torrentDone(torrent) {
-    const info = getTorrentInfo(torrent)
+    const info = this.getTorrentInfo(torrent)
     ipc.send('wt-done', torrent.key, info)
 
     this.updateTorrentProgress()
@@ -263,6 +269,24 @@ export default class WebTorrentClient {
     return ret
   }
 
+  generateTorrentPoster (torrentKey) {
+    const torrent = this.getTorrent(torrentKey)
+    torrentPoster(torrent, function (err, buf, extension) {
+      if (err) return console.log('error generating poster: %o', err)
+      // save it for next time
+      mkdirp(config.PATH.DOWNLOAD, function (err) {
+        if (err) return console.log('error creating poster dir: %o', err)
+        const posterFileName = torrent.infoHash + extension
+        const posterFilePath = path.join(config.PATH.DOWNLOAD, posterFileName)
+        fs.writeFile(posterFilePath, buf, function (err) {
+          if (err) return console.log('error saving poster: %o', err)
+          // show the poster
+          ipc.send('wt-poster', torrentKey, posterFileName)
+        })
+      })
+    })
+  }
+
   stopServer() {
     let {server} = this
 
@@ -273,6 +297,7 @@ export default class WebTorrentClient {
   }
 
   startServer(infoHash) {
+    console.log('startServer')
     const torrent = this.client.get(infoHash)
     if (torrent.ready) {
       this.startServerFromReadyTorrent(torrent)

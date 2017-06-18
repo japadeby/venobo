@@ -43,7 +43,8 @@ module.exports = {
     CACHE: path.join(CONFIG_PATH, 'Cache'),
     DOWNLOAD: getDefaultDownloadPath(),
     CONFIG: CONFIG_PATH,
-    PORTABLE: PORTABLE_PATH
+    PORTABLE: PORTABLE_PATH,
+    TEMP: path.join(getPath('temp'), pckg.productName)
   },
   TMDB: {
     API: 'https://api.themoviedb.org',

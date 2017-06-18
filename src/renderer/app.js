@@ -37,6 +37,7 @@ const PropsRoute = ({ component, ...rest }) => {
     <Route {...rest} render={routeProps => {
       dispatch('exitSearchMount')
       dispatch('hideTooltip')
+      dispatch('setLocation', routeProps.location.pathname)
       dispatch('setHistory', routeProps.history)
 
       return renderMergedProps(component, routeProps, rest)
@@ -69,7 +70,7 @@ export default class App extends React.Component {
       <IntlProvider translations={translation} locale={locale}>
         <Router>
           <Switch>
-            <PropsRoute path="/player/:type/:tmdb" component={withTranslate(PlayerController)} state={props.state} />
+            <PropsRoute path="/player/:type/:tmdb/:quality" component={withTranslate(PlayerController)} state={props.state} />
             <View state={props.state}>
               <Route exact path="/" render={() => <Redirect to={this.getIndex()} />} />
               {Object.keys(controllers).map(path => {
@@ -95,7 +96,7 @@ export default class App extends React.Component {
     const {saved} = this.props.state
     const {pathname} = saved.history.location
 
-    if (saved.prefs.saveHistory) {
+    if (saved.prefs.shouldSaveHistory) {
       return pathname
     }
 

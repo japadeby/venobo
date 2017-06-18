@@ -1,5 +1,11 @@
-import Cast from '../lib/cast'
 import {ipcRenderer} from 'electron'
+import path from 'path'
+
+import {dispatch} from '../lib/dispatcher'
+import sound from '../lib/sound'
+import Cast from '../lib/cast'
+import State from '../lib/state'
+import TorrentSummary from '../lib/torrent-summary'
 
 export default class PlaybackController {
 
@@ -25,12 +31,12 @@ export default class PlaybackController {
   playFile(infoHash, index) {
     const {state} = this
 
-    this.pauseActiveTorrents(infoHash)
+    //this.pauseActiveTorrents(infoHash)
 
     const torrentSummary = TorrentSummary.getByKey(state, infoHash)
 
     if (index === undefined || this.initialized) index = torrentSummary.mostRecentFileIndex
-    if (index === undefined) index = torrentSummary.files.findIndex(TorrentPlayer.isPlayable)
+    if (index === undefined) index = torrentSummary.files.findIndex(this.isPlayable)
     if (index === undefined) return dispatch('error', 'Unplayable torrent')
 
     this.initialized = true
@@ -39,6 +45,25 @@ export default class PlaybackController {
       if (!err) this.play()
       else dispatch('error', 'Cannot open player')
     })
+  }
+
+  isPlayable(file): Boolean {
+    return [
+      '.avi',
+      '.m4v',
+      '.mkv',
+      '.mov',
+      '.mp4',
+      '.mpg',
+      '.ogv',
+      '.webm',
+      '.wmv'
+    ].includes(getFileExtension(file))
+
+    function getFileExtension (file) {
+      const name = typeof file === 'string' ? file : file.name
+      return path.extname(name).toLowerCase()
+    }
   }
 
   // Play next file in list (if any)
@@ -84,7 +109,9 @@ export default class PlaybackController {
     const {state} = this
     const torrentSummary = TorrentSummary.getByKey(state, infoHash)
 
-    state.playing.infoHash = torrentSummary.infoHash
+    //state.playing.fileIndex = 1
+    console.log(infoHash)
+    state.playing.infoHash = infoHash
     state.playing.isReady = false
 
     // update UI to show pending playback
@@ -92,11 +119,11 @@ export default class PlaybackController {
 
     this.startServer(torrentSummary)
     ipcRenderer.send('onPlayerOpen')
-    this.updatePlayer(infoHash, index, true, callback)
+    //this.updatePlayer(infoHash, index, true, callback)
   }
 
   // Called each time the current file changes
-  updatePlayer (infoHash, index, resume, cb) {
+  /*updatePlayer (infoHash, index, resume, cb) {
     const {state} = this
 
     const torrentSummary = TorrentSummary.getByKey(state, infoHash)
@@ -151,7 +178,7 @@ export default class PlaybackController {
 
     ipcRenderer.send('onPlayerUpdate', Playlist.hasNext(state), Playlist.hasPrevious(state))
     callback()
-  }
+  }*/
 
   // Toggle (play or pause) the currently playing media
 
@@ -255,7 +282,7 @@ export default class PlaybackController {
   // * The mouse is over the controls or we're scrubbing (see CSS)
   // * The video is paused
   // * The video is playing remotely on Chromecast or Airplay
-  showOrHidePlayerControls() {
+  /*showOrHidePlayerControls() {
     const {state} = this
     const hideControls = state.shouldHidePlayerControls()
 
@@ -264,7 +291,7 @@ export default class PlaybackController {
       return true
     }
     return false
-  }
+  }*/
 
   // Starts WebTorrent server for media streaming
   startServer(torrentSummary) {
@@ -285,7 +312,6 @@ export default class PlaybackController {
 
   closePlayer() {
     const {state} = this
-    console.log('closePlayer')
 
     // Quit any external players, like Chromecast/Airplay/etc or VLC
     if (isCasting(state)) Cast.stop()
@@ -309,7 +335,7 @@ export default class PlaybackController {
     }
 
     // Tell the WebTorrent process to kill the torrent-to-HTTP server
-    ipcRenderer.send('wt-stop-server')
+    dispatch('stopTorrenting')
 
     ipcRenderer.send('onPlayerClose')
   }

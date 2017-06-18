@@ -176,7 +176,18 @@ export default class Main {
     const {shouldSaveHistory} = state.saved.prefs
 
     const dispatchHandlers = {
+      //torrents
+      stopTorrenting: () => {
+        ipcRenderer.send('wt-stop-server')
+        ipcRenderer.send('wt-stop-torrenting', state.playing.infoHash)
+      },
+      addTorrent: (magnet) => controllers.torrent().addTorrent(magnet),
+      pauseAllTorrents: () => controllers.torrent().pauseAllTorrents(),
+      resumeAllTorrents: () => controllers.torrent().resumeAllTorrents(),
+      resumePausedTorrents: () => controllers.torrent().resumePausedTorrents(),
+
       // playback
+      closePlayer: () => controllers.playback().closePlayer(),
       setMediaTag: (mediaTag) => controllers.playback().setMediaTag(mediaTag),
       playFile: (infoHash, index) => controllers.playback().playFile(infoHash, index),
       playPause: () => controllers.playback().playPause(),
@@ -320,18 +331,18 @@ export default class Main {
     ipc.on('wt-infohash', (e, ...args) => tc.torrentInfoHash(...args))
     ipc.on('wt-metadata', (e, ...args) => tc.torrentMetadata(...args))
     ipc.on('wt-done', (e, ...args) => tc.torrentDone(...args))
-    ipc.on('wt-done', () => controllers.torrentList().resumePausedTorrents())
+    //ipc.on('wt-done', () => controllers.torrent().resumePausedTorrents())
     ipc.on('wt-warning', (e, ...args) => tc.torrentWarning(...args))
     ipc.on('wt-error', (e, ...args) => tc.torrentError(...args))
+    ipc.on('wt-ready', (e, ...args) => this.dispatch('playFile', ...args))
 
     ipc.on('wt-progress', (e, ...args) => tc.torrentProgress(...args))
     ipc.on('wt-file-modtimes', (e, ...args) => tc.torrentFileModtimes(...args))
     ipc.on('wt-file-saved', (e, ...args) => tc.torrentFileSaved(...args))
     ipc.on('wt-poster', (e, ...args) => tc.torrentPosterSaved(...args))
-    ipc.on('wt-audio-metadata', (e, ...args) => tc.torrentAudioMetadata(...args))
     ipc.on('wt-server-running', (e, ...args) => tc.torrentServerRunning(...args))
 
-    //ipc.on('wt-uncaught-error', (e, err) => telemetry.logUncaughtError('webtorrent', err))
+    ipc.on('wt-uncaught-error', (e, err) => console.log(err))
 
     ipc.send('ipcReady')
 
@@ -356,15 +367,13 @@ export default class Main {
   escapeBack () {
     const {state} = this
 
-    console.log(state.window.isFullScreen)
-
     if (state.modal) {
       this.dispatch('exitModal')
     } else if (state.search.enabled) {
       this.dispatch('exitSearchMount')
     } else if (state.window.isFullScreen) {
       this.dispatch('toggleFullScreen')
-    } else {
+    } else if (!state.location.includes('player')) {
       this.dispatch('back')
     }
   }
@@ -381,7 +390,7 @@ export default class Main {
         return torrentSummary
       })
       .filter(s => s.status !== 'paused')
-      .forEach(s => controllers.torrentList().startTorrentingSummary(s.torrentKey))
+      .forEach(s => controllers.torrent().startTorrentingSummary(s.torrentKey))
   }
 
   onError(err) {

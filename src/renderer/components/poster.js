@@ -1,7 +1,6 @@
 import React from 'react'
-import randomString from 'crypto-random-string'
+//import randomString from 'crypto-random-string'
 
-import {dispatch} from '../lib/dispatcher'
 import config from '../../config'
 
 export default class Poster extends React.Component {
@@ -12,6 +11,31 @@ export default class Poster extends React.Component {
     this.state = {
       items: []
     }
+  }
+
+  componentWillMount() {
+    if (this.state.items.length === 0) {
+      const items = this.props.items.map((item, index) => {
+        return (
+          <div className="react-item movie" key={index} data-tooltip={index}>
+            <div className="front" onMouseEnter={this.showTooltip} onMouseLeave={this.hideTooltip}>
+              {item.poster ? (
+                <div className="front-image" style={{backgroundImage: `url(${item.poster})`}}>
+                  <div className="backdrop medium">
+                    <div className="react-play-button fill">
+                      <figure className="icon-content" />
+                    </div>
+                  </div>
+                </div>
+              ) : false}
+            </div>
+          </div>
+        )
+      })
+
+      this.setState({ items })
+    }
+
   }
 
   showTooltip = (e) => {
@@ -72,27 +96,9 @@ export default class Poster extends React.Component {
   }
 
   render () {
-    const items = this.props.items.map((item, index) => {
-      return (
-        <div className="react-item movie" key={randomString(10)} data-tooltip={index}>
-          <div className="front" onMouseEnter={this.showTooltip} onMouseLeave={this.hideTooltip}>
-            {item.poster ? (
-              <div className="front-image" style={{backgroundImage: `url(${item.poster})`}}>
-                <div className="backdrop medium">
-                  <div className="react-play-button fill">
-                    <figure className="icon-content" />
-                  </div>
-                </div>
-              </div>
-            ) : false}
-          </div>
-        </div>
-      )
-    })
-
     return (
       <div>
-        {items}
+        {this.state.items}
       </div>
     )
   }
