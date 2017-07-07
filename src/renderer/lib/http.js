@@ -13,8 +13,8 @@ export default class HTTP {
 
   static Cache: Object
   static Limiter: Object
-  
-  static setState(state) {
+
+  static setup(state) {
     this.Limiter = new RateLimiter(3, 1000) // limit 3 requests every 1 second
     this.Cache = state.cache
   }

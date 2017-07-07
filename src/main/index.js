@@ -69,7 +69,7 @@ export default class MainProcess {
     // Initialize the menu before Main Window
     Menu.init()
     Main.init(res.state)
-    WebTorrent.init()
+    //WebTorrent.init()
 
     // To keep app startup fast, some code is delayed.
     setTimeout(this.delayedInit, config.DELAYED_INIT)

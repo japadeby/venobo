@@ -9,39 +9,29 @@ import ReactDOM from 'react-dom'
 
 import crashReporter from '../crash-reporter'
 import State from './lib/state'
-import App from './app'
+import createApp from './app'
 import sound from './lib/sound'
 import config from '../config'
-import {setDispatch} from './lib/dispatcher'
 import HTTP from './lib/http'
-import MetadataAdapter from './api/metadata/adapter'
-
-// Controllers
-import TorrentController from './controllers/torrent'
-import PlaybackController from './controllers/playback'
 
 export default class Main {
 
-  controllers: Object
   cast: Object
   state: Object
-  app: Object
 
   constructor() {
     // Initialize crash reporter
     crashReporter()
     // Load state
-    State.load((err, _state) => {
+    State.load((err, state) => {
       if (err) return this.onError(err)
-      this.onState(_state)
+      this.onState(state)
     })
-    // Setup dispatcher
-    setDispatch((...args) => this.dispatch(...args))
   }
 
-  onState(_state) {
+  onState(state) {
     // Make available for easier debugging
-    const state = this.state = _state
+    this.state = state
 
     //const _telemetry = this.telemetry = new Telemetry(state)
 
@@ -50,36 +40,11 @@ export default class Main {
       'error', (e) => _telemetry.logUncaughtError('window', e), true
     )*/
 
-    // Create controllers and lazyload them
-    this.controllers = {
-      update: createGetter(() => {
-        return new UpdateController(state, config)
-      }),
-      media: createGetter(() => {
-        return require('./controllers/media')(state)
-      }),
-      torrent: createGetter(() => {
-        return new TorrentController(state)
-      }),
-      playback: createGetter(() => {
-        return new PlaybackController(state, config)
-      }),
-      subtitles: createGetter(() => {
-        return require('./controllers/subtitles')(state)
-      })
-    }
-
-    // Restart everything we were torrenting last time the app ran
-    //this.resumeTorrents()
-
-    // Setup MetadataAdapter and TorrentAdapter
-    MetadataAdapter.setState(state)
-
     // Set HTTP state
-    HTTP.setState(state)
+    HTTP.setup(state)
 
-    // Initialize ReactDOM
-    this.renderMain(state)
+    // Setup App
+    this.setupApp(state.saved)
 
     // Calling update() updates the UI given the current state
     // Do this at least once a second to give every file in every torrentSummary
@@ -88,10 +53,6 @@ export default class Main {
 
     // Listen for messages from the main process
     this.setupIpc()
-
-    const debouncedFullscreenToggle = debounce(function () {
-      dispatch('toggleFullScreen')
-    }, 1000, true)
 
     // ...focus and blur. Needed to show correct dock icon text ('badge') in OSX
     window.addEventListener('focus', (e) => this.onFocus(e))
@@ -137,18 +98,6 @@ export default class Main {
     return cast
   }
 
-  // React loop:
-  // 1. update() - recompute the virtual DOM, diff, apply to the real DOM
-  // 2. event - might be a click or other DOM event, or something external
-  // 3. dispatch - the event handler calls dispatch(), main.js sends it to a controller
-  // 4. controller - the controller handles the event, changing the state object
-  update() {
-    const {app, state} = this
-    //this.controllers.playback().showOrHidePlayerControls()
-    //if (app) app.setState(state)
-    this.updateElectron()
-  }
-
   // Some state changes can't be reflected in the DOM, instead we have to
   // tell the main process to update the window or OS integrations
   updateElectron() {
@@ -169,7 +118,7 @@ export default class Main {
   }
 
   // Setup dispatch handlers
-  dispatchHandlers(action) {
+  /*dispatchHandlers(action) {
     const {state, controllers} = this
     const stateHistory = state.history
     const savedHistory = state.saved.history
@@ -262,9 +211,6 @@ export default class Main {
       delStarred: (type, tmdbId) => {
         const list = state.saved.starred[type]
 
-        /**
-         * @HACK - Use Array.prototype.splice instead of delete as it replaces the key with null
-         */
         list.splice(list.indexOf(tmdbId), 1)
 
         State.save(state)
@@ -296,21 +242,16 @@ export default class Main {
     }
 
     // Update the virtual DOM, unless it's just a mouse move event
-    /*if (action !== 'mediaMouseMoved' || this.controllers.playback().showOrHidePlayerControls()) {
+    if (action !== 'mediaMouseMoved' || this.controllers.playback().showOrHidePlayerControls()) {
       this.update()
-    }*/
-  }
+    }
+  }*/
 
-  renderMain(state) {
-    const {iso2} = state.saved.prefs
+  setupApp(stateSaved) {
+    const {iso2} = stateSaved.prefs
 
     HTTP.fetchCache(`${config.APP.API}/translation/${iso2}`)
-      .then(translation => {
-        this.app = ReactDOM.render(
-          <App state={state} translation={translation} locale={iso2} />,
-          document.querySelector('#content-wrapper')
-        )
-      })
+      .then(translation => createApp(stateSaved, translation))
       .catch(err => this.dispatch('error', err))
   }
 
@@ -326,23 +267,6 @@ export default class Main {
 
     ipc.on('fullscreenChanged', (e, ...args) => this.onFullscreenChanged(e, ...args))
     ipc.on('windowBoundsChanged', (e, ...args) => this.onWindowBoundsChanged(e, ...args))
-
-    const tc = controllers.torrent()
-    ipc.on('wt-infohash', (e, ...args) => tc.torrentInfoHash(...args))
-    ipc.on('wt-metadata', (e, ...args) => tc.torrentMetadata(...args))
-    ipc.on('wt-done', (e, ...args) => tc.torrentDone(...args))
-    //ipc.on('wt-done', () => controllers.torrent().resumePausedTorrents())
-    ipc.on('wt-warning', (e, ...args) => tc.torrentWarning(...args))
-    ipc.on('wt-error', (e, ...args) => tc.torrentError(...args))
-    ipc.on('wt-ready', (e, ...args) => this.dispatch('playFile', ...args))
-
-    ipc.on('wt-progress', (e, ...args) => tc.torrentProgress(...args))
-    ipc.on('wt-file-modtimes', (e, ...args) => tc.torrentFileModtimes(...args))
-    ipc.on('wt-file-saved', (e, ...args) => tc.torrentFileSaved(...args))
-    ipc.on('wt-poster', (e, ...args) => tc.torrentPosterSaved(...args))
-    ipc.on('wt-server-running', (e, ...args) => tc.torrentServerRunning(...args))
-
-    ipc.on('wt-uncaught-error', (e, err) => console.log(err))
 
     ipc.send('ipcReady')
 
@@ -376,21 +300,6 @@ export default class Main {
     } else if (!state.location.includes('player')) {
       this.dispatch('back')
     }
-  }
-
-  // Starts all torrents that aren't paused on program startup
-  resumeTorrents () {
-    const {state, controllers} = this
-
-    state.saved.torrents
-      .map(torrentSummary => {
-        // Torrent keys are ephemeral, reassigned each time the app runs.
-        // On startup, give all torrents a key, even the ones that are paused.
-        torrentSummary.torrentKey = state.nextTorrentKey++
-        return torrentSummary
-      })
-      .filter(s => s.status !== 'paused')
-      .forEach(s => controllers.torrent().startTorrentingSummary(s.torrentKey))
   }
 
   onError(err) {

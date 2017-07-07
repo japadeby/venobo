@@ -1,0 +1,6 @@
+export const FETCHING = 'SEARCH_FETCHING'
+export const FETCHED = 'SEARCH_FETCHED'
+export const TOGGLE = 'SEARCH_TOGGLE'
+export const DISMISS = 'SEARCH_DISMISS'
+export const EMPTY = 'SEARCH_EMPTY'
+export const FILTER = 'SEARCH_FILTER'

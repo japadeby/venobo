@@ -10,9 +10,9 @@ import {
   timeout
 } from './provider'
 
-export default class KatTorrentProvider {
+export default class KickassTorrentProvider {
 
-  static endpoint = 'https://kat.how'
+  static endpoint = 'https://kickassto.org'
   static provider = 'Kickass'
 
   static fetch(query: String): Promise {
@@ -51,16 +51,14 @@ export default class KatTorrentProvider {
 
     switch (type) {
       case 'movies':
-        return timeout(
-          this.fetch(imdbId || search)
-        ).catch(err => [])
+        return timeout(this.fetch(imdbId || search))
 
       case 'shows': {
         const {season, episode} = extendedDetails
 
         return timeout(this.fetch(
           `${search} ${formatSeasonEpisodeToString(season, episode)}`
-        )).catch(err => [])
+        ))
       }
 
       case 'season_complete': {
