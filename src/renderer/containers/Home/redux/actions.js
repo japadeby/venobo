@@ -26,13 +26,13 @@ export function fetchMedia() {
           .then(data => done(null, data))
           .catch(done)
       }
-    }, (err, res) => {
-      if (err) {
-        dispatch({ type: ERROR, payload: err })
+    }, (error, res) => {
+      if (error) {
+        dispatch({ type: ERROR, error })
       } else {
         dispatch({
           type: FETCHED,
-          media: {
+          payload: {
             movies: {
               popular: res.popularMovies,
               topRated: res.topRatedMovies

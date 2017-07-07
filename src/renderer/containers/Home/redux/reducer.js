@@ -11,7 +11,7 @@ export default function reducer(state = initialState, action) {
       return {
         ...state,
         isReady: true,
-        media: action.media
+        media: action.payload
       }
     default:
       return state

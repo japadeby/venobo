@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import classNames from 'classnames'
+import PropTypes from 'prop-types'
 import debounce from 'debounce'
 
 import { withTranslate } from '../react-multilingual'
@@ -19,6 +20,16 @@ import {
   { ...searchActions }
 )
 class Search extends Component {
+
+  static propTypes = {
+    searchAction: PropTypes.func.isRequired,
+    searchFilter: PropTypes.func.isRequired,
+    filter: PropTypes.string.isRequired,
+    results: PropTypes.object.isRequired,
+    resultsEmpty: PropTypes.isRequired,
+    fetching: PropTypes.bool.isRequired,
+    active: PropTypes.bool.isRequired
+  }
 
   prevQuery: String = null
 
@@ -72,9 +83,9 @@ class Search extends Component {
   }
 
   render() {
-    const { filter, results, resultsEmpty, fetching } = this.props
+    const { active, filter, results, resultsEmpty, fetching } = this.props
 
-    return state.active ? (
+    return active ? (
       <div className="search-mount" style={{top: '66px'}}>
         <div className="search react-search">
           <div className="search-dim"></div>
@@ -113,4 +124,4 @@ class Search extends Component {
 
 }
 
-export default withTranslate(SearchMount)
+export default withTranslate(Search)

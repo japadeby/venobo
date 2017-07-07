@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import { ContentSection, Loader } from '../../components/items'
+import { ContentSection, Loader } from '../../components/Items'
 import HomeContainer from './container'
 import { homeActions } from './redux'
 
@@ -10,9 +10,7 @@ import { homeActions } from './redux'
 )
 export default class HomeController extends Component {
 
-  componentDidMount() {
-    this.props.fetchMedia()
-  }
+  componentDidMount = () => this.props.fetchMedia()
 
   render() {
     const { props } = this

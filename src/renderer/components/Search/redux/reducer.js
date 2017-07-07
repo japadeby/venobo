@@ -46,5 +46,7 @@ export default (state = initialState, action) => {
         ...state,
         filter: action.filter
       }
+    default:
+      return state
   }
 }
