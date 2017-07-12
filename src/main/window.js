@@ -65,12 +65,11 @@ export default class Main {
     }, 1000))*/
 
     win.on('close', (e) => {
-      if(process.platform !== 'darwin') {
-        if(!Tray.hasTray()) {
-          app.quit()
-          return
-        }
+      if (!Tray.hasTray()) {
+        app.quit()
+        return
       }
+
       if(!app.isQuitting) {
         e.preventDefault()
         this.hide()

@@ -7,15 +7,14 @@ import fs from 'fs'
 import mkdirp from 'mkdirp'
 
 import config from '../config'
-import crashReporter from '../crash-reporter'
+import crashReporter from '../crashReporter'
 import {log} from './log'
 
 import Menu from './menu'
 import State from '../renderer/lib/state'
-import {Main, WebTorrent} from './windows'
+import Main from './window'
 import announcement from './announcement'
 import updater from './updater'
-import Tray from './tray'
 import ipc from './ipc'
 
 export default class MainProcess {
@@ -110,10 +109,6 @@ export default class MainProcess {
 
     announcement()
     updater()
-
-    if (process.platform !== 'darwin') {
-      Tray.init()
-    }
   }
 
   onAppOpen(newArgv) {

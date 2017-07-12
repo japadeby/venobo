@@ -2,9 +2,12 @@ import electron, {app, Menu} from 'electron'
 import cp from 'child_process'
 
 import config from '../config'
-import {Main} from './windows'
+import Main from './window'
 
 export default class Tray {
+
+  static tray: Object
+
   static init () {
     if (process.platform === 'linux') {
       this.checkLinuxTraySupport(err => {
