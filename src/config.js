@@ -4,12 +4,12 @@
  * @author Marcus S. Abildskov
  */
 
-import pckg from '../package.json'
-import path from 'path'
-import electron from 'electron'
-import arch from 'arch'
-import fs from 'fs'
-const appConfig = require('application-config')('Venobo')
+const pckg = require('../package.json')
+const path = require('path')
+const electron = require('electron')
+const arch = require('arch')
+const fs = require('fs')
+const appConfig = require('application-config')(pckg.productName)
 
 const APP_TEAM = pckg.productName + ' Dev'
 const STATIC_PATH = path.join(__dirname, '..', 'static')

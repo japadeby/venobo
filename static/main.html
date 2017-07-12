@@ -18,10 +18,8 @@
 	    require('./utils')
 	    window.$ = require('jquery')
 
-			const IS_DEV = process.env.NODE_ENV === 'development'
-
-			if (IS_DEV) require('babel-register')
-			new (require(`../${IS_DEV ? 'src' : 'build'}/renderer/main.js`))
+			const {IS} = require('../src/config')
+			require(`../${IS.DEV ? 'src' : 'build'}/renderer/main.js`)
 		</script>
 
 	</body>

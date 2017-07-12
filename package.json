@@ -31,6 +31,7 @@
     "debounce": "^1.0.0",
     "deep-equal": "^1.0.1",
     "dlnacasts": "*",
+    "electron-hot-loader": "^0.8.0",
     "event-emitter-es6": "^1.1.5",
     "fn-getter": "^1.0.0",
     "history": "^4.6.1",
