@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
-import { IndexRoute, Route, Redirect } from 'react-router'
+import { MemoryRouter, Redirect, Switch, Route } from 'react-router-dom'
 
 import { View, Multilingual } from './components'
 import { HomeController } from './containers'
 
 const renderMergedProps = (component, ...rest) => {
   const finalProps = Object.assign({}, ...rest)
+
   return React.createElement(component, finalProps)
 }
 
@@ -15,9 +16,9 @@ const PropsRoute = ({ component, ...rest }) => (
   }} />
 )
 
-@connect(state => ({
+/*connect(state => ({
   saved: state.saved
-}))
+}))*/
 export default class Routes extends Component {
 
   controllers = {
@@ -25,7 +26,7 @@ export default class Routes extends Component {
   }
 
   getIndex() {
-    const { saved } = this.props
+    const saved = this.props.saved
 
     if (saved.prefs.shouldSaveHistory) {
       return saved.history.location.pathname
@@ -36,16 +37,20 @@ export default class Routes extends Component {
 
   render() {
     return (
-      <View>
-        <Route exact path="/" render={() => <Redirect to={this.getIndex()} />} />
-        {Object.keys(this.controllers).map(path => {
-          let Component = Multilingual.withTranslate(this.controllers[path])
+      <MemoryRouter>
+        <Switch>
+          <View>
+            <Route exact path="/" render={() => <Redirect to={this.getIndex()} />} />
+            {Object.keys(this.controllers).map(path => {
+              let Component = Multilingual.withTranslate(this.controllers[path])
 
-          return (
-            <Route exact key={path} path={path} component={Component} />
-          )
-        })}
-      </View>
+              return (
+                <Route exact key={path} path={path} component={Component} />
+              )
+            })}
+          </View>
+        </Switch>
+      </MemoryRouter>
     )
   }
 

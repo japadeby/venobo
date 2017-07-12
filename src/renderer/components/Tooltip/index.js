@@ -1,76 +1,28 @@
-import React from 'react'
-import {Link} from 'react-router-dom'
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { Link } from 'react-router'
 import classNames from 'classnames'
 
-import {StarredIcon} from './items'
-import {withTranslate} from './react-multilingual'
+import { StarredIcon } from '../Items'
+import { withTranslate } from '../react-multilingual'
 
-class Tooltip extends React.Component {
-
-  initialState = {
-    data: {},
-    enabled: false
-  }
-
-  constructor(props) {
-    super(props)
-
-    props.state.tooltip.toggle = this.toggle
-
-    this.state = this.initialState
-  }
-
-  toggle = (state, data: Object = {}) => {
-    const {tooltip} = this.props.state
-    const {enabled} = this.state
-
-    tooltip.enabled = state
-
-    this.setState({
-      enabled: state,
-      data: data
-    })
-
-    clearTimeout(tooltip.timeout)
-  }
-
-  setTooltipEnabled = () => {
-    const {tooltip} = this.props.state
-
-    tooltip.poster = false
-
-    clearTimeout(tooltip.timeout)
-  }
-
-  setTooltipDisabled = () => {
-    const {tooltip} = this.props.state
-
-    tooltip.timeout = setTimeout(this.setDisabled, tooltip.delay)
-  }
-
-  setDisabled = () => {
-    const {tooltip} = this.props.state
-
-    if (!tooltip.poster) {
-      tooltip.enabled = false
-
-      this.setState({ enabled: false })
-    }
-  }
+@connect(
+  state => ({ ...state.tooltip }),
+  { ...tooltipActions }
+)
+class Tooltip extends Component {
 
   render() {
-    const {state} = this.props
-    const {tooltip} = state
-    const {data, enabled} = this.state
+    const { data, enabled, setTooltipEnabled, setTooltipDisabled, setDisabled } = this.props
 
     {/*tooltip left*/}
     return (
       <div id="tooltip">
         {enabled ? (
-          <section className={classNames('tooltip', data.style.class)} onMouseEnter={this.setTooltipEnabled} onMouseLeave={this.setTooltipDisabled} style={data.style.position}>
+          <section className={classNames('tooltip', data.style.class)} onMouseEnter={setTooltipEnabled} onMouseLeave={setTooltipDisabled} style={data.style.position}>
             <header>
               <h1>
-                <Link to={data.pageLink} className="page-link" onClick={this.setDisabled}>
+                <Link to={data.pageLink} className="page-link" onClick={setDisabled}>
                   <span>{data.title}</span>
                 </Link>
               </h1>
@@ -93,11 +45,11 @@ class Tooltip extends React.Component {
                     {data.voted}
                   </a>
                 </div>
-                <StarredIcon type="button" key={data.tmdb} data={data} state={state} />
+                <StarredIcon type="button" key={data.tmdb} data={data} />
               </div>
               <p className="group synopsis">
           			<span>{data.summary}</span>
-          			<Link to={data.pageLink} className="page-link" onClick={this.setDisabled}>
+          			<Link to={data.pageLink} className="page-link" onClick={setDisabled}>
                   <span>Læs mere</span>
                 </Link>
           		</p>
@@ -120,7 +72,7 @@ class Tooltip extends React.Component {
               <div className="arrow" style={{top: `${data.style.arrow}px`}}></div>
             </div>
             <footer className="two-button">
-              <Link to={data.pageLink} className="page-link read-more movies" onClick={this.setDisabled}>
+              <Link to={data.pageLink} className="page-link read-more movies" onClick={setDisabled}>
                 <span>Mere info</span>
               </Link>
             </footer>

@@ -1,20 +1,22 @@
 import { createStore, applyMiddleware, compose } from 'redux'
-import { routerMiddleware } from 'react-router-redux'
+//import { routerMiddleware } from 'react-router-redux'
 //import Immutable from 'immutable'
 import thunk from 'redux-thunk'
+import logger from 'redux-logger'
 
 import config from '../../../config'
-import createReducer from './reducer'
+import reducer from './reducer'
 
-export default function createStore(history, state) {
-  const reduxRouterMiddleware = routerMiddleware(history)
+export default function createStore(appState) {
+  //const reduxRouterMiddleware = routerMiddleware(history)
 
-  const middleware = [reduxRouterMiddleware, thunk]
+  const middleware = [logger, thunk]
 
   let finalCreateStore
   if (config.IS.DEV) {
     const { persistState } = require('redux-devtools')
     const { DevTools } = require('../components')
+
     finalCreateStore = compose(
       applyMiddleware(...middleware),
       DevTools.instrument(),
@@ -24,7 +26,6 @@ export default function createStore(history, state) {
     finalCreateStore = applyMiddleware(...middleware)(createStore)
   }
 
-  //if (data) data.pagination = Immutable.fromJS(data.pagination)
-  const reducer = createReducer(state)
+  //const reducer = createReducer(state)
   return finalCreateStore(reducer)
 }

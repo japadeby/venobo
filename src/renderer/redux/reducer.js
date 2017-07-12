@@ -1,15 +1,14 @@
 import { combineReducers } from 'redux'
-import multireducer from 'multireducer'
-import { routerReducer } from 'react-router-redux'
-import { router as reduxAsyncConnect } from 'redux-async-connect'
+import { reducer as reduxAsyncConnect } from 'redux-connect'
 
 import { searchReducer } from '../components/Search/redux'
 
+import { discoverReducer } from '../containers/Discover/redux'
 import { homeReducer } from '../containers/Home/redux'
 
 export default combineReducers({
+  discover: discoverReducer,
   search: searchReducer,
   home: homeReducer,
-  routing: routerReducer,
   reduxAsyncConnect
 })
