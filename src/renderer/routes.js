@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { MemoryRouter, Redirect, Switch, Route } from 'react-router-dom'
 
+import dispatch from './lib/dispatcher'
 import { View, Multilingual } from './components'
 import { HomeController } from './containers'
 
@@ -12,13 +13,16 @@ const renderMergedProps = (component, ...rest) => {
 
 const PropsRoute = ({ component, ...rest }) => (
   <Route {...rest} render={routeProps => {
+    dispatch(['exitSearchMount', 'hideTooltip'])
+    dispatch('setHistory', routeProps.history)
+
     return renderMergedProps(component, routeProps, rest)
   }} />
 )
 
-/*connect(state => ({
-  saved: state.saved
-}))*/
+@connect(state => ({
+  saved: state.app.saved
+}))
 export default class Routes extends Component {
 
   controllers = {
@@ -40,12 +44,12 @@ export default class Routes extends Component {
       <MemoryRouter>
         <Switch>
           <View>
-            <Route exact path="/" render={() => <Redirect to={this.getIndex()} />} />
+            <PropsRoute exact path="/" render={() => <Redirect to={this.getIndex()} />} />
             {Object.keys(this.controllers).map(path => {
               let Component = Multilingual.withTranslate(this.controllers[path])
 
               return (
-                <Route exact key={path} path={path} component={Component} />
+                <PropsRoute exact key={path} path={path} component={Component} />
               )
             })}
           </View>

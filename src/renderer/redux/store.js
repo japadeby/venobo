@@ -1,15 +1,11 @@
 import { createStore, applyMiddleware, compose } from 'redux'
-//import { routerMiddleware } from 'react-router-redux'
-//import Immutable from 'immutable'
 import thunk from 'redux-thunk'
 import logger from 'redux-logger'
 
 import config from '../../../config'
-import reducer from './reducer'
+import createReducer from './reducer'
 
 export default function createStore(appState) {
-  //const reduxRouterMiddleware = routerMiddleware(history)
-
   const middleware = [logger, thunk]
 
   let finalCreateStore
@@ -26,6 +22,6 @@ export default function createStore(appState) {
     finalCreateStore = applyMiddleware(...middleware)(createStore)
   }
 
-  //const reducer = createReducer(state)
+  const reducer = createReducer(appState)
   return finalCreateStore(reducer)
 }

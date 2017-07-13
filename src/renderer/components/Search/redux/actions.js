@@ -1,9 +1,9 @@
 import { TOGGLE, FETCHING, EMPTY, FILTER } from './constants'
 import MetadataAdapter from '../../api/metadata/adapter'
 
-export const searchToggle = () => (dispatch) => dispatch({ type: TOGGLE })
+export const searchToggle = (active) => (dispatch) => dispatch({ type: TOGGLE, active })
 
-export const searchFilter = (filter) => dispatch({ type: FILTER, filter })
+export const searchFilter = (filter) => (dispatch) => dispatch({ type: FILTER, filter })
 
 export const searchAction = (searchQuery) => {
   return (dispatch, getState) => {

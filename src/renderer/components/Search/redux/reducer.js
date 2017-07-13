@@ -29,12 +29,7 @@ export default (state = initialState, action) => {
     case TOGGLE:
       return {
         ...state,
-        active: true
-      }
-    case DISMISS:
-      return {
-        ...state,
-        active: false
+        active: (action.active || !state.active)
       }
     case EMPTY:
       return {
