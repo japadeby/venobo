@@ -2,14 +2,14 @@ console.time('init')
 
 import createGetter from 'fn-getter'
 import debounce from 'debounce'
-import {clipboard, remote, ipcRenderer as ipc} from 'electron'
+import {clipboard, remote, ipcRenderer} from 'electron'
 import fs from 'fs'
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import {error, log} from './lib/logger'
-import dispatch, {setupDispatchers} from './lib/dispatcher'
-import crashReporter from '../crash-reporter'
+//import {error, log} from './lib/logger'
+import dispatch, {setupDispatchHandlers} from './lib/dispatcher'
+import crashReporter from '../crashReporter'
 import State from './lib/state'
 import createApp from './app'
 import createStore from './redux/store'
@@ -29,7 +29,7 @@ export default class Main {
     crashReporter()
     // Load state
     State.load((err, state) => {
-      if (err) return this.onError(err)
+      if (err) throw new Error(err)
       this.onState(state)
     })
   }
@@ -49,7 +49,7 @@ export default class Main {
     this.store = createStore(state)
 
     // Setup dispatch handlers
-    setupDispatchers(state, this.store)
+    setupDispatchHandlers(state, this.store)
 
     // Set HTTP state
     HTTP.setup(state)
@@ -132,8 +132,10 @@ export default class Main {
   }
 
   setupIpc() {
-    ipc.on('log', (e, ...args) => log(...args))
-    ipc.on('error', (e, ...args) => error(...args))
+    const ipc = ipcRenderer
+
+    ipc.on('log', (e, ...args) => console.log(...args))
+    ipc.on('error', (e, ...args) => console.error(...args))
 
     ipc.on('dispatch', (e, ...args) => dispatch(...args))
 

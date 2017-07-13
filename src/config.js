@@ -105,10 +105,7 @@ module.exports = {
     ISSUES: 'https://github.com/venobo/app/issues'
   },
   WINDOW: {
-    INDEX: {
-      MAIN: path.join(`file://${STATIC_PATH}`, 'main.html'),
-      WEBTORRENT: path.join(`file://${STATIC_PATH}`, 'webtorrent.html')
-    },
+    INDEX: path.join(`file://${STATIC_PATH}`, 'index.html'),
     MIN: {
       WIDTH: 1075,
       HEIGHT: 600

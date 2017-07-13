@@ -1,5 +1,4 @@
 import { combineReducers } from 'redux'
-import { reducer as reduxAsyncConnect } from 'redux-connect'
 
 import { searchReducer } from '../components/Search/redux'
 
@@ -11,7 +10,6 @@ export default function createReducer(appState) {
     discover: discoverReducer,
     search: searchReducer,
     home: homeReducer,
-    reduxAsyncConnect,
     app: appState
   })
 }

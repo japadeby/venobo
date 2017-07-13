@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { Component } from 'react'
 //import randomString from 'crypto-random-string'
 
 import config from '../../config'
 
-export default class Poster extends React.Component {
+export default class Poster extends Component {
 
   constructor (props) {
     super(props)

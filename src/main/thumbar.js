@@ -6,7 +6,7 @@
 
 import path from 'path'
 import config from '../config'
-import {Main} from './windows'
+import Main from './window'
 
 const STATIC = config.PATH.STATIC
 const PREV_ICON = path.join(STATIC, 'PreviousTrackThumbnailBarButton.png')

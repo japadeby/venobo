@@ -13,13 +13,11 @@
 
 	  <div id="content-wrapper"></div>
 
-		<script type="text/javascript" src="./utils.js"></script>
 		<script type="text/javascript">
-	    require('./utils')
-	    window.$ = require('jquery')
+	    const $ = window.$ = require('jquery')
 
 			const {IS} = require('../src/config')
-			require(`../${IS.DEV ? 'src' : 'build'}/renderer/main.js`)
+			require(`../${IS.DEV ? 'src' : 'build'}/renderer`)
 		</script>
 
 	</body>

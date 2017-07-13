@@ -3,7 +3,7 @@ import {NavLink} from 'react-router-dom'
 
 import config from '../../config'
 import {withTranslate} from './react-multilingual'
-import {dispatch} from '../lib/dispatcher'
+import dispatch from '../lib/dispatcher'
 
 class Header extends Component {
 

@@ -1,8 +1,8 @@
 import React from 'react'
 import classNames from 'classnames'
 
-import {dispatch} from '../lib/dispatcher'
-import Footer from './footer'
+import dispatch from '../lib/dispatcher'
+import Footer from './Footer'
 
 export function SectionMenu (props) {
   return (

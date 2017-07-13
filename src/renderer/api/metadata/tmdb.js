@@ -1,5 +1,3 @@
-import axios from 'axios'
-
 import HTTP from '../../lib/http'
 import config from '../../../config'
 
@@ -58,7 +56,7 @@ export default class TMDbProvider {
   }
 
   get(type: String, tmdbId: Number): Promise<Object> {
-    type = type === 'shows' ? 'tv' : 'movie'
+    type = type === 'show' ? 'tv' : 'movie'
 
     return this.http.fetchLimit(`${type}/${tmdbId}`)
   }

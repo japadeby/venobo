@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { Component } from 'react'
 
-import Header from './header'
-import SearchMount from './search'
-import Tooltip from './tooltip'
+import Header from './Header'
+import SearchMount from './Search'
+import Tooltip from './Tooltip'
 
 export default class View extends React.Component {
 
@@ -11,10 +11,10 @@ export default class View extends React.Component {
 
     return (
       <div>
-        <Header state={props.state} />
+        <Header />
         {props.children}
-        <SearchMount state={props.state} />
-        <Tooltip state={props.state} />
+        <SearchMount />
+        <Tooltip />
       </div>
     )
   }

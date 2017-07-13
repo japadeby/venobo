@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { MemoryRouter, Redirect, Switch, Route } from 'react-router-dom'
+import { connect } from 'react-redux'
 
 import dispatch from './lib/dispatcher'
 import { View, Multilingual } from './components'
@@ -13,7 +14,8 @@ const renderMergedProps = (component, ...rest) => {
 
 const PropsRoute = ({ component, ...rest }) => (
   <Route {...rest} render={routeProps => {
-    dispatch(['exitSearchMount', 'hideTooltip'])
+    dispatch('exitSearchMount')
+    dispatch('hideTooltip')
     dispatch('setHistory', routeProps.history)
 
     return renderMergedProps(component, routeProps, rest)

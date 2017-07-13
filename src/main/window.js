@@ -1,10 +1,10 @@
 import {app, BrowserWindow} from 'electron'
 import debounce from 'debounce'
 
-import {WINDOW, APP} from '../../config'
-import {log} from '../log'
-import Menu from '../menu'
-import Tray from '../tray'
+import {WINDOW, APP} from '../config'
+import {log} from './log'
+import Menu from './menu'
+import Tray from './tray'
 
 export default class Main {
 
@@ -24,7 +24,7 @@ export default class Main {
       useContentSize: true, // Specify web page size without OS chrome
     })
 
-    win.loadURL(WINDOW.INDEX.MAIN)
+    win.loadURL(WINDOW.INDEX)
 
     win.once('ready-to-show', win.show)
 
@@ -104,9 +104,10 @@ export default class Main {
 
   static toggleDevTools() {
     let win = this.win
-    if(!win) return
+    if (!win) return
+
     log('toggleDevTools')
-    if(win.webContents.isDevToolsOpened()) {
+    if (win.webContents.isDevToolsOpened()) {
       win.webContents.closeDevTools()
     } else {
       win.webContents.openDevTools({ detach: true })
@@ -115,14 +116,14 @@ export default class Main {
 
   static toggleFullScreen(flag) {
     const win = this.win
-    if(!win || !win.isVisible()) return
+    if (!win || !win.isVisible()) return
 
-    if(flag == null) flag = !win.isFullScreen()
+    if (flag == null) flag = !win.isFullScreen()
 
     log(`toggleFullScreen ${flag}`)
 
     // Fullscreen and aspect ratio do not play well together. (Mac)
-    if(flag) win.setAspectRatio(0)
+    if (flag) win.setAspectRatio(0)
 
     win.setFullScreen(flag)
   }
@@ -135,14 +136,14 @@ export default class Main {
   static onWindowBlur() {
     Menu.setWindowFocus(false)
 
-    if(process.platform !== 'darwin')
+    if (Tray.hasTray())
       Tray.setWindowFocus(false)
   }
 
   static onWindowFocus() {
     Menu.setWindowFocus(true)
 
-    if(process.platform !== 'darwin')
+    if (Tray.hasTray())
       Tray.setWindowFocus(true)
   }
 
@@ -153,8 +154,8 @@ export default class Main {
   }
 
   static toggleAlwaysOnTop(flag) {
-    if(!this.win) return
-    if(flag === null)
+    if (!this.win) return
+    if (flag === null)
       flag = !this.win.isAlwaysOnTop()
     log(`toggleAlwaysOnTop ${flag}`)
     this.win.setAlwaysOnTop(flag)

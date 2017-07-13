@@ -1,8 +1,8 @@
 import util from 'util'
 import path from 'path'
-import { Logger } from 'winston'
+import winston from 'winston'
 
-const logger = new Logger()
+const logger = new winston.Logger()
 
 // Override the built-in console methods with winston hooks
 switch (process.env.NODE_ENV) {
@@ -22,9 +22,6 @@ switch (process.env.NODE_ENV) {
       level: 'info'
     })
     break
-
-  default:
-    return null
 }
 
 const formatArgs = (args) => [util.format.apply(util.format, Array.prototype.slice.call(args))]

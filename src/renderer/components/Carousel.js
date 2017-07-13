@@ -1,17 +1,16 @@
 import React, { Component } from 'react'
-import ReactDOM from 'react-dom'
 import classNames from 'classnames'
 import { NavLink } from 'react-router-dom'
 
 import { withTranslate } from './react-multilingual'
 
-import Poster from './poster'
+import Poster from './Poster'
 import {
   Scaffold,
   BlockCollection,
   CollectionHeader,
   HeaderButton
-} from './items'
+} from './Items'
 
 class Carousel extends Component {
 

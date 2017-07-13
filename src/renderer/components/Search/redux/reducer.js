@@ -1,4 +1,4 @@
-import { FETCHING, FETCHED, TOGGLE, DISMISS, EMPTY } from './constants'
+import { FETCHING, FETCHED, TOGGLE, DISMISS, EMPTY, FILTER } from './constants'
 
 const initialState = {
   results: {

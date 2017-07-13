@@ -1,8 +1,8 @@
-import { createStore, applyMiddleware, compose } from 'redux'
+import { createStore as _createStore, applyMiddleware, compose } from 'redux'
 import thunk from 'redux-thunk'
 import logger from 'redux-logger'
 
-import config from '../../../config'
+import config from '../../config'
 import createReducer from './reducer'
 
 export default function createStore(appState) {
@@ -17,9 +17,9 @@ export default function createStore(appState) {
       applyMiddleware(...middleware),
       DevTools.instrument(),
       persistState(window.location.href.match(/[?&]debug_session=([^&]+)\b/))
-    )(createStore)
+    )(_createStore)
   } else {
-    finalCreateStore = applyMiddleware(...middleware)(createStore)
+    finalCreateStore = applyMiddleware(...middleware)(_createStore)
   }
 
   const reducer = createReducer(appState)

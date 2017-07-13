@@ -6,6 +6,8 @@ import classNames from 'classnames'
 import { StarredIcon } from '../Items'
 import { withTranslate } from '../react-multilingual'
 
+import * as tooltipActions from './redux/actions'
+
 @connect(
   state => ({ ...state.tooltip }),
   { ...tooltipActions }

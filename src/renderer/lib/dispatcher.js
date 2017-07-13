@@ -2,7 +2,7 @@ import {ipcRenderer as ipc} from 'electron'
 import fs from 'fs'
 
 import sound from './sound'
-import * as console from './logger'
+//import * as console from './logger'
 import State from './state'
 
 import {searchToggle} from '../components/Search/redux/actions'
@@ -139,15 +139,17 @@ function checkDownloadPath() {
 }
 
 export default function dispatch(action, ...args) {
-  if (action instanceof Object) {
-    Object.keys(action).map(name => handleDispatch(name, action[name]))
+  /*if (action instanceof Object) {
+    Object.keys(action).map(
+      name => handleDispatch(name, action[name])
+    )
   } else if (action instanceof Array) {
     action.map(name => handleDispatch(name))
   } else {
     handleDispatch(action, ...args)
   }
 
-  const handleDispatch = (action, ...args) => {
+  const handleDispatch = (action, ...args) => {*/
     // Log dispatch calls, for debugging, but don't spam
     console.log('dispatch: %s %o', action, args)
 
@@ -157,5 +159,5 @@ export default function dispatch(action, ...args) {
     } else {
       console.error(`Missing dispatch handler: ${action}`)
     }
-  }
+  //}
 }

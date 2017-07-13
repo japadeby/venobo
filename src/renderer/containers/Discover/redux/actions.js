@@ -1,3 +1,8 @@
+import async from 'async'
+
+import MetadataAdapter from '../../../api/metadata/adapter'
+import { FETCHING, FETCHED } from './constants'
+
 export function setData() {
   return (dispatch, state) => {
     let { params, page, items, fetching } = state.discover

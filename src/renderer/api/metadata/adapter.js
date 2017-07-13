@@ -281,7 +281,7 @@ export default class MetadataAdapter {
             resolve(data)
           })
           .catch(() => {
-            TMDb.getPopularShows()
+            TMDb.getPopular('shows')
               .then(shows => {
                 async.each(shows, (show, next) => {
                   this.checkShow(show.id)
@@ -319,7 +319,7 @@ export default class MetadataAdapter {
             resolve(data)
           })
           .catch(() => {
-            TMDb.getTopRatedShows()
+            TMDb.getTopRated('shows')
               .then(shows => {
                 async.each(shows, (show, next) => {
                   this.checkShow(show.id)
@@ -357,7 +357,7 @@ export default class MetadataAdapter {
             resolve(data)
           })
           .catch(() => {
-            TMDb.getPopularMovies()
+            TMDb.getPopular('movies')
               .then(shows => {
                 async.each(shows, (show, next) => {
                   this.getMovieById(show.id)
@@ -395,7 +395,7 @@ export default class MetadataAdapter {
             resolve(data)
           })
           .catch(() => {
-            TMDb.getTopRatedMovies()
+            TMDb.getTopRated('movies')
               .then(shows => {
                 async.each(shows, (show, next) => {
                   this.getMovieById(show.id)
@@ -436,7 +436,7 @@ export default class MetadataAdapter {
             resolve(data)
           })
           .catch(() => {
-            TMDb.getMovie(tmdbId)
+            TMDb.get('movie', tmdbId)
               .then(data => {
                 if (data.status !== "Released") return reject()
 
@@ -460,7 +460,7 @@ export default class MetadataAdapter {
       Cache.existsThenRead(cacheId)
         .then(resolve)
         .catch(() => {
-          TMDb.getShow(tmdbId)
+          TMDb.get('show', tmdbId)
             .then(show => {
               TorrentAdapter(undefined, 'shows', {
                 search: show.original_name,

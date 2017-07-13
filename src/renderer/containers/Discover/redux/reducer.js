@@ -1,3 +1,5 @@
+import { FETCHING, FETCHED } from './constants'
+
 const initialState = {
   navDockable: false,
   fetched: false,
@@ -19,7 +21,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         fetched: true,
-        fetching: false
+        fetching: false,
         items: action.items,
         page: action.page
       }

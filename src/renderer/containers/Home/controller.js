@@ -1,11 +1,13 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
+
 
 import { ContentSection, Loader } from '../../components/Items'
 import HomeContainer from './container'
-import { homeActions } from './redux'
+import * as homeActions from './redux/actions'
 
 @connect(
-  state => ({ home: ...state.home }),
+  state => ({ ...state.home }),
   { ...homeActions }
 )
 export default class HomeController extends Component {

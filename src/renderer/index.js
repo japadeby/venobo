@@ -6,7 +6,7 @@ if (IS.DEV) {
   electronHot.watchJsx(['src/renderer/**/*.js'])
   electronHot.watchCss(['static/css/*.css'])
 
-  require('babel-register')(__dirname)
+  require('babel-register')
 }
 
 new (require('./main'))

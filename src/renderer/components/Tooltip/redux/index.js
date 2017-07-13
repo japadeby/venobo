@@ -1,2 +1,2 @@
 export tooltipReducer from './reducer'
-export tooltipActions from './actions'
+export * as tooltipActions from './actions'

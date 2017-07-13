@@ -1,7 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react'
 import { Provider } from 'react-redux'
-import { ReduxAsyncConnect } from 'redux-connect'
 
 import { IntlProvider } from './components/react-multilingual'
 import config from '../config'

@@ -7,7 +7,6 @@ import Main from './window'
 // import dock from './dock'
 import powerSaveBlocker from './power-save-blocker'
 import Tray from './tray'
-import * as shortcuts from './shortcuts'
 import * as thumbar from './thumbar'
 import * as shell from './shell'
 import * as startup from './startup'
@@ -37,7 +36,6 @@ export default function () {
   ipc.on('onPlayerOpen', () => {
     Menu.togglePlaybackControls(true)
     powerSaveBlocker.enable()
-    shortcuts.enable()
     thumbar.enable()
   })
 
@@ -49,7 +47,6 @@ export default function () {
   ipc.on('onPlayerClose', () => {
     Menu.togglePlaybackControls(false)
     powerSaveBlocker.disable()
-    shortcuts.disable()
     thumbar.disable()
   })
 

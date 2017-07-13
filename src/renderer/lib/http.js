@@ -38,7 +38,7 @@ export default class HTTP {
       .then(res => res.data)
   }
 
-  static fetch(): Promise {
+  static fetch(url: String/*, params: Object */): Promise {
     const {Cache} = this
 
     return new Promise((resolve, reject) => {
@@ -78,7 +78,7 @@ export default class HTTP {
     })
   }
 
-  static fetchCache(): Promise {
+  static fetchCache(url: String/*, params: Object */): Promise {
     const {Cache} = this
 
     return new Promise((resolve, reject) => {
