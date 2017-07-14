@@ -21,15 +21,15 @@ export default class HTTP {
     this.Cache = state.cache
   }
 
-  static create(params) {
-    // create new instance
-    const http = Object.assign({}, this)
+  static create(options: Object = {}): Object {
+    // See comment on <https://stackoverflow.com/a/41474987>
+    const clone = Object.assign(Object.create(this), this)
 
-    return Object.defineProperty(http, 'axios', {
+    return Object.defineProperty(clone, 'axios', {
       enumerable: false,
       configurable: false,
       writable: false,
-      value: axios.create(params)
+      value: axios.create(options)
     })
   }
 
@@ -38,14 +38,14 @@ export default class HTTP {
       .then(res => res.data)
   }
 
-  static fetch(url: String/*, params: Object */): Promise {
+  static fetch(url: String, params: Object): Promise {
     const {Cache} = this
 
     return new Promise((resolve, reject) => {
       Cache.existsThenRead(url)
         .then(resolve)
         .catch(() => {
-          this.get(arguments)
+          this.get(url, params)
             .then(data => {
               Cache.write(url, data, resolve)
             })
@@ -54,38 +54,50 @@ export default class HTTP {
     })
   }
 
-  static fetchLimit(): Promise {
+  static getLimit(...args): Promise {
     const {Limiter} = this
 
     return new Promise((resolve, reject) => {
       Limiter.removeTokens(1, (err, remaining) => {
-        this.fetch(arguments)
+        this.get(...args)
           .then(resolve)
           .catch(reject)
       })
     })
   }
 
-  static fetchLimitCache(): Promise {
+  static fetchLimit(...args): Promise {
     const {Limiter} = this
 
     return new Promise((resolve, reject) => {
       Limiter.removeTokens(1, (err, remaining) => {
-        this.fetchCache(arguments)
+        this.fetch(...args)
           .then(resolve)
           .catch(reject)
       })
     })
   }
 
-  static fetchCache(url: String/*, params: Object */): Promise {
+  static fetchLimitCache(...args): Promise {
+    const {Limiter} = this
+
+    return new Promise((resolve, reject) => {
+      Limiter.removeTokens(1, (err, remaining) => {
+        this.fetchCache(...args)
+          .then(resolve)
+          .catch(reject)
+      })
+    })
+  }
+
+  static fetchCache(url: String, params: Object): Promise {
     const {Cache} = this
 
     return new Promise((resolve, reject) => {
       Cache.isNotExpiredThenRead(url, config.CACHE_DURATION)
         .then(resolve)
         .catch(() => {
-          this.fetch(arguments)
+          this.fetch(url, params)
             .then(resolve)
             .catch(reject)
         })

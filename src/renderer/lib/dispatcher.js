@@ -16,6 +16,7 @@ let savedHistory: Object
 let shouldSaveHistory: Boolean
 
 export function setupDispatchHandlers(_state, _store) {
+  console.log(_state, _store.getState())
   state = _state
   store = _store
   stateHistory = state.history
@@ -41,12 +42,12 @@ export function setupDispatchHandlers(_state, _store) {
 }
 
 const exitSearchMount = () => {
-  if (!store.getState().search.enabled) {
+  if (store.getState().search.enabled) {
     store.dispatch(searchToggle(false))
   }
 }
 const hideTooltip = () => {
-  if (!store.getState().tooltip.enabled) {
+  if (store.getState().tooltip.enabled) {
     store.dispatch(toggleTooltip(false))
   }
 }

@@ -10,7 +10,7 @@ export default class MetadataAdapter {
   static state: Object
   static iso: String
 
-  static setState(state: Object) {
+  static setup(state: Object) {
     this.iso = state.saved.prefs.iso2
     this.state = state
     this.Cache = state.cache
@@ -268,10 +268,15 @@ export default class MetadataAdapter {
     })
   }
 
-  static getPopularShows(): Promise {
+  static getPopular(type: String): Promise {
     const {TMDb, state, Cache, iso} = this
-    let {popular} = state.media.lists.shows
-    const cacheId = `gps-${iso}`
+    console.log(state)
+    let {popular} = state.media.lists[type]
+    const cacheId = `gp-${type}-${iso}`
+
+    const method = type === 'shows'
+      ? 'checkShow'
+      : 'getMovieById'
 
     return new Promise((resolve, reject) => {
       if (popular.length === 0) {
@@ -281,10 +286,10 @@ export default class MetadataAdapter {
             resolve(data)
           })
           .catch(() => {
-            TMDb.getPopular('shows')
-              .then(shows => {
-                async.each(shows, (show, next) => {
-                  this.checkShow(show.id)
+            TMDb.getPopular(type)
+              .then(medias => {
+                async.each(medias, (media, next) => {
+                  this[method].call(this, media.id)
                     .then(data => {
                       popular.push(data)
                       next()
@@ -306,10 +311,14 @@ export default class MetadataAdapter {
     })
   }
 
-  static getTopRatedShows(): Promise {
+  static getTopRated(type: String): Promise {
     const {TMDb, state, Cache, iso} = this
-    let {topRated} = state.media.lists.shows
-    const cacheId = `gtrs-${iso}`
+    let {topRated} = state.media.lists[type]
+    const cacheId = `gtr-${type}-${iso}`
+
+    const method = type === 'shows'
+      ? 'checkShow'
+      : 'getMovieById'
 
     return new Promise((resolve, reject) => {
       if (topRated.length === 0) {
@@ -320,85 +329,9 @@ export default class MetadataAdapter {
           })
           .catch(() => {
             TMDb.getTopRated('shows')
-              .then(shows => {
-                async.each(shows, (show, next) => {
-                  this.checkShow(show.id)
-                    .then(data => {
-                      topRated.push(data)
-                      next()
-                    })
-                    .catch(() => next())
-                }, (err) => {
-                  if (err) {
-                    reject(err)
-                  } else {
-                    Cache.write(cacheId, topRated, resolve)
-                  }
-                })
-              })
-              .catch(reject)
-          })
-      } else {
-        resolve(topRated)
-      }
-    })
-  }
-
-  static getPopularMovies(): Promise {
-    const {TMDb, state, Cache, iso} = this
-    let {popular} = state.media.lists.movies
-    const cacheId = `gpm-${iso}`
-
-    return new Promise((resolve, reject) => {
-      if (!popular.length) {
-        Cache.isNotExpiredThenRead(cacheId)
-          .then(data => {
-            popular = data
-            resolve(data)
-          })
-          .catch(() => {
-            TMDb.getPopular('movies')
-              .then(shows => {
-                async.each(shows, (show, next) => {
-                  this.getMovieById(show.id)
-                    .then(data => {
-                      popular.push(data)
-                      next()
-                    })
-                    .catch(() => next())
-                }, (err) => {
-                  if (err) {
-                    reject(err)
-                  } else {
-                    Cache.write(cacheId, popular, resolve)
-                  }
-                })
-              })
-              .catch(reject)
-          })
-      } else {
-        resolve(popular)
-      }
-    })
-  }
-
-  static getTopRatedMovies(): Promise {
-    const {TMDb, state, Cache, iso} = this
-    let {topRated} = state.media.lists.movies
-    const cacheId = `gtrm-${iso}`
-
-    return new Promise((resolve, reject) => {
-      if (!topRated.length) {
-        Cache.isNotExpiredThenRead(cacheId)
-          .then(data => {
-            topRated = data
-            resolve(data)
-          })
-          .catch(() => {
-            TMDb.getTopRated('movies')
-              .then(shows => {
-                async.each(shows, (show, next) => {
-                  this.getMovieById(show.id)
+              .then(medias => {
+                async.each(medias, (media, next) => {
+                  this[method].call(this, media.id)
                     .then(data => {
                       topRated.push(data)
                       next()
@@ -478,14 +411,6 @@ export default class MetadataAdapter {
             .catch(reject)
         })
     })
-  }
-
-  static getMediaById(type: String, tmdbId: Number): Promise {
-    type = type.charAt(0).toUpperCase() + type.slice(1)
-
-    console.log(`getBy${type}Id`)
-
-    return this[`getBy${type}Id`].call(this, tmdbId)
   }
 
   static getShowById(tmdbId: Number): Promise {

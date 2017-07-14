@@ -17,12 +17,12 @@ export default class iDopeTorrentProvider {
   static provider = 'iDope'
 
   static fetchMovies(query: String) {
-    return HTTP.fetchCache(`${this.endpoint}/torrent-list/${query}/?&c=1`)
+    return HTTP.get(`${this.endpoint}/torrent-list/${query}/?&c=1`)
       .then(res => this.cheerio(res))
   }
 
   static fetchShows(query: String) {
-    return HTTP.fetchCache(`${this.endpoint}/torrent-list/${query}/?c=3`)
+    return HTTP.get(`${this.endpoint}/torrent-list/${query}/?c=3`)
       .then(res => this.cheerio(res))
   }
 

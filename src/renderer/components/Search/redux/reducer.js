@@ -8,7 +8,8 @@ const initialState = {
   },
   resultsEmpty: null,
   active: false,
-  filter: 'all'
+  filter: 'all',
+  fetching: false
 }
 
 export default (state = initialState, action) => {

@@ -22,6 +22,5 @@ export default function createStore(appState) {
     finalCreateStore = applyMiddleware(...middleware)(_createStore)
   }
 
-  const reducer = createReducer(appState)
-  return finalCreateStore(reducer)
+  return finalCreateStore(createReducer)
 }

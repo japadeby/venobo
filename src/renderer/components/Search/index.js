@@ -22,11 +22,12 @@ import {
 class Search extends Component {
 
   static propTypes = {
+    translate: PropTypes.func.isRequired,
     searchAction: PropTypes.func.isRequired,
     searchFilter: PropTypes.func.isRequired,
     filter: PropTypes.string.isRequired,
     results: PropTypes.object.isRequired,
-    resultsEmpty: PropTypes.isRequired,
+    //resultsEmpty: PropTypes.oneOfType([null, PropTypes.bool]).isRequired,
     fetching: PropTypes.bool.isRequired,
     active: PropTypes.bool.isRequired
   }

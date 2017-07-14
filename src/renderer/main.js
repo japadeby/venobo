@@ -1,13 +1,12 @@
 console.time('init')
 
-import createGetter from 'fn-getter'
 import debounce from 'debounce'
 import {clipboard, remote, ipcRenderer} from 'electron'
-import fs from 'fs'
 import React from 'react'
 import ReactDOM from 'react-dom'
 
 //import {error, log} from './lib/logger'
+import MetadataAdapter from './api/metadata/adapter'
 import dispatch, {setupDispatchHandlers} from './lib/dispatcher'
 import crashReporter from '../crashReporter'
 import State from './lib/state'
@@ -51,7 +50,10 @@ export default class Main {
     // Setup dispatch handlers
     setupDispatchHandlers(state, this.store)
 
-    // Set HTTP state
+    // Setup MetadataAdapter
+    MetadataAdapter.setup(state)
+
+    // Setup HTTP
     HTTP.setup(state)
 
     // Setup App
@@ -124,11 +126,18 @@ export default class Main {
   }*/
 
   setupApp() {
-    const { iso2 } = this.state.saved.prefs
+    const { state, store } = this
+    const { iso2 } = state.saved.prefs
 
     HTTP.fetchCache(`${config.APP.API}/translation/${iso2}`)
-      .then(translation => createApp(this.store, translation))
-      .catch(err => dispatch('error', err))
+      .then(translation => createApp(store, state, translation))
+      .catch(err => {
+        dispatch('error', err)
+        const path = require('path')
+
+        const translation = require(path.join(config.PATH.TRANSLATIONS, `${iso2}.json`))
+        createApp(store, state, translation)
+      })
   }
 
   setupIpc() {

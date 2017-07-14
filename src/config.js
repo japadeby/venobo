@@ -38,6 +38,7 @@ module.exports = {
     LARGE_LOGO: path.join(STATIC_PATH, 'img', 'header-logo.png')
   },
   PATH: {
+    TRANSLATIONS: path.join(STATIC_PATH, 'translations'),
     ROOT: path.join(__dirname, '..'),
     STATIC: STATIC_PATH,
     CACHE: path.join(CONFIG_PATH, 'Cache'),

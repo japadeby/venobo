@@ -7,22 +7,22 @@ export function fetchMedia() {
   return (dispatch, getState) => {
     async.parallel({
       popularMovies: (done) => {
-        MetadataAdapter.getPopularMovies()
+        MetadataAdapter.getPopular('movies')
           .then(data => done(null, data))
           .catch(done)
       },
       topRatedMovies: (done) => {
-        MetadataAdapter.getTopRatedMovies()
+        MetadataAdapter.getTopRated('movies')
           .then(data => done(null, data))
           .catch(done)
       },
       popularShows: (done) => {
-        MetadataAdapter.getPopularShows()
+        MetadataAdapter.getPopular('shows')
           .then(data => done(null, data))
           .catch(done)
       },
       topRatedShows: (done) => {
-        MetadataAdapter.getTopRatedShows()
+        MetadataAdapter.getTopRated('shows')
           .then(data => done(null, data))
           .catch(done)
       }

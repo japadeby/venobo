@@ -22,9 +22,6 @@ const PropsRoute = ({ component, ...rest }) => (
   }} />
 )
 
-@connect(state => ({
-  saved: state.app.saved
-}))
 export default class Routes extends Component {
 
   controllers = {
@@ -32,7 +29,7 @@ export default class Routes extends Component {
   }
 
   getIndex() {
-    const saved = this.props.saved
+    const {saved} = this.props.state
 
     if (saved.prefs.shouldSaveHistory) {
       return saved.history.location.pathname
@@ -42,16 +39,18 @@ export default class Routes extends Component {
   }
 
   render() {
+    const {state} = this.props
+
     return (
       <MemoryRouter>
         <Switch>
           <View>
-            <PropsRoute exact path="/" render={() => <Redirect to={this.getIndex()} />} />
+            <Route exact path="/" render={() => <Redirect to={this.getIndex()} />} />
             {Object.keys(this.controllers).map(path => {
               let Component = Multilingual.withTranslate(this.controllers[path])
 
               return (
-                <PropsRoute exact key={path} path={path} component={Component} />
+                <PropsRoute exact key={path} path={path} component={Component} appState={state} />
               )
             })}
           </View>

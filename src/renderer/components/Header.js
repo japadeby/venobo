@@ -1,17 +1,19 @@
 import React, { Component } from 'react'
-import {NavLink} from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
+import classNames from 'classnames'
+import { connect } from 'react-redux'
 
 import config from '../../config'
-import {withTranslate} from './react-multilingual'
+import { withTranslate } from './react-multilingual'
 import dispatch from '../lib/dispatcher'
 
+import { searchActions } from './Search/redux'
+
+@connect(
+  state => ({ search: state.search }),
+  { ...searchActions }
+)
 class Header extends Component {
-
-  constructor(props) {
-    super(props)
-
-    props.state.search.toggle = this.toggleSearchMount
-  }
 
   userHover = () => {
     $(this.refs.user).children('.details.authenticated').addClass('active-hover')
@@ -21,24 +23,21 @@ class Header extends Component {
     $(this.refs.user).children('.details.authenticated').removeClass('active-hover')
   }
 
-  toggleSearchMount = () => {
-    const $search = $(this.refs.search)
-    const $header = $('#content-wrapper .page-header')
-    if (!$search.hasClass('active')) {
-      $search.addClass('active')
-      $header.addClass('active-search')
-    } else {
-      $search.removeClass('active')
-      $header.removeClass('active-search')
-    }
-    this.props.state.search.mount()
-  }
-
   render() {
-    const {translate, state} = this.props
+    const {search, translate, searchToggle} = this.props
+
+    const pageHeaderClass = classNames(
+      'block page-header',
+      { 'active-search': search.enabled }
+    )
+
+    const searchClass = classNames(
+      'search',
+      { 'active': search.enabled }
+    )
 
     return (
-      <div className="block page-header">
+      <div className={pageHeaderClass}>
         <div className="scaffold">
           <div className="logo">
             <NavLink to="/home">
@@ -57,7 +56,7 @@ class Header extends Component {
             <div className="details authenticated" onMouseEnter={this.userHover} onMouseLeave={this.userLeave}>
               <div className="summary">
                 <button className="user-name">
-                  <div>{state.saved.username}</div>
+                  <div>test</div>
                 </button>
               </div>
               <div className="dropdown">
@@ -90,7 +89,7 @@ class Header extends Component {
               </div>
             </div>
           </div>
-          <div className="search" ref="search" onClick={this.toggleSearchMount}>
+          <div className={searchClass} onClick={searchToggle}>
             <div className="search-icon"></div>
           </div>
           <div className="search-backdrop"></div>
