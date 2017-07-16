@@ -9,6 +9,7 @@ const path = require('path')
 const electron = require('electron')
 const arch = require('arch')
 const fs = require('fs')
+const LocalStorage = require('local-storage-es6')
 const appConfig = require('application-config')(pckg.productName)
 
 const APP_TEAM = pckg.productName + ' Dev'
@@ -20,6 +21,8 @@ const PORTABLE_PATH = IS_DEV
 const IS_PRODUCTION = isProduction()
 const IS_PORTABLE = isPortable()
 const CONFIG_PATH = getConfigPath()
+const CACHE_PATH = path.join(CONFIG_PATH, 'Cache')
+const APP_SECRET = '56dc6f8e86f739bbce37281a8ad47641'
 
 module.exports = {
   OS_SYSARCH: arch() === 'x64' ? 'x64' : 'ia32',
@@ -29,7 +32,7 @@ module.exports = {
     NAME: pckg.productName,
     TEAM: APP_TEAM,
     VERSION: pckg.version,
-    SECRET_KEY: '56dc6f8e86f739bbce37281a8ad47641',
+    SECRET_KEY: APP_SECRET,
     DESC: pckg.description,
     API: 'https://venobo.herokuapp.com/api',
     URL: 'http://localhost:3001',
@@ -41,7 +44,7 @@ module.exports = {
     TRANSLATIONS: path.join(STATIC_PATH, 'translations'),
     ROOT: path.join(__dirname, '..'),
     STATIC: STATIC_PATH,
-    CACHE: path.join(CONFIG_PATH, 'Cache'),
+    CACHE: CACHE_PATH,
     DOWNLOAD: getDefaultDownloadPath(),
     CONFIG: CONFIG_PATH,
     PORTABLE: PORTABLE_PATH,
@@ -124,7 +127,14 @@ module.exports = {
   TOOLTIP_DELAY: 400,
   CACHE_DURATION: 3 * 60, // 3 hours cache duration,
   AXIOS_TIMEOUT: 5000, // in ms
-  SAVE_DEBOUNCE_INTERVAL: 1000
+  SAVE_DEBOUNCE_INTERVAL: 1000,
+  CACHE: new LocalStorage({
+    path: CACHE_PATH,
+    key: APP_SECRET,
+    mkdir: true,
+    encryptFileName: true,
+    encryptFileContent: false
+  })
 }
 
 function getConfigPath () {

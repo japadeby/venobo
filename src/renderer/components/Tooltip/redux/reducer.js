@@ -11,7 +11,7 @@ export default (state = initialState, action) => {
     case TOGGLE:
       return {
         ...state,
-        enabled: (action.enabled || !state.enabled),
+        enabled: true,
         data: action.payload
       }
     case DISMISS:
@@ -27,7 +27,6 @@ export default (state = initialState, action) => {
     case DISABLE:
       return {
         ...state,
-        enabled: false,
         poster: true
       }
     default:

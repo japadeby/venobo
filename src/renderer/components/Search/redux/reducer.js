@@ -35,6 +35,7 @@ export default (state = initialState, action) => {
     case EMPTY:
       return {
         ...state,
+        fetching: false,
         resultsEmpty: true
       }
     case FILTER:

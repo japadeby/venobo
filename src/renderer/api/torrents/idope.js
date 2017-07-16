@@ -1,4 +1,3 @@
-import axios from 'axios'
 import cheerio from 'cheerio'
 
 import HTTP from '../../lib/http'
@@ -13,21 +12,26 @@ import {
 
 export default class iDopeTorrentProvider {
 
-  static endpoint = 'https://idope.se'
-  static provider = 'iDope'
+  endpoint: String = 'https://idope.se'
+  provider: String = 'iDope'
+  api: Object
 
-  static fetchMovies(query: String) {
-    return HTTP.get(`${this.endpoint}/torrent-list/${query}/?&c=1`)
+  constructor() {
+    this.api = new HTTP({ baseURL: this.endpoint })
+  }
+
+  fetchMovies(query: String) {
+    return this.api.get(`torrent-list/${query}/`, { c: 1 })
       .then(res => this.cheerio(res))
   }
 
-  static fetchShows(query: String) {
-    return HTTP.get(`${this.endpoint}/torrent-list/${query}/?c=3`)
+  fetchShows(query: String) {
+    return this.api.get(`torrent-list/${query}/`, { c: 3 })
       .then(res => this.cheerio(res))
   }
 
-  static cheerio(html: String): Promise {
-    let $ = cheerio.load(html)
+  cheerio(html: String): Promise {
+    const $ = cheerio.load(html)
     const provider = this.provider
 
     const torrents = $('div#div2child .resultdiv').slice(0, 10).map(function() {
@@ -44,13 +48,13 @@ export default class iDopeTorrentProvider {
     return torrents
   }
 
-  static getStatus(): Boolean {
-    return axios.get(this.endpoint)
+  getStatus(): Boolean {
+    return HTTP.get(this.endpoint)
       .then(res => res.status === 200)
       .catch(() => false)
   }
 
-  static provide(imdbId: String, type: String, extendedDetails: Object): Promise {
+  provide(imdbId: String, type: String, extendedDetails: Object): Promise {
     const {search} = extendedDetails
 
     switch (type) {

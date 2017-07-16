@@ -1,4 +1,5 @@
-import { TOGGLE, ENABLE, DISMISS } from './constants'
+import { TOGGLE, ENABLE, DISMISS, DISABLE } from './constants'
+import config from '../../../../config'
 
 export var timeout
 
@@ -8,8 +9,7 @@ export const toggleTooltip = (enabled, payload = {}) => (dispatch) => {
 }
 
 export const dismissTooltip = () => (dispatch, getState) => {
-  if (getState.tooltip.enabled) {
-    clearTimeout(timeout)
+  if (!getState().tooltip.poster) {
     dispatch({ type: DISMISS })
   }
 }
@@ -19,12 +19,7 @@ export const setTooltipEnabled = () => (dispatch) => {
   dispatch({ type: ENABLE })
 }
 
-export const setTooltipDisabled = () => {
-  timeout = setTimeout(setDisabled, 400) // state.tooltip.delay
-}
-
-const setDisabled = () => (dispatch, getState) => {
-  if (!getState.tooltip.poster) {
-    dispatch({ type: DISMISS })
-  }
+export const setTooltipDisabled = () => (dispatch) => {
+  dispatch({ type: DISABLE })
+  timeout = setTimeout(dismissTooltip, config.TOOLTIP_DELAY) // state.tooltip.delay
 }

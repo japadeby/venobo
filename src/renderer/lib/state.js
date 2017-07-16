@@ -4,7 +4,6 @@ import cpFile from 'cp-file'
 import fs from 'fs'
 import debounce from 'debounce'
 import os from 'os'
-import LocalStorage from 'local-storage-es6'
 
 import config from '../../config'
 
@@ -104,14 +103,7 @@ class State extends EventEmitter {
         },
         movies: [],
         shows: []
-      },
-      cache: new LocalStorage({
-        path: config.PATH.CACHE,
-        key: config.APP.SECRET_KEY,
-        mkdir: true,
-        encryptFileName: true,
-        encryptFileContent: false
-      }), // cache module
+      }, // cache module
       modal: null, /* modal popover */
       errors: [], /* user-facing errors */
       nextTorrentKey: 1, /* identify torrents for IPC between the main and webtorrent windows */

@@ -42,7 +42,7 @@ export function setupDispatchHandlers(_state, _store) {
 }
 
 const exitSearchMount = () => {
-  if (store.getState().search.enabled) {
+  if (store.getState().search.active) {
     store.dispatch(searchToggle(false))
   }
 }

@@ -3,9 +3,10 @@ import async from 'async'
 import TMDbProvider from './tmdb'
 import TorrentAdapter from '../torrents/adapter'
 
+import { CACHE as Cache } from '../../../config'
+
 export default class MetadataAdapter {
 
-  static Cache: Object
   static TMDb: Object
   static state: Object
   static iso: String
@@ -13,7 +14,6 @@ export default class MetadataAdapter {
   static setup(state: Object) {
     this.iso = state.saved.prefs.iso2
     this.state = state
-    this.Cache = state.cache
     this.TMDb = new TMDbProvider(state)
   }
 
@@ -24,7 +24,7 @@ export default class MetadataAdapter {
   }
 
   static discover(type: String, args: Object) {
-    const {TMDb, Cache, state, iso} = this
+    const {TMDb, state, iso} = this
     const {discover} = state.media.lists
 
     const key = JSON.stringify({type, args})
@@ -106,7 +106,7 @@ export default class MetadataAdapter {
   }
 
   static saveMovieMetadata(data: Object, torrents: Object): Object {
-    const {state, Cache, iso} = this
+    const {state, iso} = this
 
     const formattedData = state.media.movies[data.id] = this.formatMovieMetadata(data, torrents)
 
@@ -116,7 +116,7 @@ export default class MetadataAdapter {
   }
 
   static saveShowMetadata(data: Object, torrents: Object): Object {
-    const {state, Cache, iso} = this
+    const {state, iso} = this
 
     const formattedData = state.media.shows[data.id] = this.formatShowMetadata(data, torrents)
 
@@ -183,7 +183,7 @@ export default class MetadataAdapter {
   }
 
   static getSimilar(type: String, tmdbId: Number): Promise<Array> {
-    const {TMDb, state, Cache, iso} = this
+    const {TMDb, state, iso} = this
     const {similar} = state.media.lists[`${type}s`]
     const cacheId = `gs${type}-${tmdbId}-${iso}`
 
@@ -226,7 +226,7 @@ export default class MetadataAdapter {
   }
 
   static getRecommendations(type: String, tmdbId: Number): Promise<Array> {
-    const {TMDb, state, Cache, iso} = this
+    const {TMDb, state, iso} = this
     const {recommendations} = state.media.lists[`${type}s`]
     const cacheId = `g${type}r-${tmdbId}-${iso}`
 
@@ -269,8 +269,7 @@ export default class MetadataAdapter {
   }
 
   static getPopular(type: String): Promise {
-    const {TMDb, state, Cache, iso} = this
-    console.log(state)
+    const {TMDb, state, iso} = this
     let {popular} = state.media.lists[type]
     const cacheId = `gp-${type}-${iso}`
 
@@ -312,7 +311,7 @@ export default class MetadataAdapter {
   }
 
   static getTopRated(type: String): Promise {
-    const {TMDb, state, Cache, iso} = this
+    const {TMDb, state, iso} = this
     let {topRated} = state.media.lists[type]
     const cacheId = `gtr-${type}-${iso}`
 
@@ -358,7 +357,7 @@ export default class MetadataAdapter {
    * @return {Promise}
    */
   static getMovieById(tmdbId: Number): Promise {
-    const {state, TMDb, Cache, iso} = this
+    const {state, TMDb, iso} = this
     const {movies} = state.media
 
     return new Promise((resolve, reject) => {
@@ -386,7 +385,7 @@ export default class MetadataAdapter {
   }
 
   static checkShow(tmdbId: Object): Promise {
-    const {state, TMDb, Cache} = this
+    const {state, TMDb} = this
     const cacheId = `cs-${tmdbId}`
 
     return new Promise((resolve, reject) => {
@@ -414,7 +413,7 @@ export default class MetadataAdapter {
   }
 
   static getShowById(tmdbId: Number): Promise {
-    const {state, TMDb, Cache, iso} = this
+    const {state, TMDb, iso} = this
     const {shows} = state.media
 
     return new Promise((resolve, reject) => {
@@ -495,7 +494,7 @@ export default class MetadataAdapter {
               })
               .catch(() => next())
           }, function(err) {
-            if (fetchedQueries.length == 0) {
+            if (fetchedQueries.length === 0) {
               reject(err)
             } else {
               resolve(fetchedQueries)

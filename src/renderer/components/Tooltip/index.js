@@ -6,7 +6,7 @@ import classNames from 'classnames'
 import { StarredIcon } from '../Items'
 import { withTranslate } from '../react-multilingual'
 
-import * as tooltipActions from './redux/actions'
+import { tooltipActions } from './redux'
 
 @connect(
   state => ({ ...state.tooltip }),
@@ -15,7 +15,9 @@ import * as tooltipActions from './redux/actions'
 class Tooltip extends Component {
 
   render() {
-    const { data, enabled, setTooltipEnabled, setTooltipDisabled, setDisabled } = this.props
+    const { data, enabled, setTooltipEnabled, setTooltipDisabled} = this.props
+
+    console.log(data, enabled)
 
     {/*tooltip left*/}
     return (
@@ -24,7 +26,7 @@ class Tooltip extends Component {
           <section className={classNames('tooltip', data.style.class)} onMouseEnter={setTooltipEnabled} onMouseLeave={setTooltipDisabled} style={data.style.position}>
             <header>
               <h1>
-                <Link to={data.pageLink} className="page-link" onClick={setDisabled}>
+                <Link to={data.pageLink} className="page-link">
                   <span>{data.title}</span>
                 </Link>
               </h1>
@@ -51,7 +53,7 @@ class Tooltip extends Component {
               </div>
               <p className="group synopsis">
           			<span>{data.summary}</span>
-          			<Link to={data.pageLink} className="page-link" onClick={setDisabled}>
+          			<Link to={data.pageLink} className="page-link">
                   <span>Læs mere</span>
                 </Link>
           		</p>
@@ -74,7 +76,7 @@ class Tooltip extends Component {
               <div className="arrow" style={{top: `${data.style.arrow}px`}}></div>
             </div>
             <footer className="two-button">
-              <Link to={data.pageLink} className="page-link read-more movies" onClick={setDisabled}>
+              <Link to={data.pageLink} className="page-link read-more movies">
                 <span>Mere info</span>
               </Link>
             </footer>

@@ -28,12 +28,12 @@ class Header extends Component {
 
     const pageHeaderClass = classNames(
       'block page-header',
-      { 'active-search': search.enabled }
+      { 'active-search': search.active }
     )
 
     const searchClass = classNames(
       'search',
-      { 'active': search.enabled }
+      { 'active': search.active }
     )
 
     return (
@@ -89,7 +89,7 @@ class Header extends Component {
               </div>
             </div>
           </div>
-          <div className={searchClass} onClick={searchToggle}>
+          <div className={searchClass} onClick={() => searchToggle()}>
             <div className="search-icon"></div>
           </div>
           <div className="search-backdrop"></div>

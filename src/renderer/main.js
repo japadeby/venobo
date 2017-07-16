@@ -21,6 +21,7 @@ export default class Main {
   store: Object
   cast: Object
   state: Object
+  api: Object
   dispatchHandlers: Object
 
   constructor() {
@@ -53,8 +54,8 @@ export default class Main {
     // Setup MetadataAdapter
     MetadataAdapter.setup(state)
 
-    // Setup HTTP
-    HTTP.setup(state)
+    // Setup API HTTP
+    this.api = new HTTP({ baseURL: config.APP.API })
 
     // Setup App
     this.setupApp()
@@ -126,10 +127,10 @@ export default class Main {
   }*/
 
   setupApp() {
-    const { state, store } = this
+    const { state, store, api } = this
     const { iso2 } = state.saved.prefs
 
-    HTTP.fetchCache(`${config.APP.API}/translation/${iso2}`)
+    api.fetchCache(`translation/${iso2}`)
       .then(translation => createApp(store, state, translation))
       .catch(err => {
         dispatch('error', err)

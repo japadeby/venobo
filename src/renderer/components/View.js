@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 
 import Header from './Header'
-import SearchMount from './Search'
+import Search from './Search'
 import Tooltip from './Tooltip'
 
 export default class View extends React.Component {
@@ -13,7 +13,7 @@ export default class View extends React.Component {
       <div>
         <Header />
         {props.children}
-        <SearchMount />
+        <Search />
         <Tooltip />
       </div>
     )

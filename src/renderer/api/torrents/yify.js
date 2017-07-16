@@ -1,5 +1,3 @@
-import axios from 'axios'
-
 import HTTP from '../../lib/http'
 import {
   encodeUri,
@@ -9,21 +7,19 @@ import {
 
 export default class YtsTorrentProvider {
 
-  static endpoint: String = 'https://yts.ag/api/v2/list_movies.json'
-  static provider: String = 'Yify'
+  endpoint: String = 'https://yts.ag/api/v2/list_movies.json'
+  provider: String = 'Yify'
 
-  static fetch(imdbId): Promise {
-    return HTTP.get(
-      this.formatApi({
-        query_term: imdbId,
-        order_by: 'desc',
-        sort_by: 'seeds',
-        limit: 50
-      })
-    ).then(res => res.data)
+  fetch(imdbId: String): Promise {
+    return HTTP.get(this.endpoint, {
+      query_term: imdbId,
+      order_by: 'desc',
+      sort_by: 'seeds',
+      limit: 50
+    }).then(res => res.data)
   }
 
-  static formatTorrent(torrent: Object): Object {
+  formatTorrent(torrent: Object): Object {
     return {
       size: torrent.size,
       quality: torrent.quality,
@@ -35,13 +31,13 @@ export default class YtsTorrentProvider {
     }
   }
 
-  static getStatus(): Promise {
-    return axios.get(this.endpoint)
+  getStatus(): Promise {
+    return HTTP.get(this.endpoint)
       .then(res => res.status === 200)
       .catch(err => false)
   }
 
-  static provide(imdbId: String, type: String): Promise<Array> {
+  provide(imdbId: String, type: String): Promise<Array> {
     switch (type) {
       case 'movies':
         return this.fetch(imdbId)
@@ -54,10 +50,6 @@ export default class YtsTorrentProvider {
       default:
         return []
     }
-  }
-
-  static formatApi(query: Object): String {
-    return `${this.endpoint}?${encodeUri(query)}`
   }
 
 }
