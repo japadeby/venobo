@@ -8,19 +8,26 @@ import createReducer from './reducer'
 export default function createStore(appState) {
   const middleware = [logger, thunk]
 
-  let finalCreateStore
   if (config.IS.DEV) {
     const { persistState } = require('redux-devtools')
     const { DevTools } = require('../components')
 
-    finalCreateStore = compose(
+    const finalCreateStore = compose(
       applyMiddleware(...middleware),
       DevTools.instrument(),
       persistState(window.location.href.match(/[?&]debug_session=([^&]+)\b/))
     )(_createStore)
   } else {
-    finalCreateStore = applyMiddleware(...middleware)(_createStore)
+    const finalCreateStore = applyMiddleware(...middleware)(_createStore)
   }
 
-  return finalCreateStore(createReducer)
+  const store = finalCreateStore(createReducer)
+
+  if (config.IS.DEV && module.hot) {
+    module.hot.accept('./reducer', () => {
+      store.replaceReducer(require('./reducer'))
+    })
+  }
+
+  return store
 }

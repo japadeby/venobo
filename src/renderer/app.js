@@ -4,36 +4,44 @@ import { Provider } from 'react-redux'
 
 import { IntlProvider } from './components/react-multilingual'
 import config from '../config'
-import Routes from './routes'
+import getRoutes from './routes'
 
 export default function createApp(store, appState, translations) {
   const dest = document.querySelector('#content-wrapper')
 
-  const DestProvider = ({ children }) => (
-    <Provider store={store}>
-      <IntlProvider translations={translations}>
-        {children ? (
-          <div>
-            {children}
-            <Routes state={appState} />
-          </div>
-        ) : (
-          <Routes state={appState} />
-        )}
-      </IntlProvider>
-    </Provider>
-  )
-
-  if (config.IS.DEV) {
-    const { DevTools } = require('./components')
+  const render = (routes) => (
     ReactDOM.render(
-      <DestProvider>
-        <DevTools />
-      </DestProvider>,
+      <AppContainer>
+        <Provider store={store}>
+          <IntlProvider translations={translations}>
+            {routes}
+          </IntlProvider>
+        </Provider>
+      </AppContainer>,
       dest
     )
-  } else {
-    ReactDOM.render(<DestProvider />, dest)
+  )
+
+  render(getRoutes(appState))
+
+  if (module.hot) {
+    module.hot.accept('./routes', () => {
+      const nextRoutes = require('./routes')(appState)
+      render(nextRoutes)
+    })
+  }
+
+  if (config.IS.DEV) {
+    const devToolsDest = document.createElement('div')
+    window.document.body.insertBefore(devToolsDest, null)
+    const { DevTools } = require('./components')
+
+    ReactDOM.render(
+      <Provider store={store} key="provider">
+        <DevTools />
+      </Provider>,
+      devToolsDest
+    )
   }
 
 }

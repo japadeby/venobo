@@ -1,12 +1,12 @@
-import {ipcRenderer as ipc} from 'electron'
+import { ipcRenderer as ipc } from 'electron'
 import fs from 'fs'
 
 import sound from './sound'
 //import * as console from './logger'
 import State from './state'
 
-import {searchToggle} from '../components/Search/redux/actions'
-import {toggleTooltip} from '../components/Tooltip/redux/actions'
+import { searchToggle}  from '../components/Search/redux/actions'
+import { toggleTooltip } from '../components/Tooltip/redux/actions'
 
 let handlers: Object
 let state: Object
@@ -16,7 +16,6 @@ let savedHistory: Object
 let shouldSaveHistory: Boolean
 
 export function setupDispatchHandlers(_state, _store) {
-  console.log(_state, _store.getState())
   state = _state
   store = _store
   stateHistory = state.history

@@ -9,7 +9,6 @@ import powerSaveBlocker from './power-save-blocker'
 import Tray from './tray'
 import * as thumbar from './thumbar'
 import * as shell from './shell'
-import * as startup from './startup'
 import * as externalPlayer from './external-player'
 
 // Messages from the main process, to be sent once the WebTorrent process starts
@@ -67,14 +66,6 @@ export default function () {
   ipc.on('openItem', (e, ...args) => shell.openItem(...args))
   ipc.on('showItemInFolder', (e, ...args) => shell.showItemInFolder(...args))
   ipc.on('moveItemToTrash', (e, ...args) => shell.moveItemToTrash(...args))
-
-  /**
-   * Auto start on login
-   */
-  ipc.on('setStartup', (e, flag) => {
-    if (flag) startup.install()
-    else startup.uninstall()
-  })
 
   /**
    * Windows: Main

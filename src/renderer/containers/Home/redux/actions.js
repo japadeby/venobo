@@ -4,6 +4,7 @@ import MetadataAdapter from '../../../api/metadata/adapter'
 import { FETCHED, ERROR } from './constants'
 
 export function fetchMedia() {
+  console.log('fetchMedia')
   return (dispatch, getState) => {
     async.parallel({
       popularMovies: (done) => {

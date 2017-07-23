@@ -4,141 +4,108 @@ import classNames from 'classnames'
 import dispatch from '../lib/dispatcher'
 import Footer from './Footer'
 
-export function SectionMenu (props) {
-  return (
-    <secton className="block section-menu active">
-      {props.children}
-    </secton>
-  )
-}
+export const SectionMenu = ({ children }) => (
+  <secton className="block section-menu active">
+    {children}
+  </secton>
+)
 
-export function SectionWrapper (props) {
-  return (
-    <div className="section-wrapper">
-      {props.children}
-    </div>
-  )
-}
+export const SectionWrapper = ({ children }) => (
+  <div className="section-wrapper">
+    {children}
+  </div>
+)
 
-function Content (props) {
-  return (
-    <div id="content" className={props.classNames}>
-      {props.children}
-      <Footer state={props.state} />
-    </div>
-  )
-}
+export const Content = ({ className, children }) => (
+  <div id="content" className={className}>
+    {children}
+    <Footer />
+  </div>
+)
 
-export function ContentCategory (props) {
-  return (
-    <Content classNames={classNames('category', props.classNames)}>
-      {props.children}
-    </Content>
-  )
-}
+export const ContentCategory = (props) => (
+  <Content classNames={classNames('category', className)}>
+    {children}
+  </Content>
+)
 
-export function ContentStarred (props) {
-  return (
-    <Content classNames={classNames('starred', props.classNames)}>
-      {props.children}
-    </Content>
-  )
-}
+export const ContentStarred = ({ className, children }) => (
+  <Content classNames={classNames('starred', className)}>
+    {children}
+  </Content>
+)
 
-export function ContentSection (props) {
-  return (
-    <Content classNames="section">
-      {props.children}
-    </Content>
-  )
-}
+export const ContentSection = ({ children }) => (
+  <Content className="section">
+    {children}
+  </Content>
+)
 
-export function ContentProduct (props) {
-  return (
-    <Content classNames="product">
-      {props.children}
-    </Content>
-  )
-}
+export const ContentProduct = ({ children }) => (
+  <Content className="product">
+    {children}
+  </Content>
+)
 
-export function MovieProduct (props) {
-  return (
-    <section className="block product movie">
-      {props.children}
-    </section>
-  )
-}
+export const MovieProduct = ({ children }) => (
+  <section className="block product movie">
+    {children}
+  </section>
+)
 
-export function PlayerWrapper (props) {
-  return (
-    <div className="block-product">
-      <Scaffold>
-        <div className="player-wrapper">
-          <div className="react-play-button large" onClick={props.onClick}>
-            <figure className="icon-content"></figure>
-          </div>
+export const PlayerWrapper = ({ onClick }) => (
+  <div className="block-product">
+    <Scaffold>
+      <div className="player-wrapper">
+        <div className="react-play-button large" onClick={onClick}>
+          <figure className="icon-content"></figure>
         </div>
-      </Scaffold>
-    </div>
-  )
-}
+      </div>
+    </Scaffold>
+  </div>
+)
 
-export function Hero (props) {
-  var styles = classNames('hero', props.classNames)
-  return (
-    <section className={styles}>
-      {props.children}
-    </section>
-  )
-}
+export const Hero = ({ children, className }) => (
+  <section className={classNames('hero', className)}>
+    {children}
+  </section>
+)
 
-export function HeroWrapper (props) {
-  return (
-    <div className="hero-wrapper">
-      {props.children}
-    </div>
-  )
-}
+export const HeroWrapper = ({ children }) => (
+  <div className="hero-wrapper">
+    {children}
+  </div>
+)
 
-export function Scaffold (props) {
-  return (
-    <div className={classNames('scaffold', props.classNames)}>
-      {props.children}
-    </div>
-  )
-}
+export const Scaffold = ({ children, className }) => (
+  <div className={classNames('scaffold', className)}>
+    {children}
+  </div>
+)
 
-export function CollectionHeader (props) {
-  return (
-    <header className='collection-header'>
-      {props.children}
-    </header>
-  )
-}
+export const CollectionHeader = ({ children }) => (
+  <header className='collection-header'>
+    {children}
+  </header>
+)
 
-export function BlockCollection (props) {
-  return (
-    <section className={classNames('block collection', props.classNames)}>
-      {props.children}
-    </section>
-  )
-}
+export const BlockCollection = ({ className, children }) => (
+  <section className={classNames('block collection', className)}>
+    {children}
+  </section>
+)
 
-export function HeaderButton (props) {
-  return (
-    <span onClick={props.click} className='see-all button'>{props.children}</span>
-  )
-}
+export const HeaderButton = ({ onClick, children }) => (
+  <span onClick={onClick} className='see-all button'>{children}</span>
+)
 
-export function ReactGrid (props) {
-  return (
-    <div className={classNames('react-grid', props.classNames)}>
-      <span>
-        {props.children}
-      </span>
-    </div>
-  )
-}
+export const ReactGrid = ({ className, children }) => (
+  <div className={classNames('react-grid', className)}>
+    <span>
+      {children}
+    </span>
+  </div>
+)
 
 export class StarredIcon extends React.Component {
 
@@ -195,7 +162,31 @@ export class StarredIcon extends React.Component {
 
 }
 
-export class Loader extends React.Component {
+export const Loader = ({ top, container, spinner }) => {
+  const searchSpinner = classNames('search-spinner load-spinner no-query', spinner)
+  const spinnerContainer = classNames('spinner-container', container)
+
+  return (
+    <div className={searchSpinner} style={{marginTop: top}}>
+      <div className={spinnerContainer}>
+        <div className="spinner-line line01"></div>
+        <div className="spinner-line line02"></div>
+        <div className="spinner-line line03"></div>
+        <div className="spinner-line line04"></div>
+        <div className="spinner-line line05"></div>
+        <div className="spinner-line line06"></div>
+        <div className="spinner-line line07"></div>
+        <div className="spinner-line line08"></div>
+        <div className="spinner-line line09"></div>
+        <div className="spinner-line line10"></div>
+        <div className="spinner-line line11"></div>
+        <div className="spinner-line line12"></div>
+      </div>
+    </div>
+  )
+}
+
+/*export class Loader extends React.Component {
 
   initialState = {
     prevItem:  0,
@@ -280,4 +271,4 @@ export class Loader extends React.Component {
       this.getSpinner()
     )
   }
-}
+}*/

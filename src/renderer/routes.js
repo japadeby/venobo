@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { MemoryRouter, Redirect, Switch, Route } from 'react-router-dom'
 import { connect } from 'react-redux'
 
@@ -22,15 +22,8 @@ const PropsRoute = ({ component, ...rest }) => (
   }} />
 )
 
-export default class Routes extends Component {
-
-  controllers = {
-    '/home': HomeController
-  }
-
-  getIndex() {
-    const {saved} = this.props.state
-
+export default ({ saved }) => {
+  const getIndex = () => {
     if (saved.prefs.shouldSaveHistory) {
       return saved.history.location.pathname
     }
@@ -38,25 +31,24 @@ export default class Routes extends Component {
     return '/home'
   }
 
-  render() {
-    const {state} = this.props
-
-    return (
-      <MemoryRouter>
-        <Switch>
-          <View>
-            <Route exact path="/" render={() => <Redirect to={this.getIndex()} />} />
-            {Object.keys(this.controllers).map(path => {
-              let Component = Multilingual.withTranslate(this.controllers[path])
-
-              return (
-                <PropsRoute exact key={path} path={path} component={Component} appState={state} />
-              )
-            })}
-          </View>
-        </Switch>
-      </MemoryRouter>
-    )
+  const controllers = {
+    '/home': HomeController
   }
 
+  return (
+    <MemoryRouter>
+      <Switch>
+        <View>
+          <Route exact path="/" render={() => <Redirect to={getIndex()} />} />
+          {Object.keys(controllers).map(path => {
+            let Component = Multilingual.withTranslate(controllers[path])
+
+            return (
+              <PropsRoute exact key={path} path={path} component={Component} />
+            )
+          })}
+        </View>
+      </Switch>
+    </MemoryRouter>
+  )
 }
