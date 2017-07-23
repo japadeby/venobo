@@ -3,13 +3,15 @@ import { combineReducers } from 'redux'
 import { searchReducer } from '../components/Search/redux'
 import { tooltipReducer } from '../components/Tooltip/redux'
 
-import { mediaReducer } from '../containers/Media/redux'
-import { discoverReducer } from '../containers/Discover/redux'
-import { homeReducer } from '../containers/Home/redux'
+import { starredReducer } from '../pages/Starred/redux'
+import { mediaReducer } from '../pages/Media/redux'
+import { discoverReducer } from '../pages/Discover/redux'
+import { homeReducer } from '../pages/Home/redux'
 
 export default (appState) => {
   return combineReducers({
     discover: discoverReducer,
+    starred: starredReducer,
     tooltip: tooltipReducer,
     search: searchReducer,
     media: mediaReducer,

@@ -1,0 +1,4 @@
+export const SET_ITEMS = 'STARRED_SET_ITEMS'
+export const FETCHED = 'STARRED_FETCHED'
+export const EMPTY = 'STARRED_EMPTY'
+export const FETCHING = 'STARRED_FETCHING'

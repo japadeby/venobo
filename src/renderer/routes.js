@@ -5,7 +5,11 @@ import { connect } from 'react-redux'
 import dispatch from './lib/dispatcher'
 
 import { View, Multilingual } from './components'
-import { HomeController, MediaController } from './containers'
+import {
+  HomeController, 
+  MediaController, 
+  StarredController 
+} from './pages'
 
 const renderMergedProps = (component, ...rest) => {
   const finalProps = Object.assign({}, ...rest)
@@ -39,6 +43,7 @@ export default ({ saved }) => {
           <Route exact path="/" render={() => <Redirect to={getIndex()} />} />
           <PropsRoute path="/home" component={HomeController} />
           <PropsRoute path="/media/:type/:tmdb" component={MediaController} />
+          <PropsRoute path="/starred" component={StarredController} />
 
 
           {/*Object.keys(controllers).map(path => {

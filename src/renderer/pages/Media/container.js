@@ -11,10 +11,9 @@ import {
   MovieProduct,
   HeroWrapper,
   PlayerWrapper,
-  StarredIcon,
   Scaffold
 } from '../../components/Items'
-import { Carousel } from '../../components'
+import { Carousel, StarredIcon } from '../../components'
 
 import { mediaActions } from './redux'
 

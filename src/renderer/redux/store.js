@@ -2,6 +2,8 @@ import { createStore as _createStore, applyMiddleware, compose } from 'redux'
 import thunk from 'redux-thunk'
 import logger from 'redux-logger'
 
+import {setupDispatchHandlers} from '../lib/dispatcher'
+
 import config from '../../config'
 import createReducer from './reducer'
 
@@ -26,7 +28,9 @@ export default function createStore(appState) {
 
   if (config.IS.DEV && module.hot) {
     module.hot.accept(() => {
+      // Setup dispatch handlers
       store.replaceReducer(require('./reducer')(appState))
+      setupDispatchHandlers(appState, store)
     })
   }
 

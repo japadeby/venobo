@@ -107,61 +107,6 @@ export const ReactGrid = ({ className, children }) => (
   </div>
 )
 
-export class StarredIcon extends React.Component {
-
-  static defaultProps = {
-    withText: true
-  }
-
-  constructor(props) {
-    super(props)
-
-    const type = props.data.type === 'show' ? 'shows' : 'movies'
-
-    this.state = {
-      type,
-      active: props.state.saved.starred[type].includes(props.data.tmdb)
-    }
-  }
-
-  action = (e) => {
-    const {state, props} = this
-
-    const action = state.active ? 'delStarred' : 'addStarred'
-
-    dispatch(action, state.type, props.data.tmdb)
-
-    e.preventDefault()
-
-    if (props.state.starredAction) {
-      props.state.starredAction(state.type, props.data.tmdb, !state.active)
-    }
-
-    this.setState({ active: !state.active })
-  }
-
-  render() {
-    const {state, props} = this
-
-    const buttonStarred = classNames('icon starred', {
-      active: state.active
-    })
-
-    const starredText = props.withText ? state.active ? 'Stjernemærket' : 'Stjernemærk' : ''
-
-    return props.type === 'button' ? (
-      <button className={buttonStarred} onClick={this.action}>
-        {starredText}
-      </button>
-    ) : (
-      <a className={buttonStarred} onClick={this.action}>
-        <span className="button-text">{starredText}</span>
-      </a>
-    )
-  }
-
-}
-
 export const Loader = ({ top, container, spinner }) => {
   const searchSpinner = classNames('search-spinner load-spinner no-query', spinner)
   const spinnerContainer = classNames('spinner-container', container)
