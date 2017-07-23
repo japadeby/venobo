@@ -31,7 +31,7 @@ export default class TMDbProvider {
   }
 
   getSimilar(type: String, tmdbId: Number): Promise<Object> {
-    type = type === 'shows' ? 'tv' : 'movie'
+    type = type === 'show' ? 'tv' : 'movie'
 
     return this.tmdb.fetchLimit(`${type}/${tmdbId}/similar`)
   }

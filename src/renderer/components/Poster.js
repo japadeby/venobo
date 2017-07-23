@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
 //import randomString from 'crypto-random-string'
 
-import {tooltipActions} from './Tooltip/redux'
+import { tooltipActions } from './Tooltip/redux'
 import config from '../../config'
 
 @connect(
@@ -15,12 +16,12 @@ export default class Poster extends Component {
     items: []
   }
 
-  componentWillMount() {
+  /*componentWillMount() {
     if (this.state.items.length === 0) {
       const items = this.props.items.map((item, index) => {
         return (
           <div className="react-item movie" key={index} data-tooltip={index}>
-            <div className="front" onMouseEnter={this.showTooltip}>  {/*onMouseLeave={this.props.setTooltipDisabled*/}
+            <div className="front" onMouseEnter={this.showTooltip}>
               {item.poster ? (
                 <div className="front-image" style={{backgroundImage: `url(${item.poster})`}}>
                   <div className="backdrop medium">
@@ -37,11 +38,10 @@ export default class Poster extends Component {
 
       this.setState({ items })
     }
-
-  }
+  }*/
 
   showTooltip = (e) => {
-    if (!this.props.tooltip.enabled) {
+    //if (!this.props.tooltip.enabled) {
       const $front = $(e.target).closest('.react-item')
       const $frontPos = $front.offset()
       const $frontWidth = $front.outerWidth()
@@ -83,14 +83,36 @@ export default class Poster extends Component {
 
       console.log(data)
 
-      this.props.toggleTooltip(true, data)
-    }
+      this.props.toggleTooltip(data)
+    //}
   }
 
   render () {
+    const items = this.props.items.map((item, index) => {
+      return (
+        <div className="react-item movie" key={index} data-tooltip={index}>
+          <div className="front"> {/*onMouseEnter={this.showTooltip}>  onMouseLeave={this.props.setTooltipDisabled*/}
+            <Link to={`/media/${item.type}/${item.tmdb}`}>
+              {item.poster ? (
+                <div className="front-image" style={{backgroundImage: `url(${item.poster})`}}>
+                  <div className="backdrop medium">
+                    <div className="react-play-button fill">
+                      <figure className="icon-content" />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <span></span>
+              )}
+            </Link>
+          </div>
+        </div>
+      )
+    })
+
     return (
       <div>
-        {this.state.items}
+        {items}
       </div>
     )
   }

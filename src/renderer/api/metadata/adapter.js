@@ -424,7 +424,7 @@ export default class MetadataAdapter {
             resolve(data)
           })
           .catch(() => {
-            TMDb.getShow(tmdbId)
+            TMDb.get('show', tmdbId)
               .then(show => {
                 let seasons = {}
                 show.episodeCount = 0

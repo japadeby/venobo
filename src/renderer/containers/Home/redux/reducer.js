@@ -1,4 +1,4 @@
-import { FETCHED } from './constants'
+import { FETCHED, FETCHING } from './constants'
 
 const initialState = {
   isReady: false,
@@ -7,6 +7,12 @@ const initialState = {
 
 export default function reducer(state = initialState, action) {
   switch (action.type) {
+    case FETCHING:
+      return {
+        ...state,
+        isReady: false
+      }
+
     case FETCHED:
       return {
         ...state,

@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-
 import { ContentSection, Loader } from '../../components/Items'
 import HomeContainer from './container'
-import * as homeActions from './redux/actions'
+
+import { homeActions } from './redux'
 
 @connect(
   state => ({ ...state.home }),
@@ -19,7 +19,7 @@ export default class HomeController extends Component {
 
     return props.isReady ? (
       <ContentSection>
-        <HomeContainer media={props.media} />
+        <HomeContainer {...props} />
       </ContentSection>
     ) : (
       <Loader spinner="dark" container="dark" top="250px" />

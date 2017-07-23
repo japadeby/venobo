@@ -7,7 +7,6 @@
 
 		<link rel="stylesheet" href="./css/app.css" />
 		<link rel="stylesheet" href="./css/facelift.css" />
-		<link rel="stylesheet" href="./css/loader.css" />
 	</head>
 	<body>
 
@@ -17,6 +16,7 @@
 	   	window.$ = require('jquery')
 
 			const {IS} = require('../src/config')
+
 			new (require(IS.DEV ? '../src/renderer' : '../build/renderer'))
 		</script>
 

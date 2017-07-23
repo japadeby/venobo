@@ -2,7 +2,7 @@ import { TOGGLE, DISMISS, ENABLE, DISABLE } from './actions'
 
 const initialState = {
   data: {},
-  enabled: false,
+  active: false,
   poster: false
 }
 
@@ -11,13 +11,14 @@ export default (state = initialState, action) => {
     case TOGGLE:
       return {
         ...state,
-        enabled: true,
+        active: true,
         data: action.payload
       }
     case DISMISS:
       return {
         ...state,
-        enabled: false
+        active: false,
+        data: {}
       }
     case ENABLE:
       return {

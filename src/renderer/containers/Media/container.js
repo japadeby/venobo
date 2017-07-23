@@ -1,9 +1,9 @@
-import React from 'react'
-import randomString from 'crypto-random-string'
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import classNames from 'classnames'
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
-import {dispatch} from '../lib/dispatcher'
+import { dispatch } from '../../lib/dispatcher'
 
 import {
   ContentProduct,
@@ -13,29 +13,27 @@ import {
   PlayerWrapper,
   StarredIcon,
   Scaffold
-} from '../components/items'
-import Carousel from '../components/carousel'
+} from '../../components/Items'
+import { Carousel } from '../../components'
 
-export default class MediaPage extends React.Component {
+import { mediaActions } from './redux'
 
-  constructor(props) {
-    super(props)
+@connect(
+  state => ({
+    app: state.app,
+    state: state.media
+  }),
+  { ...mediaActions }
+)
+export default class MediaPage extends Component {
 
-    this.state = {
-      pagination: 1,
-      episodes: '',
-      navigation: ''
-    }
-  }
-
-  renderNavigation(pagination) {
-    const {media} = this.props.data
+  renderNavigation(pagination: Number) {
+    const { media } = this.props.state.data
     const seasons = media.season_episodes
 
     return Object.keys(seasons).map(season => {
-      const active = classNames({
-        active: pagination == season
-      })
+      const active = classNames({ active: pagination == season })
+
       return (
         <a href="#" className={active} data-season={season} key={season} onClick={this.paginate}>{season}</a>
       )
@@ -43,11 +41,11 @@ export default class MediaPage extends React.Component {
   }
 
   paginate = (e) => {
-    const {pagination} = this.state.pagination
+    const { pagination } = this.props.state
     const season = Number($(e.target).data('season'))
 
     if (season !== pagination) {
-      this.setState({
+      this.props.paginate({
         pagination: season,
         navigation: this.renderNavigation(season),
         episodes: this.renderEpisodes(season)
@@ -57,78 +55,77 @@ export default class MediaPage extends React.Component {
     e.preventDefault()
   }
 
-  renderEpisodes(season) {
-    const {data, history} = this.props
-    const {media} = data
+  renderEpisodes(season: Number) {
+    const { media } = this.props.state.data
     const episodes = media.season_episodes[season]
 
     return Object.keys(episodes).map(episode => {
       const {poster, title, summary, voted, votes, torrents} = episodes[episode]
       return (
-        <div className="episode table" key={randomString(5)} onClick={() => history.push(`/player/show/${media.tmdb}/${season}/${episode}`)}>
-          <div className="front">
-            <div>
-              <h3>
-                <a className="episode-link">
-                  <div className="front-image episode-img" style={{background: `url(${poster}) no-repeat center center`}}></div>
-                </a>
-              </h3>
-              <div className="backdrop small">
-                <div className="box">
-                  <div className="play-link"></div>
-                  <div className="load-spinner dark small"></div>
+        <div className="episode table" key={episode}>
+          <Link to={`/player/show/${media.tmdb}/${season}/${episode}`}>
+            <div className="front">
+              <div>
+                <h3>
+                  <a className="episode-link">
+                    <div className="front-image episode-img" style={{background: `url(${poster}) no-repeat center center`}}></div>
+                  </a>
+                </h3>
+                <div className="backdrop small">
+                  <div className="box">
+                    <div className="play-link"></div>
+                    <div className="load-spinner dark small"></div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div className="meta-data-container">
-            <div className="meta">
-              <span className="title">{episode}. {title}</span>
-              &nbsp;&nbsp;&nbsp;
-              {/*<span className="episode-length">57min</span>*/}
-              <span className="flags">
-                {Object.keys(torrents).map(quality => {
-                  return (
-                    <span className="flag" key={quality}>{quality}</span>
-                  )
-                })}
-              </span>
+            <div className="meta-data-container">
+              <div className="meta">
+                <span className="title">{episode}. {title}</span>
+                &nbsp;&nbsp;&nbsp;
+                {/*<span className="episode-length">57min</span>*/}
+                <span className="flags">
+                  {Object.keys(torrents).map(quality => {
+                    return (
+                      <span className="flag" key={quality}>{quality}</span>
+                    )
+                  })}
+                </span>
+              </div>
+              <div className="table">
+                <div className="synopsis">
+                  <span>{summary}</span>
+                </div>
+                <div className="progress">
+                  <progress value="99" max="100">99% </progress>
+                  <p className="remaining">0 minutter tilbage</p>
+                </div>
+                <div className="starred">
+                  <a className="icon starred"></a>
+                </div>
+              </div>
             </div>
-            <div className="table">
-              <div className="synopsis">
-                <span>{summary}</span>
-              </div>
-              <div className="progress">
-                <progress value="99" max="100">99% </progress>
-                <p className="remaining">0 minutter tilbage</p>
-              </div>
-              <div className="starred">
-                <a className="icon starred"></a>
-              </div>
-            </div>
-          </div>
+          </Link>
         </div>
       )
     })
   }
 
   componentDidMount() {
-    const {state, props} = this
-    const {type} = props.data.media
-    const {pagination} = state
+    if (this.props.state.data.media.type === 'show') {
+      const season = 1
 
-    if (type === 'show') {
-      this.setState({
-        episodes: this.renderEpisodes(pagination),
-        navigation: this.renderNavigation(pagination)
+      this.props.paginate({
+        pagination: season,
+        episodes: this.renderEpisodes(season),
+        navigation: this.renderNavigation(season)
       })
     }
   }
 
   render() {
-    const {props, state} = this
-    const {similar, media, recommended} = props.data
-    const {defaultQuality} = props.state.saved.prefs
+    const { state, app } = this.props
+    const { similar, media, recommended } = state.data
 
     return (
       <ContentProduct>
@@ -144,9 +141,9 @@ export default class MediaPage extends React.Component {
           </Hero>
           <MovieProduct>
             <Scaffold>
-              {media.type === 'movie' &&
+              {/*media.type === 'movie' &&
                 <PlayerWrapper onClick={() => props.history.push(`/player/movie/${media.tmdb}/${defaultQuality}`)} />
-              }
+              */}
               <div className="metadata">
                 <div className="thumb portrait thumb-dk">
                   <img className="poster" src={media.poster} />
@@ -179,7 +176,7 @@ export default class MediaPage extends React.Component {
                     {/*{translate('torrent.votes', {votes: media.votes})}*/}
                     <a className="tmdb-link">{media.voted} <span className="tmdb-votes">baseret på {media.votes} brugere</span></a>
                   </div>
-                  <StarredIcon data={media} state={props.state} />
+                  <StarredIcon data={media} state={app} />
                 </div>
                 <span></span>
                 <div className="group">
@@ -221,9 +218,9 @@ export default class MediaPage extends React.Component {
           </div>
         }
         {similar.length !== 0 &&
-          <Carousel title={"Lignende film"} items={similar} state={props.state} />}
+          <Carousel title={"Lignende film"} items={similar} />}
         {recommended.length !== 0 &&
-          <Carousel title={"Recomendations"} items={recommended} state={props.state} />}
+          <Carousel title={"Recomendations"} items={recommended} />}
       </ContentProduct>
     )
   }

@@ -10,7 +10,10 @@ import dispatch from '../lib/dispatcher'
 import { searchActions } from './Search/redux'
 
 @connect(
-  state => ({ search: state.search }),
+  state => ({
+    app: state.app,
+    search: state.search
+   }),
   { ...searchActions }
 )
 class Header extends Component {
@@ -24,7 +27,7 @@ class Header extends Component {
   }
 
   render() {
-    const {search, translate, searchToggle} = this.props
+    const {search, translate, searchToggle, app} = this.props
 
     const pageHeaderClass = classNames(
       'block page-header',
@@ -56,7 +59,7 @@ class Header extends Component {
             <div className="details authenticated" onMouseEnter={this.userHover} onMouseLeave={this.userLeave}>
               <div className="summary">
                 <button className="user-name">
-                  <div>test</div>
+                  <div>{app.saved.username}</div>
                 </button>
               </div>
               <div className="dropdown">

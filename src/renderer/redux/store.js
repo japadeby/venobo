@@ -22,11 +22,11 @@ export default function createStore(appState) {
     finalCreateStore = applyMiddleware(...middleware)(_createStore)
   }
 
-  const store = finalCreateStore(createReducer)
+  const store = finalCreateStore(createReducer(appState))
 
   if (config.IS.DEV && module.hot) {
     module.hot.accept(() => {
-      store.replaceReducer(require('./reducer'))
+      store.replaceReducer(require('./reducer')(appState))
     })
   }
 

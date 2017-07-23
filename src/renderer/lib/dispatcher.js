@@ -6,14 +6,30 @@ import sound from './sound'
 import State from './state'
 
 import { searchToggle}  from '../components/Search/redux/actions'
-import { toggleTooltip } from '../components/Tooltip/redux/actions'
+import { dismissTooltip } from '../components/Tooltip/redux/actions'
 
-let handlers: Object
 let state: Object
 let store: Object
 let stateHistory: Object
 let savedHistory: Object
 let shouldSaveHistory: Boolean
+
+const handlers = {
+  openUrl: (url) => ipc.send('openExternal', url),
+  appQuit: () => ipc.send('appQuit'),
+  exitSearchMount,
+  hideTooltip,
+  escapeBack,
+  checkDownloadPath,
+  toggleFullScreen: (setTo) => ipc.send('toggleFullScreen', setTo),
+  setTitle: (title) => ipc.send('setTitle', title),
+  setHistory,
+  addStarred,
+  delStarred,
+  error: (err) => onError(err),
+  stateSave: () => State.save(state),
+  stateSaveImmediate: () => State.saveImmediate(state)
+}
 
 export function setupDispatchHandlers(_state, _store) {
   state = _state
@@ -21,33 +37,17 @@ export function setupDispatchHandlers(_state, _store) {
   stateHistory = state.history
   savedHistory = state.saved.history
   shouldSaveHistory = state.saved.prefs.shouldSaveHistory
-
-  handlers = {
-    openUrl: (url) => ipc.send('openExternal', url),
-    appQuit: () => ipc.send('appQuit'),
-    exitSearchMount,
-    hideTooltip,
-    escapeBack,
-    checkDownloadPath,
-    toggleFullScreen: (setTo) => ipc.send('toggleFullScreen', setTo),
-    setTitle: (title) => ipc.send('setTitle', title),
-    setHistory,
-    addStarred,
-    delStarred,
-    error: (err) => onError(err),
-    stateSave: () => State.save(state),
-    stateSaveImmediate: () => State.saveImmediate(state)
-  }
 }
 
-const exitSearchMount = () => {
+function exitSearchMount() {
   if (store.getState().search.active) {
     store.dispatch(searchToggle(false))
   }
 }
-const hideTooltip = () => {
+
+function hideTooltip() {
   if (store.getState().tooltip.enabled) {
-    store.dispatch(toggleTooltip(false))
+    store.dispatch(dismissTooltip())
   }
 }
 
@@ -152,6 +152,8 @@ export default function dispatch(action, ...args) {
   const handleDispatch = (action, ...args) => {*/
     // Log dispatch calls, for debugging, but don't spam
     console.log('dispatch: %s %o', action, args)
+
+    console.log(store)
 
     const handler = handlers[action]
     if (handler instanceof Function) {

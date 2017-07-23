@@ -104,12 +104,12 @@ class Search extends Component {
                 <span className="search-help">Det kan skyldes, at vi ikke har det hos os, eller at det blev stavet lidt forkert. Tag et kig i <a href="http://kundeservice.viaplay.dk/?s=qweqweqwe">kundeservice</a>, og se om de ved mere.</span>
               </div>
             }
-            <BlockCollection classNames="search-result portrait">
+            <BlockCollection className="search-result portrait">
               {this.renderResultsFilters()}
               <Scaffold>
                 {fetching && <Loader spinner="dark" container="light" />}
                 {resultsEmpty === false && !fetching &&
-                  <ReactGrid classNames="result">
+                  <ReactGrid className="result">
                     <Poster items={results[filter]} />
                   </ReactGrid>
                 }

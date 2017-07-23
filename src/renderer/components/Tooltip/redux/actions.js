@@ -3,13 +3,14 @@ import config from '../../../../config'
 
 export var timeout
 
-export const toggleTooltip = (enabled, payload = {}) => (dispatch) => {
-  clearTimeout(timeout)
-  dispatch({ type: TOGGLE, enabled, payload })
+export const toggleTooltip = (payload = {}) => (dispatch, getState) => {
+  if (!getState().tooltip.active) {
+    dispatch({ type: TOGGLE, payload })
+  }
 }
 
 export const dismissTooltip = () => (dispatch, getState) => {
-  if (!getState().tooltip.poster) {
+  if (getState().tooltip.active) {
     dispatch({ type: DISMISS })
   }
 }

@@ -1,11 +1,14 @@
 import async from 'async'
 
 import MetadataAdapter from '../../../api/metadata/adapter'
-import { FETCHED, ERROR } from './constants'
+import { FETCHED, ERROR, FETCHING } from './constants'
 
 export function fetchMedia() {
-  console.log('fetchMedia')
   return (dispatch, getState) => {
+    if (getState().home.isReady) {
+      dispatch({ type: FETCHING })
+    }
+
     async.parallel({
       popularMovies: (done) => {
         MetadataAdapter.getPopular('movies')

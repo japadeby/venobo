@@ -3,8 +3,9 @@ import { MemoryRouter, Redirect, Switch, Route } from 'react-router-dom'
 import { connect } from 'react-redux'
 
 import dispatch from './lib/dispatcher'
+
 import { View, Multilingual } from './components'
-import { HomeController } from './containers'
+import { HomeController, MediaController } from './containers'
 
 const renderMergedProps = (component, ...rest) => {
   const finalProps = Object.assign({}, ...rest)
@@ -31,22 +32,22 @@ export default ({ saved }) => {
     return '/home'
   }
 
-  const controllers = {
-    '/home': HomeController
-  }
-
   return (
     <MemoryRouter>
       <Switch>
         <View>
           <Route exact path="/" render={() => <Redirect to={getIndex()} />} />
-          {Object.keys(controllers).map(path => {
+          <PropsRoute path="/home" component={HomeController} />
+          <PropsRoute path="/media/:type/:tmdb" component={MediaController} />
+
+
+          {/*Object.keys(controllers).map(path => {
             let Component = Multilingual.withTranslate(controllers[path])
 
             return (
-              <PropsRoute exact key={path} path={path} component={Component} />
+              <PropsRoute exact key={path} path={path} component={() => require(Component} />
             )
-          })}
+          })*/}
         </View>
       </Switch>
     </MemoryRouter>

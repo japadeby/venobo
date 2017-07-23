@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Link } from 'react-router'
+import { Link } from 'react-router-dom'
 import classNames from 'classnames'
 
 import { StarredIcon } from '../Items'
@@ -12,18 +12,17 @@ import { tooltipActions } from './redux'
   state => ({ ...state.tooltip }),
   { ...tooltipActions }
 )
-class Tooltip extends Component {
+export default class Tooltip extends Component {
 
   render() {
-    const { data, enabled, setTooltipEnabled, setTooltipDisabled} = this.props
+    const { data, active } = this.props
 
-    console.log(data, enabled)
+    console.log(data, active)
 
-    {/*tooltip left*/}
     return (
       <div id="tooltip">
-        {enabled ? (
-          <section className={classNames('tooltip', data.style.class)} onMouseEnter={setTooltipEnabled} onMouseLeave={setTooltipDisabled} style={data.style.position}>
+        {active &&
+          <section className={classNames('tooltip', data.style.class)} style={data.style.position}>
             <header>
               <h1>
                 <Link to={data.pageLink} className="page-link">
@@ -81,13 +80,11 @@ class Tooltip extends Component {
               </Link>
             </footer>
           </section>
-        ) : (
-          <div></div>
-        )}
+        }
       </div>
     )
   }
 
 }
 
-export default withTranslate(Tooltip)
+//export default withTranslate(Tooltip)
