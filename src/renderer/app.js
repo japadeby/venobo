@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
+import { AppContainer } from 'react-hot-loader'
 
 import { IntlProvider } from './components/react-multilingual'
 import config from '../config'
@@ -9,7 +10,9 @@ import getRoutes from './routes'
 export default function createApp(store, appState, translations) {
   const dest = document.querySelector('#content-wrapper')
 
-  const render = (routes) => (
+  const render = () => {
+    const routes = require('./routes')(appState)
+
     ReactDOM.render(
       <AppContainer>
         <Provider store={store}>
@@ -20,15 +23,12 @@ export default function createApp(store, appState, translations) {
       </AppContainer>,
       dest
     )
-  )
+  }
 
-  render(getRoutes(appState))
+  render()
 
   if (module.hot) {
-    module.hot.accept('./routes', () => {
-      const nextRoutes = require('./routes')(appState)
-      render(nextRoutes)
-    })
+    module.hot.accept(render)
   }
 
   if (config.IS.DEV) {

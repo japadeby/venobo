@@ -17,7 +17,7 @@ import announcement from './announcement'
 import updater from './updater'
 import ipc from './ipc'
 
-export default class MainProcess {
+class MainProcess {
 
   shouldQuit: Boolean = false
   isReady: Boolean = false // app ready, windows can be created
@@ -62,6 +62,12 @@ export default class MainProcess {
 
   onReady(err, res) {
     if (err) throw err
+
+    if (config.IS.DEV) {
+      require('electron-compile').enableLiveReload({
+        strategy: 'react-hmr'
+      })
+    }
 
     this.isReady = true
 
@@ -119,3 +125,5 @@ export default class MainProcess {
   }
 
 }
+
+export default new MainProcess

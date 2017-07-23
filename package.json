@@ -6,29 +6,7 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "build": "babel -d build/ src/",
-    "package": "node ./bin/package.js",
-    "watch": "better-npm-run watch",
-    "start-dev": "better-npm-run dev",
-    "dev": "concurrently --kill-others \"npm run watch\" \"npm run start-dev\""
-  },
-  "betterScripts": {
-    "dev": {
-      "command": "electron .",
-      "env": {
-        "HOST": "localhost",
-        "PORT": 3118,
-        "NODE_ENV": "development"
-      }
-    },
-    "watch": {
-      "command": "node webpack/webpack-dev-server.js",
-      "env": {
-        "HOST": "localhost",
-        "PORT": 3118,
-        "NODE_ENV": "development"
-      }
-    }
+    "dev": "cross-env NODE_ENV=development electron ."
   },
   "dependencies": {
     "airplayer": "*",
@@ -46,6 +24,8 @@
     "debounce": "^1.0.0",
     "deep-equal": "^1.0.1",
     "dlnacasts": "*",
+    "electron-compile": "^6.4.1",
+    "electron-compilers": "^5.9.0",
     "event-emitter-es6": "^1.1.5",
     "express": "^4.15.3",
     "fn-getter": "^1.0.0",

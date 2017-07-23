@@ -5,11 +5,9 @@
  */
 
 const config = require('./src/config')
-const path = require('path')
 
 if (config.IS.DEV) {
-  require('babel-register')
-  new (require('./src/main'))
+  require('electron-compile').init(__dirname, require.resolve('./src/main'))
 } else {
-  new (require('./build/main'))
+  require('./build/main')
 }

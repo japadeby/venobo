@@ -17,16 +17,7 @@
 	   	window.$ = require('jquery')
 
 			const {IS} = require('../src/config')
-
-			const scriptURL = IS.DEV
-				? `http://${process.env.HOST}:${process.env.PORT}/renderer.js`
-				: '../build/renderer'
-
-			const scriptEl = document.createElement('script')
-			scriptEl.setAttribute('type', 'text/javascript')
-			scriptEl.setAttribute('src', scriptURL)
-
-			document.getElementsByTagName('head')[0].appendChild(scriptEl)
+			new (require(IS.DEV ? '../src/renderer' : '../build/renderer'))
 		</script>
 
 	</body>
