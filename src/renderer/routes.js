@@ -6,9 +6,10 @@ import dispatch from './lib/dispatcher'
 
 import { View, Multilingual } from './components'
 import {
-  HomeController, 
-  MediaController, 
-  StarredController 
+  HomeController,
+  MediaController,
+  StarredController,
+  DiscoverController
 } from './pages'
 
 const renderMergedProps = (component, ...rest) => {
@@ -44,8 +45,7 @@ export default ({ saved }) => {
           <PropsRoute path="/home" component={HomeController} />
           <PropsRoute path="/media/:type/:tmdb" component={MediaController} />
           <PropsRoute path="/starred" component={StarredController} />
-
-
+          <PropsRoute path="/discover/:type/:genre/:sortBy" component={DiscoverController} />
           {/*Object.keys(controllers).map(path => {
             let Component = Multilingual.withTranslate(controllers[path])
 

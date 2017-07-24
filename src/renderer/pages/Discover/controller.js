@@ -1,11 +1,8 @@
 import React, { Component } from 'react'
-import async from 'async'
+import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
-import randomString from 'crypto-random-string'
 import classNames from 'classnames'
 import config from '../../../config'
-
-import MetadataAdapter from '../../api/metadata/adapter'
 
 import {
   Loader,
@@ -16,8 +13,10 @@ import {
   BlockCollection,
   ReactGrid,
   CollectionHeader
-} from '../../components/items'
-import Poster from '../../components/poster'
+} from '../../components/Items'
+import { Poster } from '../../components'
+
+import { discoverActions } from './redux'
 
 @connect(
   state => ({ ...state.discover }),
@@ -28,14 +27,15 @@ export default class DiscoverController extends Component {
   componentWillReceiveProps(nextProps) {
     window.scrollTo(0, 0)
 
+    const {params} = nextProps.match
+
     // reset
     //this.isFetching = false
     this.lastScrollTop = 0
 
-    this.setState({
-      ...this.initialState,
-      params: nextProps.match.params
-    }, () => this.setData())
+    if (params.genre !== this.props.match.params.genre) {
+      this.props.setData(params, true)
+    }
   }
 
   componentWillUnmount() {
@@ -43,20 +43,20 @@ export default class DiscoverController extends Component {
   }
 
   onScroll = () => {
-    const {navDockable} = this.state
+    const {navDockable} = this.props
     const {scrollTop, scrollHeight} = $('#content-wrapper')[0]
 
     if (scrollTop > this.lastScrollTop) {
       if (scrollTop >= (scrollHeight - $(window).height() - 250)) {
-        this.setData()
+        this.props.setData(this.props.match.params)
       }
       this.lastScrollTop = scrollTop
     }
 
     if (scrollTop >= 66) {
-      if (!navDockable) this.setState({navDockable: true})
+      if (!navDockable) this.props.toggleDock()
     } else {
-      if (navDockable) this.setState({navDockable: false})
+      if (navDockable) this.props.dismissDock()
     }
 
     /*if($('#content-wrapper')[0].scrollHeight === $('#content-wrapper').scrollTop() + $(window).height()) {
@@ -68,7 +68,7 @@ export default class DiscoverController extends Component {
   componentDidMount() {
     $('#content-wrapper').on('scroll', this.onScroll)
 
-    this.setData()
+    this.props.setData(this.props.match.params)
   }
 
   categoriesHover = () => {
@@ -81,7 +81,7 @@ export default class DiscoverController extends Component {
 
   receiveNav() {
     const {translate} = this.props
-    const {params} = this.state
+    const {params} = this.props.match
 
     const sortBy = config.TMDB.SORT_BY
     const genres = config.TMDB.GENRES[params.type.toUpperCase()]
@@ -91,7 +91,7 @@ export default class DiscoverController extends Component {
       <SectionMenu>
       	<div className="dock">
       		<SectionWrapper>
-      			<Scaffold classNames="inner">
+      			<Scaffold className="inner">
       				<div className="details categories" onMouseEnter={this.categoriesHover} onMouseLeave={this.categoriesLeave} ref="categories">
       						<div className="summary">
       							<button>
@@ -106,7 +106,7 @@ export default class DiscoverController extends Component {
                             {Object.keys(genres).slice(0, genresLength / 2).map(id => {
                               const name = genres[id]
                               return (
-                                <li key={randomString(5)}>
+                                <li key={id}>
                                   <NavLink to={`/discover/${params.type}/${id}/popularity.desc`}>
                                     {name/*translate(`nav.genres.${name.toLowerCase()}`)*/}
                                   </NavLink>
@@ -119,7 +119,7 @@ export default class DiscoverController extends Component {
                             {Object.keys(genres).slice(genresLength / 2, genresLength).map(id => {
                               const name = genres[id]
                               return (
-                                <li key={randomString(5)}>
+                                <li key={id}>
                                   <NavLink to={`/discover/${params.type}/${id}/popularity.desc`}>
                                     {name/*translate(`nav.genres.${name.toLowerCase()}`)*/}
                                   </NavLink>
@@ -141,7 +141,7 @@ export default class DiscoverController extends Component {
                       const isActive = classNames({active: key === params.sortBy})
 
                       return (
-                        <li key={randomString(5)} className={isActive}>
+                        <li key={key} className={isActive}>
             							<NavLink to={`/discover/${params.type}/${params.genre}/${key}`}>{key}</NavLink>
                         </li>
                       )
@@ -157,24 +157,25 @@ export default class DiscoverController extends Component {
   }
 
   render() {
-    const {navDockable, isMounted, items} = this.state
+    const {navDockable, isReady, items, fetching} = this.props
     const {genre, sortBy, type} = this.props.match.params
 
-    return isMounted ? (
+    return isReady ? (
       <ContentCategory>
         <div className="dockable" ref="dockable">
           {navDockable ? this.receiveNav() : ''}
         </div>
         {!navDockable ? this.receiveNav() : (<div style={{height: '66px'}}></div>)}
         {items &&
-          <BlockCollection classNames="portrait">
+          <BlockCollection className="portrait">
             <Scaffold>
               <CollectionHeader>
                 <h2>{config.TMDB.GENRES[type.toUpperCase()][genre]} sorted by {sortBy}</h2>
               </CollectionHeader>
               <ReactGrid>
-                <Poster key={randomString(5)} items={items} state={this.props.state} />
+                <Poster key={items.length} items={items} />
               </ReactGrid>
+              {fetching && <Loader spinner="dark" container="dark" top="45px" bottom="15px" />}
             </Scaffold>
           </BlockCollection>
         }

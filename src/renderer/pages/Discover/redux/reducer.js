@@ -1,4 +1,4 @@
-import { FETCHING, FETCHED } from './constants'
+import * as discover from './constants'
 
 const initialState = {
   navDockable: false,
@@ -7,23 +7,40 @@ const initialState = {
   fetching: false,
   page: 1,
   lastScrollTop: 0,
-  params: {}
+  isReady: false
 }
 
-export default (state = initialState, action) => {
+export default (state = initialState, action = {}) => {
   switch (action.type) {
-    case FETCHING:
+    case discover.FETCHING:
       return {
         ...state,
         fetching: true
       }
-    case FETCHED:
+    case discover.FETCHED:
       return {
         ...state,
+        isReady: true,
         fetched: true,
         fetching: false,
         items: action.items,
         page: action.page
+      }
+    case discover.RESET:
+      return {
+        ...state,
+        ...initialState,
+        fetching: true
+      }
+    case discover.TOGGLE_DOCK:
+      return {
+        ...state,
+        navDockable: true
+      }
+    case discover.DISMISS_DOCK:
+      return {
+        ...state,
+        navDockable: false
       }
     default:
       return state

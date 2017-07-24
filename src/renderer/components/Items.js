@@ -23,14 +23,14 @@ export const Content = ({ className, children }) => (
   </div>
 )
 
-export const ContentCategory = (props) => (
-  <Content classNames={classNames('category', className)}>
+export const ContentCategory = ({ className, children }) => (
+  <Content className={classNames('category', className)}>
     {children}
   </Content>
 )
 
 export const ContentStarred = ({ className, children }) => (
-  <Content classNames={classNames('starred', className)}>
+  <Content className={classNames('starred', className)}>
     {children}
   </Content>
 )
@@ -107,12 +107,12 @@ export const ReactGrid = ({ className, children }) => (
   </div>
 )
 
-export const Loader = ({ top, container, spinner }) => {
+export const Loader = ({ top, container, spinner, bottom }) => {
   const searchSpinner = classNames('search-spinner load-spinner no-query', spinner)
   const spinnerContainer = classNames('spinner-container', container)
 
   return (
-    <div className={searchSpinner} style={{marginTop: top}}>
+    <div className={searchSpinner} style={{marginTop: top, marginBottom: bottom}}>
       <div className={spinnerContainer}>
         <div className="spinner-line line01"></div>
         <div className="spinner-line line02"></div>
