@@ -7,8 +7,8 @@ import {
 
 export default class YtsTorrentProvider {
 
-  endpoint: String = 'https://yts.ag/api/v2/list_movies.json'
-  provider: String = 'Yify'
+  endpoint = 'https://yts.ag/api/v2/list_movies.json'
+  provider = 'Yify'
 
   fetch(imdbId: String): Promise {
     return HTTP.get(this.endpoint, {

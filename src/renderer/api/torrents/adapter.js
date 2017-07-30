@@ -8,24 +8,24 @@ import {
 } from './provider'
 
 const providers = [
-  new (require('./yify')),
-  //require('./kickass'),
+  require('./YtsTorrentProvider'),
+  require('./iDopeTorrentProvider'),
+  require('./KickassTorrentProvider'),
   //require('./rarbg'),
   //require('./piratebay'),
   //require('./magnetdl')
   //require('./extratorrent')
-  new (require('./idope'))
 ]
 
-export default async function TorrentAdapter(imdbId: string,
-                                              type: string,
+export default async function TorrentAdapter(imdbId: String,
+                                              type: String,
                                               extendedDetails: Object = {},
-                                              returnAll: boolean = false,
-                                              method: string = 'all') {
+                                              returnAll: Boolean = false,
+                                              method: String = 'all') {
   //const key = JSON.stringify({extendedDetails, returnAll, method})
 
   const torrentPromises = providers.map(
-    provider => provider.provide(imdbId, type, extendedDetails)
+    provider => new provider().provide(imdbId, type, extendedDetails)
   )
 
   switch (method) {
@@ -107,7 +107,7 @@ function appendAttributes(providerResults: Array<any>) {
   return formattedResults
 }
 
-export function filterShows(show: Object, season: number, episode: number) {
+export function filterShows(show: Object, season: Number, episode: Number) {
   return (
     show.metadata.toLowerCase().includes(
       formatSeasonEpisodeToString(
@@ -120,7 +120,7 @@ export function filterShows(show: Object, season: number, episode: number) {
   )
 }
 
-export function filterShowsComplete(show: Object, season: number) {
+export function filterShowsComplete(show: Object, season: Number) {
   const metadata = show.metadata.toLowerCase()
 
   return (
@@ -154,9 +154,9 @@ export function getStatuses() {
  * @return {object}
  */
 export function selectTorrents(torrents: Array<any>,
-                                sortMethod: string = 'seeders',
-                                returnAll: boolean = false,
-                                key: string) {
+                                sortMethod: String = 'seeders',
+                                returnAll: Boolean = false,
+                                key: String) {
   const sortedTorrents = sortTorrentsBySeeders(
     torrents
       .filter(

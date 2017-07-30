@@ -16,13 +16,13 @@ export default class Poster extends Component {
     items: []
   }
 
-  /*componentWillMount() {
+  componentWillMount() {
     if (this.state.items.length === 0) {
       const items = this.props.items.map((item, index) => {
         return (
           <div className="react-item movie" key={index} data-tooltip={index}>
-            <div className="front" onMouseEnter={this.showTooltip}>
-              {item.poster ? (
+            <div className="front" onMouseEnter={this.showTooltip} onMouseLeave={this.props.dismissTooltipDelay}>
+              {item.poster &&
                 <div className="front-image" style={{backgroundImage: `url(${item.poster})`}}>
                   <div className="backdrop medium">
                     <div className="react-play-button fill">
@@ -30,7 +30,7 @@ export default class Poster extends Component {
                     </div>
                   </div>
                 </div>
-              ) : false}
+              }
             </div>
           </div>
         )
@@ -38,10 +38,10 @@ export default class Poster extends Component {
 
       this.setState({ items })
     }
-  }*/
+  }
 
   showTooltip = (e) => {
-    //if (!this.props.tooltip.enabled) {
+    if (!this.props.tooltip.enabled) {
       const $front = $(e.target).closest('.react-item')
       const $frontPos = $front.offset()
       const $frontWidth = $front.outerWidth()
@@ -81,17 +81,15 @@ export default class Poster extends Component {
 
       data.pageLink = `/media/${data.type}/${data.tmdb}`
 
-      console.log(data)
-
       this.props.toggleTooltip(data)
-    //}
+    }
   }
 
-  render () {
+  render() {
     const items = this.props.items.map((item, index) => {
       return (
         <div className="react-item movie" key={index} data-tooltip={index}>
-          <div className="front"> {/*onMouseEnter={this.showTooltip}>  onMouseLeave={this.props.setTooltipDisabled*/}
+          <div className="front" onMouseEnter={this.showTooltip}> {/*onMouseLeave={this.props.dismissTooltipDelay}>*/}
             <Link to={`/media/${item.type}/${item.tmdb}`}>
               {item.poster ? (
                 <div className="front-image" style={{backgroundImage: `url(${item.poster})`}}>
@@ -116,4 +114,5 @@ export default class Poster extends Component {
       </div>
     )
   }
+
 }

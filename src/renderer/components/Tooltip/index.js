@@ -12,7 +12,7 @@ import { tooltipActions } from './redux'
   state => ({ ...state.tooltip }),
   { ...tooltipActions }
 )
-export default class Tooltip extends Component {
+class Tooltip extends Component {
 
   render() {
     const { data, active } = this.props
@@ -87,4 +87,4 @@ export default class Tooltip extends Component {
 
 }
 
-//export default withTranslate(Tooltip)
+export default withTranslate(Tooltip)

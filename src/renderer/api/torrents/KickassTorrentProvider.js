@@ -12,16 +12,21 @@ import {
 
 export default class KickassTorrentProvider {
 
-  static endpoint = 'https://kickassto.org'
-  static provider = 'Kickass'
+  endpoint = 'https://kickassto.org'
+  provider = 'Kickass'
+  api: Object
 
-  static fetch(query: String): Promise {
-    return HTTP.fetchLimitCache(`${this.endpoint}/usearch/${encodeURIComponent(query)}/?field=seeders&sorder=desc`)
+  constructor() {
+    this.api = new HTTP({ baseURL: this.endpoint })
+  }
+
+  fetch(query: String): Promise {
+    return this.api.fetchLimitCache(`usearch/${encodeURIComponent(query)}`, { field: 'seeders', sorder: 'desc' })
       .then(res => this.cheerio(res))
       .catch(err => [])
   }
 
-  static cheerio(html: String): Promise {
+  cheerio(html: String): Promise {
     let $ = cheerio.load(html)
     const provider = this.provider
 
@@ -40,13 +45,13 @@ export default class KickassTorrentProvider {
     return torrents
   }
 
-  static getStatus(): Boolean {
+  getStatus(): Boolean {
     return axios.get(this.endpoint)
       .then(res => res.status === 200)
       .catch(() => false)
   }
 
-  static provide(imdbId: String, type: String, extendedDetails: Object): Promise<Array> {
+  provide(imdbId: String, type: String, extendedDetails: Object): Promise<Array> {
     const { search } = extendedDetails
 
     switch (type) {

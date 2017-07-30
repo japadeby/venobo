@@ -8,7 +8,7 @@ import config from '../../config'
 import createReducer from './reducer'
 
 export default function createStore(appState) {
-  const middleware = [logger, thunk]
+  const middleware = [thunk, logger]
 
   let finalCreateStore
   if (config.IS.DEV) {

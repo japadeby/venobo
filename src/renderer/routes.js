@@ -1,60 +1,78 @@
-import React from 'react'
-import { MemoryRouter, Redirect, Switch, Route } from 'react-router-dom'
+import React, { Component } from 'react'
+import { MemoryRouter, Redirect, Switch, Route as ReactRoute } from 'react-router-dom'
 import { connect } from 'react-redux'
 
 import dispatch from './lib/dispatcher'
 
-import { View, Multilingual } from './components'
-import {
-  HomeController,
-  MediaController,
-  StarredController,
-  DiscoverController
-} from './pages'
+import { searchActions }  from './components/Search/redux'
+import { tooltipActions } from './components/Tooltip/redux'
 
-const renderMergedProps = (component, ...rest) => {
+import { View, Multilingual } from './components'
+
+/*const renderMergedProps = (component, ...rest) => {
   const finalProps = Object.assign({}, ...rest)
 
   return React.createElement(component, finalProps)
 }
 
-const PropsRoute = ({ component, ...rest }) => (
+const PropsRoute = ({ component, store, ...rest }) => (
   <Route {...rest} render={routeProps => {
-    dispatch('exitSearchMount')
-    dispatch('hideTooltip')
-    dispatch('setHistory', routeProps.history)
+    console.log(routeProrps)
+    //dispatch('exitSearchMount')
+    //dispatch('hideTooltip')
+    //dispatch('setHistory', routeProps.history)
 
     return renderMergedProps(component, routeProps, rest)
   }} />
-)
+)*/
 
-export default ({ saved }) => {
-  const getIndex = () => {
-    if (saved.prefs.shouldSaveHistory) {
-      return saved.history.location.pathname
-    }
+@connect(null, {
+  ...searchActions,
+  ...tooltipActions
+})
+export default class Routes extends Component {
 
+  getIndex = () => {
+    /*if (saved.prefs.shouldSaveHistory) {
+        return saved.history.location.pathname
+    }*/
     return '/home'
   }
 
-  return (
-    <MemoryRouter>
-      <Switch>
-        <View>
-          <Route exact path="/" render={() => <Redirect to={getIndex()} />} />
-          <PropsRoute path="/home" component={HomeController} />
-          <PropsRoute path="/media/:type/:tmdb" component={MediaController} />
-          <PropsRoute path="/starred" component={StarredController} />
-          <PropsRoute path="/discover/:type/:genre/:sortBy" component={DiscoverController} />
-          {/*Object.keys(controllers).map(path => {
-            let Component = Multilingual.withTranslate(controllers[path])
+  /*renderMergedProps = (component, ...rest) => {
+    const finalProps = Object.assign({}, ...rest)
 
-            return (
-              <PropsRoute exact key={path} path={path} component={() => require(Component} />
-            )
-          })*/}
-        </View>
-      </Switch>
-    </MemoryRouter>
+    return React.createElement(component, finalProps)
+  }*/
+
+  Route = ({ controller, path }) => (
+    <ReactRoute path={path} render={routeProps => {
+      this.props.dismissTooltip()
+      this.props.searchDismiss()
+
+      const component = require(`./pages/${controller}/controller`)
+
+      return React.createElement(component, routeProps)
+      //this.renderMergedProps(component, routeProps, rest)
+    }} />
   )
+
+  render() {
+    const { Route } = this
+
+    return (
+      <MemoryRouter>
+        <Switch>
+          <View>
+            <ReactRoute exact path="/" render={() => <Redirect to={this.getIndex()} />} />
+            <Route path="/home" controller="Home" />
+            <Route path="/media/:type/:tmdb" controller="Media" />
+            <Route path="/starred" controller="Starred" />
+            <Route path="/discover/:type/:genre/:sortBy" controller="Discover" />
+          </View>
+        </Switch>
+      </MemoryRouter>
+    )
+  }
+
 }

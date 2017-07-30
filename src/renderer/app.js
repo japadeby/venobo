@@ -5,19 +5,18 @@ import { AppContainer } from 'react-hot-loader'
 
 import { IntlProvider } from './components/react-multilingual'
 import config from '../config'
-import getRoutes from './routes'
 
 export default function createApp(store, appState, translations) {
   const dest = document.querySelector('#content-wrapper')
 
   const render = () => {
-    const routes = require('./routes')(appState)
+    const Routes = require('./routes')
 
     ReactDOM.render(
       <AppContainer>
         <Provider store={store}>
           <IntlProvider translations={translations}>
-            {routes}
+            <Routes appState={appState} />
           </IntlProvider>
         </Provider>
       </AppContainer>,

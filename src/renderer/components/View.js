@@ -4,7 +4,7 @@ import Header from './Header'
 import Search from './Search'
 import Tooltip from './Tooltip'
 
-export default class View extends React.Component {
+export default class View extends Component {
 
   render() {
     const {props} = this

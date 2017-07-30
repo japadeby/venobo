@@ -50,8 +50,10 @@ class Search extends Component {
     this.props.searchAction(searchQuery)
   }
 
-  setResultsFilter(filter, disabled) {
+  setResultsFilter(e, filter, disabled) {
     const {props} = this
+
+    e.preventDefault()
 
     if (props.filter !== filter && !disabled) {
       props.searchFilter(filter)
@@ -74,7 +76,7 @@ class Search extends Component {
 
             return (
               <li className={className} key={type}>
-                <a href="#" onClick={() => this.setResultsFilter(type, disabled)}>{type}</a>
+                <a href="#" onClick={(e) => this.setResultsFilter(e, type, disabled)}>{type}</a>
               </li>
             )
           })}
