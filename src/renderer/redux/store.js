@@ -27,7 +27,7 @@ export default function createStore(appState) {
   const store = finalCreateStore(createReducer(appState))
 
   if (config.IS.DEV && module.hot) {
-    module.hot.accept(() => {
+    module.hot.accept('./reducer', () => {
       // Setup dispatch handlers
       store.replaceReducer(require('./reducer')(appState))
       setupDispatchHandlers(appState, store)

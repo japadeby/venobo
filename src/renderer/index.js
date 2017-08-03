@@ -16,7 +16,7 @@ import sound from './lib/sound'
 import config from '../config'
 import HTTP from './lib/http'
 
-export default class Main {
+class Renderer {
 
   store: Object
   cast: Object
@@ -135,8 +135,16 @@ export default class Main {
       .catch(err => {
         dispatch('error', err)
         const path = require('path')
+        const fs = require('fs')
 
-        const translation = require(path.join(config.PATH.TRANSLATIONS, `${iso2}.json`))
+        let translation
+        try {
+          let translationFile = fs.readFileSync(path.join(config.PATH.TRANSLATIONS, `${iso2}.json`), 'utf-8')
+          translation = JSON.parse(translationFile)
+        } catch(e) {
+          throw e
+        }
+
         createApp(store, state, translation)
       })
   }
@@ -196,3 +204,5 @@ export default class Main {
   }
 
 }
+
+export default new Renderer

@@ -27,7 +27,7 @@ export default function createApp(store, appState, translations) {
   render()
 
   if (module.hot) {
-    module.hot.accept(render)
+    module.hot.accept('./routes', render)
   }
 
   if (config.IS.DEV) {

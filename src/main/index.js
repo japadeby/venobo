@@ -63,11 +63,11 @@ class MainProcess {
   onReady(err, res) {
     if (err) throw err
 
-    if (config.IS.DEV) {
+    /*if (config.IS.DEV) {
       require('electron-compile').enableLiveReload({
         strategy: 'react-hmr'
       })
-    }
+    }*/
 
     this.isReady = true
 
