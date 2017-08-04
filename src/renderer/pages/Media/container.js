@@ -219,7 +219,7 @@ export default class MediaPage extends Component {
         {similar.length !== 0 &&
           <Carousel title={"Lignende film"} items={similar} />}
         {recommended.length !== 0 &&
-          <Carousel title={"Recomendations"} items={recommended} />}
+          <Carousel title={"Recommendations"} items={recommended} />}
       </ContentProduct>
     )
   }

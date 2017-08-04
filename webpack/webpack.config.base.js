@@ -24,7 +24,7 @@ export default {
   },
 
   output: {
-    path: path.join(rootPath, 'renderer'),
+    path: rootPath,
     filename: 'renderer.dev.js',
     // https://github.com/webpack/webpack/issues/1114
     libraryTarget: 'commonjs2'
