@@ -6,7 +6,7 @@
 
 import path from 'path'
 import config from '../config'
-import {Main} from './windows'
+import Main from './window'
 
 const STATIC = config.PATH.STATIC
 const PREV_ICON = path.join(STATIC, 'PreviousTrackThumbnailBarButton.png')
@@ -52,24 +52,24 @@ export function disable () {
   update()
 }
 
-function onPlayerPause () {
+export function onPlayerPause () {
   if (!isEnabled()) return
   buttons[PLAY_PAUSE].tooltip = 'Play'
   buttons[PLAY_PAUSE].icon = PLAY_ICON
   update()
 }
 
-function onPlayerPlay () {
+export function onPlayerPlay () {
   if (!isEnabled()) return
   buttons[PLAY_PAUSE].tooltip = 'Pause'
   buttons[PLAY_PAUSE].icon = PAUSE_ICON
   update()
 }
 
-function isEnabled () {
+export function isEnabled () {
   return buttons.length > 0
 }
 
-function update () {
+export function update () {
   Main.win.setThumbarButtons(buttons)
 }

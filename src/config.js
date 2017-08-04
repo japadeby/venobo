@@ -9,17 +9,20 @@ const path = require('path')
 const electron = require('electron')
 const arch = require('arch')
 const fs = require('fs')
-const appConfig = require('application-config')('Venobo')
+const LocalStorage = require('local-storage-es6')
+const appConfig = require('application-config')(pckg.productName)
 
 const APP_TEAM = pckg.productName + ' Dev'
 const STATIC_PATH = path.join(__dirname, '..', 'static')
-const IS_TEST = isTest()
-const PORTABLE_PATH = IS_TEST
+const IS_DEV = isDev()
+const PORTABLE_PATH = IS_DEV
         ? path.join(process.platform === 'win32' ? 'C:\\Windows\\Temp' : '/tmp', pckg.productName)
         : path.join(path.dirname(process.execPath), pckg.productName)
 const IS_PRODUCTION = isProduction()
 const IS_PORTABLE = isPortable()
 const CONFIG_PATH = getConfigPath()
+const CACHE_PATH = path.join(CONFIG_PATH, 'Cache')
+const APP_SECRET = '56dc6f8e86f739bbce37281a8ad47641'
 
 module.exports = {
   OS_SYSARCH: arch() === 'x64' ? 'x64' : 'ia32',
@@ -29,7 +32,7 @@ module.exports = {
     NAME: pckg.productName,
     TEAM: APP_TEAM,
     VERSION: pckg.version,
-    SECRET_KEY: '56dc6f8e86f739bbce37281a8ad47641',
+    SECRET_KEY: APP_SECRET,
     DESC: pckg.description,
     API: 'https://venobo.herokuapp.com/api',
     URL: 'http://localhost:3001',
@@ -38,27 +41,75 @@ module.exports = {
     LARGE_LOGO: path.join(STATIC_PATH, 'img', 'header-logo.png')
   },
   PATH: {
+    TRANSLATIONS: path.join(STATIC_PATH, 'translations'),
     ROOT: path.join(__dirname, '..'),
     STATIC: STATIC_PATH,
-    CACHE: path.join(CONFIG_PATH, 'cache'),
+    CACHE: CACHE_PATH,
     DOWNLOAD: getDefaultDownloadPath(),
     CONFIG: CONFIG_PATH,
-    PORTABLE: PORTABLE_PATH
+    PORTABLE: PORTABLE_PATH,
+    TEMP: path.join(getPath('temp'), pckg.productName)
   },
   TMDB: {
-    API: 'https://api.themoviedb.org/3',
+    API: 'https://api.themoviedb.org',
     KEY: '56dc6f8e86f739bbce37281a8ad47641',
-    POSTER: 'https://image.tmdb.org/t/p/w300_and_h450_bestv2'
+    POSTER: 'https://image.tmdb.org/t/p/w300_and_h450_bestv2',
+    BACKDROP: 'https://image.tmdb.org/t/p/original',
+    STILL: 'https://image.tmdb.org/t/p/w227_and_h127_bestv2',
+    GENRES: {
+      MOVIES: {
+        28: 'Action',
+        12: 'Adventure',
+        16: 'Animation',
+        35: 'Comedy',
+        80: 'Crime',
+        99: 'Documentary',
+        18: 'Drama',
+        10751: 'Family',
+        14: 'Fantasy',
+        36: 'History',
+        27: 'Horror',
+        10402: 'Music',
+        9648: 'Mystery',
+        10749: 'Romance',
+        878: 'Science Fiction',
+        10770: 'TV Movie',
+        53: 'Thriller',
+        10752: 'War',
+        37: 'Western'
+      },
+      SHOWS: {
+        10759: 'Action & Adventure',
+        16: 'Animation',
+        35: 'Comedy',
+        80: 'Crime',
+        99: 'Documentary',
+        18: 'Drama',
+        10751: 'Family',
+        10762: 'Kids',
+        9648: 'Mystery',
+        10763: 'News',
+        10764: 'Reality',
+        10765: 'Sci-Fi & Fantasy',
+        10766: 'Soap',
+        10767: 'Talk',
+        10768: 'War & Politics',
+        37: 'Western'
+      }
+    },
+    SORT_BY: [
+      'popularity.desc',
+      'release_date.desc',
+      'vote_count.desc',
+      'original_title.desc'
+    ]
   },
   GITHUB: {
-    URL: 'https://github.com/marcus-sa/Venobo',
-    ISSUES: 'https://github.com/marcus-sa/Venobo/issues'
+    URL: 'https://github.com/venobo/app',
+    ISSUES: 'https://github.com/venobo/app/issues'
   },
   WINDOW: {
-    INDEX: {
-      MAIN: path.join(`file://${STATIC_PATH}`, 'main.html'),
-      WEBTORRENT: path.join(`file://${STATIC_PATH}`, 'webtorrent.html')
-    },
+    INDEX: path.join(`file://${STATIC_PATH}`, 'index.html'),
     MIN: {
       WIDTH: 1075,
       HEIGHT: 600
@@ -68,11 +119,22 @@ module.exports = {
     DEVTOOLS: true
   },
   IS: {
-    TEST: IS_TEST,
+    DEV: IS_DEV,
     PRODUCTION: IS_PRODUCTION,
     PORTABLE: IS_PORTABLE
   },
-  DELAYED_INIT: 3000 /* 3 seconds */
+  DELAYED_INIT: 3000, // 3 seconds
+  TOOLTIP_DELAY: 400,
+  CACHE_DURATION: 3 * 60, // 3 hours cache duration,
+  AXIOS_TIMEOUT: 5000, // in ms
+  SAVE_DEBOUNCE_INTERVAL: 1000,
+  CACHE: new LocalStorage({
+    path: CACHE_PATH,
+    key: APP_SECRET,
+    mkdir: true,
+    encryptFileName: true,
+    encryptFileContent: false
+  })
 }
 
 function getConfigPath () {
@@ -104,14 +166,16 @@ function getDefaultDownloadPath () {
   }
 }
 
-function isTest () {
-  return process.env.NODE_ENV === 'test'
+function isDev () {
+  return process.env.NODE_ENV === 'development'
 }
 
 function isPortable () {
-  if (IS_TEST) { return true }
+  if (IS_DEV) return true
   // Fast path: Non-Windows platforms should not check for path on disk
-  if (process.platform !== 'win32' || !IS_PRODUCTION) { return false }
+  if (process.platform !== 'win32' || !IS_PRODUCTION) {
+    return false
+  }
 
   try {
     // This line throws if the "Venobo" folder does not exist, and does

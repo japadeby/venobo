@@ -11,10 +11,10 @@ export default class powerSaveBlocker {
    */
   static enable() {
     // If a power saver block already exists, do nothing.
-    if(blocker.isStarted(this.blockId)) return
+    if (blocker.isStarted(this.blockId)) return
 
     this.blockId = blocker.start('prevent-display-sleep')
-    log(`powerSaveBlocker.enable: ${blockId}`)
+    log(`powerSaveBlocker.enable: ${this.blockId}`)
   }
 
   /**
@@ -22,10 +22,10 @@ export default class powerSaveBlocker {
    */
   static disable() {
     // If a power saver block does not exist, do nothing.
-    if(!blocker.isStarted(this.blockId)) return
+    if (!blocker.isStarted(this.blockId)) return
 
     blocker.stop(this.blockId)
-    log(`powerSaveBlocker.disable: ${blockId}`)
+    log(`powerSaveBlocker.disable: ${this.blockId}`)
   }
 
 }

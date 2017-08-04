@@ -1,7 +1,7 @@
 import electron, {app, Menu as appMenu} from 'electron'
 
 import config from '../config'
-import {Main, WebTorrent} from './windows'
+import Main from './window'
 import {openExternal} from './shell'
 
 export default class Menu {
@@ -90,6 +90,11 @@ export default class Menu {
             click: () => Main.dispatch('escapeBack')
           },
           {
+            label: 'Go Forward',
+            accelerator: 'Alt+Esc',
+            click: () => Main.dispatch('forward')
+          },
+          {
             type: 'separator'
           },
           {
@@ -101,13 +106,6 @@ export default class Menu {
                   ? 'Alt+Command+I'
                   : 'Ctrl+Shift+I',
                 click: () => Main.toggleDevTools()
-              },
-              {
-                label: 'Show WebTorrent Process',
-                accelerator: process.platform === 'darwin'
-                  ? 'Alt+Command+P'
-                  : 'Ctrl+Shift+P',
-                click: () => WebTorrent.toggleDevTools()
               }
             ]
           }
@@ -232,7 +230,7 @@ export default class Menu {
       }
     ]
 
-    if(process.platform === 'darwin') {
+    if (process.platform === 'darwin') {
       // WebTorrent menu (Mac)
       template.unshift({
         label: config.APP.NAME,

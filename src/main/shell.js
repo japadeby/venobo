@@ -12,7 +12,7 @@ export function openExternal (url) {
 /**
  * Open the given file in the desktop’s default manner.
  */
-export function openItem (e, path) {
+export function openItem (path) {
   log(`openItem: ${path}`)
   shell.openItem(path)
 }
@@ -20,7 +20,7 @@ export function openItem (e, path) {
 /**
  * Show the given file in a file manager. If possible, select the file.
  */
-export function showItemInFolder (e, path) {
+export function showItemInFolder (path) {
   log(`showItemInFolder: ${path}`)
   shell.showItemInFolder(path)
 }
@@ -28,7 +28,7 @@ export function showItemInFolder (e, path) {
 /**
  * Move the given file or folder to trash and returns a boolean status for the operation.
  */
-export function moveItemToTrash (e, path) {
+export function moveItemToTrash (path) {
   log(`moveItemToTrash: ${path}`)
   shell.moveItemToTrash(path)
 }

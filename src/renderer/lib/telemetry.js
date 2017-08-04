@@ -21,7 +21,11 @@ export default class Telemetry {
     }
   }
 
+<<<<<<< HEAD
   send (state) {
+=======
+  send(state) {
+>>>>>>> redux-dev
     const {usage} = this
     const now = new Date()
 

@@ -18,6 +18,7 @@ rimraf.sync('dist/')
 
 // Remove any saved configuration
 rimraf.sync(config.PATH.CONFIG)
+rimraf.sync(config.PATH.CACHE)
 
 // Remove any temporary files
 let tmpPath
