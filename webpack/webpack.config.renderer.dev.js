@@ -29,8 +29,7 @@ export default merge.smart(baseConfig, {
 
   entry: [
     'react-hot-loader/patch',
-    `webpack-dev-server/client?http://localhost:${port}/`,
-    'webpack/hot/only-dev-server',
+    `webpack-hot-middleware/client?path=http://localhost:${port}/__webpack_hmr`,
     path.join(process.cwd(), 'src', 'renderer', 'index.js'),
   ],
 
@@ -189,39 +188,5 @@ export default merge.smart(baseConfig, {
   node: {
     __dirname: false,
     __filename: false
-  },
-
-  devServer: {
-    port,
-    publicPath,
-    compress: true,
-    noInfo: true,
-    stats: 'errors-only',
-    inline: true,
-    lazy: false,
-    hot: true,
-    headers: { 'Access-Control-Allow-Origin': '*' },
-    contentBase: path.join(process.cwd(), 'dist'),
-    watchOptions: {
-      aggregateTimeout: 300,
-      ignored: /node_modules/,
-      poll: 100
-    },
-    historyApiFallback: {
-      verbose: true,
-      disableDotRule: false,
-    },
-    /*setup() {
-      if (process.env.START_HOT) {
-        console.log('Staring Main Process...')
-        spawn(
-          'npm',
-          ['run', 'start-main-dev'],
-          { shell: true, env: process.env, stdio: 'inherit' }
-        )
-        .on('close', code => process.exit(code))
-        .on('error', spawnError => console.error(spawnError))
-      }
-    }*/
-  },
+  }
 })

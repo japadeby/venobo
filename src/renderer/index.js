@@ -1,5 +1,10 @@
 console.time('init')
 
+// Accept HMR
+if (module.hot) {
+  module.hot.accept()
+}
+
 import debounce from 'debounce'
 import {clipboard, remote, ipcRenderer} from 'electron'
 import React from 'react'
