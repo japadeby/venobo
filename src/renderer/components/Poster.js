@@ -46,6 +46,8 @@ export default class Poster extends Component {
       const $frontPos = $front.offset()
       const $frontWidth = $front.outerWidth()
 
+      console.log($frontPos, $frontWidth)
+
       const key = $front.data('tooltip')
       const data = this.props.items[key]
 

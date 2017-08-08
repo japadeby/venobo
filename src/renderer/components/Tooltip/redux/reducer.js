@@ -2,12 +2,10 @@ import { TOGGLE, DISMISS, ENABLE, DISABLE } from './actions'
 
 const initialState = {
   data: {},
-  active: false,
-  poster: false
+  active: false
 }
 
 export default (state = initialState, action) => {
-  console.log(state, action)
   switch (action.type) {
     case TOGGLE:
       return {

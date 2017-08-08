@@ -5,7 +5,9 @@ export var timeout
 
 export const toggleTooltip = (payload = {}) => {
   return (dispatch, getState) => {
-    dispatch({ type: TOGGLE, payload })
+    if (!getState().tooltip.active) {
+      dispatch({ type: TOGGLE, payload })
+    }
   }
 }
 
@@ -17,7 +19,7 @@ export const dismissTooltip = () => {
   }
 }
 
-export const dismissTooltipDelay = (e ) => {
+export const dismissTooltipDelay = (e) => {
   return (dispatch, getState) => {
     timeout = setTimeout(() => {
       if (!getState().tooltip.active) {

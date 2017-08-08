@@ -1,4 +1,4 @@
-export const TOGGLE = 'TOOLTIP_TOGGLE'
-export const ENABLE = 'TOOLTIP_ENABLE'
-export const DISABLE = 'TOOLTIP_DISABLE'
-export const DISMISS = 'TOOLTIP_DISMISS'
+export const TOGGLE = '@@tooltip/TOGGLE'
+export const ENABLE = '@@tooltip/ENABLE'
+export const DISABLE = '@@tooltip/DISABLE'
+export const DISMISS = '@@tooltip/DISMISS'

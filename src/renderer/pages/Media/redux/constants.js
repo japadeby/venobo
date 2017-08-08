@@ -1,3 +1,3 @@
-export const FETCHED = 'MEDIA_FETCHED'
-export const FETCHING = 'MEDIA_FETCHING'
-export const PAGINATE = 'MEDIA_PAGINATE'
+export const FETCHED = '@@media/FETCHED'
+export const FETCHING = '@@media/FETCHING'
+export const PAGINATE = '@@media/PAGINATE'

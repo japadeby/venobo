@@ -4,6 +4,7 @@ import ExtractTextPlugin from 'extract-text-webpack-plugin'
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'
 import merge from 'webpack-merge'
 import BabiliPlugin from 'babili-webpack-plugin'
+
 import baseConfig from './webpack.config.base'
 
 const distPath = path.join(__dirname, '..', 'dist')

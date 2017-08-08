@@ -22,25 +22,25 @@ export default function createApp(store, appState, translations) {
       </AppContainer>,
       dest
     )
+
+    if (config.IS.DEV) {
+      const devToolsDest = document.querySelector('#devtools')
+      //window.document.body.insertBefore(devToolsDest, null)
+      const { DevTools } = require('./components')
+
+      ReactDOM.render(
+        <Provider store={store} key="provider">
+          <DevTools />
+        </Provider>,
+        devToolsDest
+      )
+    }
   }
 
   render()
 
   if (module.hot) {
     module.hot.accept('./routes', render)
-  }
-
-  if (config.IS.DEV) {
-    const devToolsDest = document.createElement('div')
-    window.document.body.insertBefore(devToolsDest, null)
-    const { DevTools } = require('./components')
-
-    ReactDOM.render(
-      <Provider store={store} key="provider">
-        <DevTools />
-      </Provider>,
-      devToolsDest
-    )
   }
 
 }

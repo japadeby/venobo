@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import classNames from 'classnames'
 
-import { StarredIcon } from '../Items'
+import StarredIcon from '../StarredIcon'
 import { withTranslate } from '../react-multilingual'
 
 import { tooltipActions } from './redux'
@@ -12,12 +12,10 @@ import { tooltipActions } from './redux'
   state => ({ ...state.tooltip }),
   { ...tooltipActions }
 )
-class Tooltip extends Component {
+export default class Tooltip extends Component {
 
   render() {
     const { data, active } = this.props
-
-    console.log(data, active)
 
     return (
       <div id="tooltip">
@@ -33,7 +31,7 @@ class Tooltip extends Component {
               <p className="genres">
                 {data.genres.join(' / ')}
               </p>
-              <p className="year divider">{String(data.year)}</p>
+              <p className="year divider">{data.year}</p>
               <p className="duration divider">{data.runtime}</p>
               <span className="flags">
                 {data.torrents != null ? Object.keys(data.torrents).map(quality => {
@@ -59,15 +57,9 @@ class Tooltip extends Component {
               <span className="group people">
                 <div className="people-list actors">
                   <h2>Actors:</h2>
-                  <p>
-
-                  </p>
                 </div>
                 <div className="people-list directors">
-                  <h2>Director: </h2>
-                  <p>
-                    qwe
-                  </p>
+                  <h2>Director:</h2>
                 </div>
               </span>
             </div>
@@ -86,5 +78,3 @@ class Tooltip extends Component {
   }
 
 }
-
-export default withTranslate(Tooltip)
