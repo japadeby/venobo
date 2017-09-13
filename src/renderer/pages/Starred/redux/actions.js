@@ -28,14 +28,12 @@ function get(type, starred, done) {
         next(null)
       })
       .catch(next)
-  }, function (err) {
-    done(err, media)
-  })
+  }, (err) => done(err, media))
 }
 
 export const fetchStarred = () => (dispatch, getState) => {
   const state = getState()
-  const {starred} = state.app.saved
+  const { starred } = state.app.saved
 
   if (state.starred.isReady) {
     dispatch({ type: FETCHING })

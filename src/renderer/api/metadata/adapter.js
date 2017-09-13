@@ -10,11 +10,13 @@ export default class MetadataAdapter {
   static TMDb: Object
   static state: Object
   static iso: String
+  static getTorrents: Function
 
   static setup(state: Object) {
     this.iso = state.saved.prefs.iso2
     this.state = state
     this.TMDb = new TMDbProvider(state)
+    this.getTorrents = new TorrentAdapter().search
   }
 
   static formatReleaseYear(date: String): String {
@@ -153,7 +155,7 @@ export default class MetadataAdapter {
 
   static addShowTorrents(data: Object, ...args): Promise {
     return new Promise((resolve, reject) => {
-      TorrentAdapter(data.imdb_id, 'shows', {
+      this.getTorrents(data.imdb_id, 'shows', {
         search: data.original_title,
         ...args
       })
@@ -169,7 +171,7 @@ export default class MetadataAdapter {
 
   static addMovieTorrents(data: Object): Promise {
     return new Promise((resolve, reject) => {
-      TorrentAdapter(data.imdb_id, 'movies', {
+      this.getTorrents(data.imdb_id, 'movies', {
         search: data.original_title
       })
         .then(torrents => {
@@ -394,7 +396,7 @@ export default class MetadataAdapter {
         .catch(() => {
           TMDb.get('show', tmdbId)
             .then(show => {
-              TorrentAdapter(undefined, 'shows', {
+              this.getTorrents(undefined, 'shows', {
                 search: show.original_name,
                 season: 1,
                 episode: 1
@@ -439,7 +441,7 @@ export default class MetadataAdapter {
 
                     TMDb.getShowSeasonEpisode(tmdbId, season, episode)
                       .then(data => {
-                        TorrentAdapter(undefined, 'shows', {
+                        this.getTorrents(undefined, 'shows', {
                           search: show.original_name,
                           season,
                           episode

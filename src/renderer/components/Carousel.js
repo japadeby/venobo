@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import classNames from 'classnames'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import { withTranslate } from './react-multilingual'
 
@@ -118,12 +118,12 @@ class Carousel extends Component {
           <i className={nav.next} onClick={this.handleNext}></i>
           <CollectionHeader>
             {props.route ? (
-              <NavLink to={props.route}>
+              <Link to={props.route}>
                 <span>
                   <HeaderButton>{props.translate('show.more')}</HeaderButton>
                   <h2>{props.title}</h2>
                 </span>
-              </NavLink>
+              </Link>
             ) : (
               <h2>{props.title}</h2>
             )}

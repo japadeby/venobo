@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux'
+import { routerReducer } from 'react-router-redux'
 
 import { searchReducer } from '../components/Search/redux'
 import { tooltipReducer } from '../components/Tooltip/redux'
@@ -14,6 +15,7 @@ export default (appState) => {
     starred: starredReducer,
     tooltip: tooltipReducer,
     search: searchReducer,
+    routing: routerReducer,
     media: mediaReducer,
     app: (state = appState) => state,
     home: homeReducer

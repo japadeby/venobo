@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 //import randomString from 'crypto-random-string'
 
 import { tooltipActions } from './Tooltip/redux'
@@ -88,31 +88,25 @@ export default class Poster extends Component {
   }
 
   render() {
-    const items = this.props.items.map((item, index) => {
-      return (
-        <div className="react-item movie" key={index} data-tooltip={index}>
-          <div className="front" onMouseEnter={this.showTooltip}> {/*onMouseLeave={this.props.dismissTooltipDelay}>*/}
-            <Link to={`/media/${item.type}/${item.tmdb}`}>
-              {item.poster ? (
-                <div className="front-image" style={{backgroundImage: `url(${item.poster})`}}>
-                  <div className="backdrop medium">
-                    <div className="react-play-button fill">
-                      <figure className="icon-content" />
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <span></span>
-              )}
-            </Link>
-          </div>
-        </div>
-      )
-    })
-
     return (
       <div>
-        {items}
+        {this.props.items.map((item, index) => (
+          <div className="react-item movie" key={index} data-tooltip={index}>
+            <div className="front" onMouseEnter={this.showTooltip} onMouseLeave={this.props.dismissTooltipDelay}>
+              <Link to={`/media/${item.type}/${item.tmdb}`}>
+                {item.poster &&
+                  <div className="front-image" style={{backgroundImage: `url(${item.poster})`}}>
+                    <div className="backdrop medium">
+                      <div className="react-play-button fill">
+                        <figure className="icon-content" />
+                      </div>
+                    </div>
+                  </div>
+                }
+              </Link>
+            </div>
+          </div>
+        ))}
       </div>
     )
   }

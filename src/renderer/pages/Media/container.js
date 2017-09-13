@@ -61,53 +61,78 @@ export default class MediaPage extends Component {
     return Object.keys(episodes).map(episode => {
       const {poster, title, summary, voted, votes, torrents} = episodes[episode]
       return (
-        <div className="episode table" key={episode}>
-          <Link to={`/player/show/${media.tmdb}/${season}/${episode}`}>
-            <div className="front">
-              <div>
-                <h3>
-                  <a className="episode-link">
-                    <div className="front-image episode-img" style={{background: `url(${poster}) no-repeat center center`}}></div>
-                  </a>
-                </h3>
-                <div className="backdrop small">
-                  <div className="box">
-                    <div className="play-link"></div>
-                    <div className="load-spinner dark small"></div>
-                  </div>
-                </div>
+        <div className="react-item episode" key={episode}>
+          <div className="front">
+            <div className="front-image" style={{
+              backgroundImage: `url(${poster})`
+            }}></div>
+            <div className="backdrop medium">
+              <div className="react-play-button fill">
+                <figure className="icon-content"></figure>
               </div>
             </div>
-            <div className="meta-data-container">
-              <div className="meta">
-                <span className="title">{episode}. {title}</span>
-                &nbsp;&nbsp;&nbsp;
-                {/*<span className="episode-length">57min</span>*/}
-                <span className="flags">
-                  {Object.keys(torrents).map(quality => {
-                    return (
-                      <span className="flag" key={quality}>{quality}</span>
-                    )
-                  })}
-                </span>
-              </div>
-              <div className="table">
-                <div className="synopsis">
-                  <span>{summary}</span>
-                </div>
-                <div className="progress">
-                  <progress value="99" max="100">99% </progress>
-                  <p className="remaining">0 minutter tilbage</p>
-                </div>
-                <div className="starred">
-                  <a className="icon starred"></a>
-                </div>
-              </div>
+            <div className="episode-labels episode-progress">
+              <div className="title">{episode}. {title}</div>
             </div>
-          </Link>
+            <progress max="100" value="100" />
+          </div>
+          <span className="flags">
+            {Object.keys(torrents).map(quality => (
+              <span className="flag" key={quality}>{quality}</span>
+            ))}
+          </span>
+          <div className="duration">
+            10m
+          </div>
+          <div className="synopsis">{summary}</div>
         </div>
       )
     })
+
+    /*<div className="episode table" key={episode}>
+      <Link to={`/player/show/${media.tmdb}/${season}/${episode}`}>
+        <div className="front">
+          <div>
+            <h3>
+              <a className="episode-link">
+                <div className="front-image episode-img" style={{background: `url(${poster}) no-repeat center center`}}></div>
+              </a>
+            </h3>
+            <div className="backdrop small">
+              <div className="box">
+                <div className="play-link"></div>
+                <div className="load-spinner dark small"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="meta-data-container">
+          <div className="meta">
+            <span className="title">{episode}. {title}</span>
+            &nbsp;&nbsp;&nbsp;
+            <span className="flags">
+              {Object.keys(torrents).map(quality => {
+                return (
+                  <span className="flag" key={quality}>{quality}</span>
+                )
+              })}
+            </span>
+          </div>
+          <div className="table">
+            <div className="synopsis">
+              <span>{summary}</span>
+            </div>
+            <div className="progress">
+              <progress value="99" max="100">99% </progress>
+              <p className="remaining">0 minutter tilbage</p>
+            </div>
+            <div className="starred">
+              <a className="icon starred"></a>
+            </div>
+          </div>
+        </div>
+      </Link>
+    </div>*/
   }
 
   componentDidMount() {
@@ -207,13 +232,13 @@ export default class MediaPage extends Component {
                 </div>
               </Scaffold>
             </div>
-            <section className="block season landscape">
-              <Scaffold>
-                <div className="episodes" ref="episodes">
-                  {state.episodes}
-                </div>
-              </Scaffold>
-            </section>
+            <Scaffold>
+              <section className="block collection landscape episode">
+                  <div className="react-grid">
+                    {state.episodes}
+                  </div>
+              </section>
+          </Scaffold>
           </div>
         }
         {similar.length !== 0 &&

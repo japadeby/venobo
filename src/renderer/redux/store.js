@@ -1,15 +1,14 @@
 import { createStore as _createStore, applyMiddleware, compose } from 'redux'
+import { routerMiddleware } from 'react-router-redux'
 import thunk from 'redux-thunk'
-import logger from 'redux-logger'
-import { combineReducers } from 'redux'
 
-import {setupDispatchHandlers} from '../lib/dispatcher'
+import { setupDispatchHandlers } from '../lib/dispatcher'
 
 import config from '../../config'
 import createReducer from './reducer'
 
-export default function createStore(appState) {
-  const middleware = [thunk, logger]
+export default function createStore(appState, history) {
+  const middleware = [thunk, routerMiddleware(history)]
 
   let finalCreateStore
   if (config.IS.DEV) {

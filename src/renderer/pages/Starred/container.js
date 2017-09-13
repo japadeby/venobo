@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
 
 import {
   Scaffold,
@@ -10,7 +9,6 @@ import {
 } from '../../components/Items'
 import { Poster } from '../../components'
 
-@connect(state => ({ ...state.starred }))
 export default class StarredPage extends Component {
 
   render () {

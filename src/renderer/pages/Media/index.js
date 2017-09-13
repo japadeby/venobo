@@ -32,7 +32,7 @@ export default class MediaController extends Component {
     return props.isReady ? (
       <MediaPage />
     ) : (
-      <Loader spinner="dark" container="dark" top="250px" />
+      <Loader spinner="dark" container="dark" />
     )
   }
 

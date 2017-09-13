@@ -3,7 +3,7 @@ import async from 'async'
 import MetadataAdapter from '../../../api/metadata/adapter'
 import { FETCHED, ERROR, FETCHING } from './constants'
 
-export function fetchMedia() {
+export const fetchMedia = () => {
   return (dispatch, getState) => {
     if (getState().home.isReady) {
       dispatch({ type: FETCHING })
@@ -32,6 +32,7 @@ export function fetchMedia() {
       }
     }, (error, res) => {
       if (error) {
+        console.log(error)
         dispatch({ type: ERROR, error })
       } else {
         dispatch({

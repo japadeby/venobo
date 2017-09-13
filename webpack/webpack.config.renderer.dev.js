@@ -30,11 +30,11 @@ export default merge.smart(baseConfig, {
   entry: [
     'react-hot-loader/patch',
     `webpack-hot-middleware/client?path=http://localhost:${port}/__webpack_hmr`,
-    path.join(process.cwd(), 'src', 'renderer', 'index.js'),
+    path.join(process.cwd(), 'src', 'renderer'),
   ],
 
   output: {
-    publicPath: `http://localhost:${port}/dist/`
+    publicPath: `http://localhost:${port}/dist`
   },
 
   module: {

@@ -53,7 +53,8 @@
       "command": "node --trace-warnings -r babel-register webpack/webpack-dev-server.js",
       "env": {
         "NODE_ENV": "development",
-        "WEBPACK_PORT": 9000
+        "WEBPACK_PORT": 9000,
+        "HOT": 1
       }
     }
   },
@@ -87,9 +88,10 @@
     "react-dom": "^15.4.2",
     "react-redux": "^5.0.5",
     "react-redux-router": "0.0.5",
-    "react-router": "^4.1.1",
+    "react-router": "^4.2.0",
     "react-router-dom": "^4.1.0",
     "react-router-redux": "^4.0.8",
+    "react-tap-event-plugin": "^2.0.1",
     "redux": "^3.7.1",
     "redux-devtools": "^3.4.0",
     "redux-devtools-dock-monitor": "^1.1.2",

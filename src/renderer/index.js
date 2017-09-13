@@ -1,25 +1,20 @@
 console.time('init')
 
-// Accept HMR
-if (module.hot) {
-  module.hot.accept()
-}
-
-import debounce from 'debounce'
-import {clipboard, remote, ipcRenderer} from 'electron'
-import React from 'react'
-import ReactDOM from 'react-dom'
+import { clipboard, remote, ipcRenderer } from 'electron'
+import { syncHistoryWithStore } from 'react-router-redux'
+import { createBrowserHistory } from 'history'
+import injectTapEventPlugin from 'react-tap-event-plugin'
 
 //import {error, log} from './lib/logger'
+import dispatch, { setupDispatchHandlers } from './lib/dispatcher'
 import MetadataAdapter from './api/metadata/adapter'
-import dispatch, {setupDispatchHandlers} from './lib/dispatcher'
 import crashReporter from '../crashReporter'
-import State from './lib/state'
-import createApp from './app'
 import createStore from './redux/store'
+import State from './lib/state'
 import sound from './lib/sound'
 import config from '../config'
 import HTTP from './lib/http'
+import createApp from './app'
 
 class Renderer {
 
@@ -30,16 +25,15 @@ class Renderer {
   dispatchHandlers: Object
 
   constructor() {
+    injectTapEventPlugin()
     // Initialize crash reporter
     crashReporter()
     // Load state
-    State.load((err, state) => {
-      if (err) throw new Error(err)
-      this.onState(state)
-    })
+    State.load(this.onState)
   }
 
-  onState(state) {
+  onState = (err, state) => {
+    if (err) throw new Error(err)
     // Make available for easier debugging
     this.state = state
 
@@ -51,10 +45,15 @@ class Renderer {
     )*/
 
     // Create Redux store
-    this.store = createStore(state)
+    //this.store = createStore(state)
 
+    const browserHistory = createBrowserHistory()
+    const store = this.store = createStore(state, browserHistory)
+    const history = this.history = syncHistoryWithStore(browserHistory, store)
+
+    state.saved.history = history
     // Setup dispatch handlers
-    setupDispatchHandlers(state, this.store)
+    setupDispatchHandlers(state, store)
 
     // Setup MetadataAdapter
     MetadataAdapter.setup(state)
@@ -112,31 +111,12 @@ class Renderer {
     return cast
   }
 
-  // Some state changes can't be reflected in the DOM, instead we have to
-  // tell the main process to update the window or OS integrations
-  /*updateElectron() {
-    const {window, prev, dock} = this.state
-
-    if (window.title !== prev.title && window.title !== null) {
-      prev.title = window.title
-      ipcRenderer.send('setTitle', window.title)
-    }
-    if (dock.progress.toFixed(2) !== prev.progress.toFixed(2)) {
-      prev.progress = dock.progress
-      ipcRenderer.send('setProgress', dock.progress)
-    }
-    if (dock.badge !== prev.badge) {
-      prev.badge = dock.badge
-      ipcRenderer.send('setBadge', dock.badge || 0)
-    }
-  }*/
-
-  setupApp() {
-    const { state, store, api } = this
+  setupApp = () => {
+    const { state, api, history, store } = this
     const { iso2 } = state.saved.prefs
 
     api.fetchCache(`translation/${iso2}`)
-      .then(translation => createApp(store, state, translation))
+      .then(translation => createApp(state, store, history, translation))
       .catch(err => {
         dispatch('error', err)
         const path = require('path')
@@ -150,7 +130,7 @@ class Renderer {
           throw e
         }
 
-        createApp(store, state, translation)
+        createApp(state, store, history, translation)
       })
   }
 

@@ -48,7 +48,7 @@ export default class iDopeTorrentProvider {
     return torrents
   }
 
-  getStatus(): Boolean {
+  getStatus(): Promise {
     return HTTP.get(this.endpoint)
       .then(res => res.status === 200)
       .catch(() => false)

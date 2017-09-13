@@ -138,7 +138,7 @@ export default class DiscoverController extends Component {
         				 <div className="align-right">
         					<ul className="sortby">
                     {sortBy.map(key => {
-                      const isActive = classNames({active: key === params.sortBy})
+                      const isActive = classNames({ active: key === params.sortBy })
 
                       return (
                         <li key={key} className={isActive}>
@@ -181,7 +181,7 @@ export default class DiscoverController extends Component {
         }
       </ContentCategory>
     ) : (
-      <Loader spinner="dark" container="dark" top="250px" />
+      <Loader spinner="dark" container="dark" />
     )
   }
 

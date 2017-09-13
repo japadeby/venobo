@@ -1,8 +1,8 @@
-import {app, BrowserWindow} from 'electron'
+import { app, BrowserWindow } from 'electron'
 import debounce from 'debounce'
 
-import {WINDOW, APP} from '../config'
-import {log} from './log'
+import { WINDOW, APP, IS } from '../config'
+import { log } from './log'
 import Menu from './menu'
 import Tray from './tray'
 

@@ -1,7 +1,7 @@
-import {app, Menu} from 'electron'
+import { app, Menu } from 'electron'
 
 // import dialog from './dialog'
-import {log} from './log'
+import { log } from './log'
 
 /**
  * Add a right-click menu to the dock icon. (Mac)

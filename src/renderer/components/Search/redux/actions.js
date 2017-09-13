@@ -2,7 +2,7 @@ import { TOGGLE, FETCHING, EMPTY, FILTER, FETCHED, DISMISS } from './constants'
 import MetadataAdapter from '../../../api/metadata/adapter'
 
 export const searchToggle = () => {
-  return (dispatch) => {
+  return (dispatch, getState) => {
     if (!getState().search.active) {
       dispatch({ type: TOGGLE })
     }

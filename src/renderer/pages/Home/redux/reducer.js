@@ -2,7 +2,10 @@ import { FETCHED, FETCHING } from './constants'
 
 const initialState = {
   isReady: false,
-  media: {}
+  media: {
+    shows: null,
+    movies: null
+  }
 }
 
 export default function reducer(state = initialState, action) {

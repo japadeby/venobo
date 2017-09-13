@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router'
 import classNames from 'classnames'
 import { connect } from 'react-redux'
 
@@ -27,7 +27,7 @@ class Header extends Component {
   }
 
   render() {
-    const {search, translate, searchToggle, app} = this.props
+    const { search, translate, searchToggle, app } = this.props
 
     const pageHeaderClass = classNames(
       'block page-header',
@@ -43,17 +43,17 @@ class Header extends Component {
       <div className={pageHeaderClass}>
         <div className="scaffold">
           <div className="logo">
-            <NavLink to="/home">
+            <Link to="/home">
               <img src={config.APP.LARGE_LOGO} width="144" height="35" />
-            </NavLink>
+            </Link>
           </div>
           <nav className="sections">
-            <NavLink to="/discover/shows/all/popularity.desc">
+            <Link to="/discover/shows/all/popularity.desc">
               <span>{translate('nav.series')}</span>
-            </NavLink>
-            <NavLink to="/discover/movies/all/popularity.desc">
+            </Link>
+            <Link to="/discover/movies/all/popularity.desc">
               <span>{translate('nav.movies')}</span>
-            </NavLink>
+            </Link>
           </nav>
           <div className="user" ref="user">
             <div className="details authenticated" onMouseEnter={this.userHover} onMouseLeave={this.userLeave}>
@@ -66,19 +66,19 @@ class Header extends Component {
                 <div className="box-shadow">
                   <ul>
                     <li>
-                      <NavLink to="/watched" className="icon watched">
+                      <Link to="/watched" className="icon watched">
                         <span>{translate('watched')}</span>
-                      </NavLink>
+                      </Link>
                     </li>
                     <li>
-                      <NavLink to="/starred" className="icon starred">
+                      <Link to="/starred" className="icon starred">
                         <span>{translate('starred')}</span>
-                      </NavLink>
+                      </Link>
                     </li>
                     <li>
-                      <NavLink to="/preferences" className="icon settings">
+                      <Link to="/preferences" className="icon settings">
                         <span>{translate('preferences')}</span>
-                      </NavLink>
+                      </Link>
                     </li>
                   </ul>
                   {/*<ul>

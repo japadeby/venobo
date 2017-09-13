@@ -19,7 +19,7 @@ export default class StarredController extends Component {
 
     return props.isReady ? (
         <ContentStarred>
-          <StarredPage />
+          <StarredPage {...props} />
         </ContentStarred>
       ) : (
         <Loader spinner="dark" container="dark" />

@@ -111,8 +111,12 @@ export const Loader = ({ top, container, spinner, bottom }) => {
   const searchSpinner = classNames('search-spinner load-spinner no-query', spinner)
   const spinnerContainer = classNames('spinner-container', container)
 
+  const style = !top && !bottom
+    ? { marginTop: `${($(window).height() / 2) - 66}px`, marginBottom: bottom }
+    : { marginTop: top, marginBottom: bottom }
+
   return (
-    <div className={searchSpinner} style={{marginTop: top, marginBottom: bottom}}>
+    <div className={searchSpinner} style={style}>
       <div className={spinnerContainer}>
         <div className="spinner-line line01"></div>
         <div className="spinner-line line02"></div>
