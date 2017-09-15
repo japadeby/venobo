@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
-import { Router } from 'react-router'
+import { Router } from 'react-router-dom'
 import { AppContainer as HotEnabler } from 'react-hot-loader'
 
 import { IntlProvider } from './components/react-multilingual'
@@ -16,11 +16,11 @@ export default function createApp(state, store, history, translations) {
     ReactDOM.render(
       <HotEnabler>
         <Provider store={store} key="provider">
-          <IntlProvider translations={translations}>
-            <Router history={history}>
+          <Router history={history}>
+            <IntlProvider translations={translations}>
               <Routes appState={state} />
-            </Router>
-          </IntlProvider>
+            </IntlProvider>
+          </Router>
         </Provider>
       </HotEnabler>,
       dest

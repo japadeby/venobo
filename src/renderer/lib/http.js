@@ -50,7 +50,7 @@ export default class HTTP {
 
     return new Promise((resolve, reject) => {
       Limiter.removeTokens(1, (err, remaining) => {
-        this.fetch(...args)
+        this.get(...args)
           .then(resolve)
           .catch(reject)
       })

@@ -1,5 +1,6 @@
 import path from 'path'
 import EventEmitter from 'event-emitter-es6'
+import { createMemoryHistory } from 'history'
 import cpFile from 'cp-file'
 import fs from 'fs'
 import debounce from 'debounce'
@@ -68,7 +69,6 @@ class State extends EventEmitter {
         isFullScreen: false,
         title: config.APP_WINDOW_TITLE
       },
-      history: {},
       selectedInfoHash: null, /* the torrent we've selected to view details. see state.torrents */
       playing: this.getDefaultPlayState(), /* the media (audio or video) that we're currently playing */
       devices: {}, /* playback devices like Chromecast and AppleTV */
@@ -139,11 +139,7 @@ class State extends EventEmitter {
         defaultQuality: '1080p',
         shouldSaveHistory: true
       },
-      history: {
-        location: {
-          pathname: '/home'
-        }
-      },
+      history: null,
       starred: {
         movies: [],
         shows: []

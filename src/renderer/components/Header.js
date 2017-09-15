@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Link } from 'react-router'
+import { NavLink } from 'react-router-dom'
 import classNames from 'classnames'
 import { connect } from 'react-redux'
 
@@ -43,17 +43,17 @@ class Header extends Component {
       <div className={pageHeaderClass}>
         <div className="scaffold">
           <div className="logo">
-            <Link to="/home">
+            <NavLink to="/home">
               <img src={config.APP.LARGE_LOGO} width="144" height="35" />
-            </Link>
+            </NavLink>
           </div>
           <nav className="sections">
-            <Link to="/discover/shows/all/popularity.desc">
+            <NavLink to="/discover/shows/all/popularity.desc">
               <span>{translate('nav.series')}</span>
-            </Link>
-            <Link to="/discover/movies/all/popularity.desc">
+            </NavLink>
+            <NavLink to="/discover/movies/all/popularity.desc">
               <span>{translate('nav.movies')}</span>
-            </Link>
+            </NavLink>
           </nav>
           <div className="user" ref="user">
             <div className="details authenticated" onMouseEnter={this.userHover} onMouseLeave={this.userLeave}>
@@ -66,19 +66,19 @@ class Header extends Component {
                 <div className="box-shadow">
                   <ul>
                     <li>
-                      <Link to="/watched" className="icon watched">
+                      <NavLink to="/watched" className="icon watched">
                         <span>{translate('watched')}</span>
-                      </Link>
+                      </NavLink>
                     </li>
                     <li>
-                      <Link to="/starred" className="icon starred">
+                      <NavLink to="/starred" className="icon starred">
                         <span>{translate('starred')}</span>
-                      </Link>
+                      </NavLink>
                     </li>
                     <li>
-                      <Link to="/preferences" className="icon settings">
+                      <NavLink to="/preferences" className="icon settings">
                         <span>{translate('preferences')}</span>
-                      </Link>
+                      </NavLink>
                     </li>
                   </ul>
                   {/*<ul>

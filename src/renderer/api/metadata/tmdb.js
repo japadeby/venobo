@@ -4,8 +4,10 @@ import config from '../../../config'
 export default class TMDbProvider {
 
   tmdb: Object
+  state: Object
 
   constructor(state) {
+    this.state = state
     this.tmdb = new HTTP({
       baseURL: `${config.TMDB.API}/3`,
       params: {
@@ -72,7 +74,7 @@ export default class TMDbProvider {
   }
 
   searchAll(query: String, page: Number = 1) {
-    return this.tmdb.fetchLimit('search/multi', { include_adult: true, page, query })
+    return this.tmdb.fetchLimit('search/multi', { include_adult: this.state.saved.prefs.includeAdult, page, query })
       .then(data => data.results)
   }
 

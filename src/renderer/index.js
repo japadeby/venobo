@@ -8,6 +8,7 @@ import injectTapEventPlugin from 'react-tap-event-plugin'
 //import {error, log} from './lib/logger'
 import dispatch, { setupDispatchHandlers } from './lib/dispatcher'
 import MetadataAdapter from './api/metadata/adapter'
+import TorrentAdapter from './api/torrent/adapter'
 import crashReporter from '../crashReporter'
 import createStore from './redux/store'
 import State from './lib/state'
@@ -47,22 +48,21 @@ class Renderer {
     // Create Redux store
     //this.store = createStore(state)
 
-    const browserHistory = createBrowserHistory()
-    const store = this.store = createStore(state, browserHistory)
-    const history = this.history = syncHistoryWithStore(browserHistory, store)
-
-    state.saved.history = history
-    // Setup dispatch handlers
-    setupDispatchHandlers(state, store)
-
-    // Setup MetadataAdapter
-    MetadataAdapter.setup(state)
+    const history = !!state.saved.history ? state.saved.history : createBrowserHistory()
+    const store = this.store = createStore(state, history)
+    //const history = this.history = syncHistoryWithStore(browserHistory, store)
 
     // Setup API HTTP
     this.api = new HTTP({ baseURL: config.APP.API })
 
-    // Setup App
-    this.setupApp()
+    // Setup dispatch handlers
+    setupDispatchHandlers(state, store)
+
+    TorrentAdapter.checkProviders().then(() => {
+      MetadataAdapter.setup(state)
+
+      this.setupApp(history, state, store)
+    })
 
     // Listen for messages from the main process
     this.setupIpc()
@@ -111,12 +111,12 @@ class Renderer {
     return cast
   }
 
-  setupApp = () => {
-    const { state, api, history, store } = this
+  setupApp = (history, state, store) => {
     const { iso2 } = state.saved.prefs
+    const data = [state, store, history]
 
-    api.fetchCache(`translation/${iso2}`)
-      .then(translation => createApp(state, store, history, translation))
+    this.api.fetchCache(`translation/${iso2}`)
+      .then(translation => createApp(...data, translation))
       .catch(err => {
         dispatch('error', err)
         const path = require('path')
@@ -130,7 +130,7 @@ class Renderer {
           throw e
         }
 
-        createApp(state, store, history, translation)
+        createApp(...data, translation)
       })
   }
 

@@ -1,16 +1,16 @@
 /**
  * Handle a promise and set a timeout
  */
-export function timeout(promise, time: Number = 2500) {
+export function timeout(promise: Promise, time: Number = 5000) {
   return new Promise((resolve, reject) => {
-    promise.then(resolve).catch(console.log)
+    promise.then(resolve).catch(reject)
 
-    setTimeout(() => {
+    /*setTimeout(() => {
       reject(new Error('Timeout exceeded'))
     }, process.env.CONFIG_API_TIMEOUT
         ? parseInt(process.env.CONFIG_API_TIMEOUT, 10)
         : time
-    )
+    )*/
   })
 }
 

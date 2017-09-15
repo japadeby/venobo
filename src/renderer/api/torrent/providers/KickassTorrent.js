@@ -1,14 +1,13 @@
-import axios from 'axios'
 import cheerio from 'cheerio'
 
-import HTTP from '../../lib/http'
+import HTTP from '../../../lib/http'
 import {
   mergeProviderPromises,
   formatSeasonEpisodeToString,
   constructSeasonQueries,
   constructSearchQueries,
   timeout
-} from './provider'
+} from '../provider'
 
 export default class KickassTorrentProvider {
 
@@ -21,7 +20,7 @@ export default class KickassTorrentProvider {
   }
 
   fetch(query: String): Promise {
-    return this.api.fetchLimitCache(`usearch/${encodeURIComponent(query)}`, { field: 'seeders', sorder: 'desc' })
+    return this.api.fetchLimit(`usearch/${encodeURIComponent(query)}`, { field: 'seeders', sorder: 'desc' })
       .then(res => this.cheerio(res))
       .catch(err => [])
   }
@@ -45,10 +44,10 @@ export default class KickassTorrentProvider {
     return torrents
   }
 
-  getStatus(): Boolean {
-    return axios.get(this.endpoint)
-      .then(res => res.status === 200)
-      .catch(() => false)
+  getStatus(): Promise {
+    return this.api.get()
+      .then(res => true)
+      .catch(err => false)
   }
 
   provide(imdbId: String, type: String, extendedDetails: Object): Promise<Array> {
@@ -56,18 +55,18 @@ export default class KickassTorrentProvider {
 
     switch (type) {
       case 'movies':
-        return timeout(this.fetch(imdbId || search))
+        return this.fetch(imdbId || search)
 
       case 'shows': {
-        const {season, episode} = extendedDetails
+        const { season, episode } = extendedDetails
 
-        return timeout(this.fetch(
+        return this.fetch(
           `${search} ${formatSeasonEpisodeToString(season, episode)}`
-        ))
+        )
       }
 
       case 'season_complete': {
-        const {season} = extendedDetails
+        const { season } = extendedDetails
         const queries = constructSeasonQueries(search, season)
 
         return Promise.all(
@@ -82,6 +81,7 @@ export default class KickassTorrentProvider {
           ))
         )
       }
+
       default:
         return []
     }

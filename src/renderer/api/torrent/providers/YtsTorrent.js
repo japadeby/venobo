@@ -1,17 +1,22 @@
-import HTTP from '../../lib/http'
+import HTTP from '../../../lib/http'
 import {
+  timeout,
   encodeUri,
   determineQuality,
   constructMagnet
-} from './provider'
+} from '../provider'
 
 export default class YtsTorrentProvider {
 
   endpoint = 'https://yts.ag/api/v2/list_movies.json'
   provider = 'Yify'
 
+  constructor() {
+    this.api = new HTTP({ baseURL: this.endpoint })
+  }
+
   fetch(imdbId: String): Promise {
-    return HTTP.get(this.endpoint, {
+    return this.api.fetchLimit('', {
       query_term: imdbId,
       order_by: 'desc',
       sort_by: 'seeds',
@@ -32,8 +37,8 @@ export default class YtsTorrentProvider {
   }
 
   getStatus(): Promise {
-    return HTTP.get(this.endpoint)
-      .then(res => res.status === 200)
+    return this.api.get()
+      .then(res => true)
       .catch(err => false)
   }
 

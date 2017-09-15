@@ -1,6 +1,6 @@
 import cheerio from 'cheerio'
 
-import HTTP from '../../lib/http'
+import HTTP from '../../../lib/http'
 import {
   mergeProviderPromises,
   formatSeasonEpisodeToString,
@@ -8,7 +8,7 @@ import {
   constructSearchQueries,
   timeout,
   constructMagnet
-} from './provider'
+} from '../provider'
 
 export default class iDopeTorrentProvider {
 
@@ -21,12 +21,12 @@ export default class iDopeTorrentProvider {
   }
 
   fetchMovies(query: String) {
-    return this.api.get(`torrent-list/${query}/`, { c: 1 })
+    return this.api.fetchLimit(`torrent-list/${query}/`, { c: 1 })
       .then(res => this.cheerio(res))
   }
 
   fetchShows(query: String) {
-    return this.api.get(`torrent-list/${query}/`, { c: 3 })
+    return this.api.fetchLimit(`torrent-list/${query}/`, { c: 3 })
       .then(res => this.cheerio(res))
   }
 
@@ -49,26 +49,24 @@ export default class iDopeTorrentProvider {
   }
 
   getStatus(): Promise {
-    return HTTP.get(this.endpoint)
-      .then(res => res.status === 200)
-      .catch(() => false)
+    return this.api.get()
+      .then(res => true)
+      .catch(err => false)
   }
 
   provide(imdbId: String, type: String, extendedDetails: Object): Promise {
-    const {search} = extendedDetails
+    const { search } = extendedDetails
 
     switch (type) {
       case 'movies':
-        return timeout(
-          this.fetchMovies(search)
-        ).catch(err => [])
+        return this.fetchMovies(search)
 
       case 'shows': {
-        const {season, episode} = extendedDetails
+        const { season, episode } = extendedDetails
 
-        return timeout(this.fetchShows(
+        return this.fetchShows(
           `${search} ${formatSeasonEpisodeToString(season, episode)}`
-        )).catch(err =>  [])
+        )
       }
 
       default:

@@ -1,5 +1,5 @@
 import { createStore as _createStore, applyMiddleware, compose } from 'redux'
-import { routerMiddleware } from 'react-router-redux'
+//import { routerMiddleware } from 'react-router-redux'
 import thunk from 'redux-thunk'
 
 import { setupDispatchHandlers } from '../lib/dispatcher'
@@ -8,7 +8,8 @@ import config from '../../config'
 import createReducer from './reducer'
 
 export default function createStore(appState, history) {
-  const middleware = [thunk, routerMiddleware(history)]
+  const middleware = [thunk]//[thunk, routerMiddleware(history)]
+  const rootReducer = createReducer(appState)
 
   let finalCreateStore
   if (config.IS.DEV) {
@@ -24,12 +25,12 @@ export default function createStore(appState, history) {
     finalCreateStore = applyMiddleware(...middleware)(_createStore)
   }
 
-  const store = finalCreateStore(createReducer(appState))
+  const store = finalCreateStore(rootReducer)
 
   if (module.hot) {
     module.hot.accept('./reducer', () => {
       // Setup dispatch handlers
-      store.replaceReducer(require('./reducer')(appState))
+      store.replaceReducer(rootReducer)
       setupDispatchHandlers(appState, store)
     })
   }

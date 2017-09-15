@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Route as ReactRoute } from 'react-router'
+import { Route as ReactRoute, Redirect, Switch, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 
 import dispatch from './lib/dispatcher'
@@ -9,6 +9,7 @@ import { tooltipActions } from './components/Tooltip/redux'
 
 import { View, Multilingual } from './components'
 
+@withRouter
 @connect(null, {
   ...searchActions,
   ...tooltipActions
@@ -40,11 +41,13 @@ export default class Routes extends Component {
 
     return (
       <View>
-        <ReactRoute exact path="/" render={() => <Redirect to={this.getIndex()} />} />
-        <Route path="/home" controller="Home" />
-        <Route path="/media/:type/:tmdb" controller="Media" />
-        <Route path="/starred" controller="Starred" />
-        <Route path="/discover/:type/:genre/:sortBy" controller="Discover" />
+        <Switch>
+          <ReactRoute exact path="/" render={() => <Redirect to={this.getIndex()} />} />
+          <Route path="/home" controller="Home" />
+          <Route path="/media/:type/:tmdb" controller="Media" />
+          <Route path="/starred" controller="Starred" />
+          <Route path="/discover/:type/:genre/:sortBy" controller="Discover" />
+        </Switch>
       </View>
     )
   }
