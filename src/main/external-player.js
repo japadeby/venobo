@@ -2,7 +2,7 @@ import cp from 'child_process'
 import path from 'path'
 import vlcCommand from 'vlc-command'
 
-import {log} from './log'
+import { log } from './log'
 import Main from './window'
 
 // holds a ChildProcess while we're playing a video in an external player, null otherwise

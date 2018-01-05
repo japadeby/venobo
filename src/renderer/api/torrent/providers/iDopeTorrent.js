@@ -20,26 +20,26 @@ export default class iDopeTorrentProvider {
     this.api = new HTTP({ baseURL: this.endpoint })
   }
 
-  fetchMovies(query: String) {
+  fetchMovies(query: String): Promise<Array> {
     return this.api.fetchLimit(`torrent-list/${query}/`, { c: 1 })
       .then(res => this.cheerio(res))
   }
 
-  fetchShows(query: String) {
+  fetchShows(query: String): Promise<Array> {
     return this.api.fetchLimit(`torrent-list/${query}/`, { c: 3 })
       .then(res => this.cheerio(res))
   }
 
-  cheerio(html: String): Promise {
+  cheerio(html: String): Array {
     const $ = cheerio.load(html)
-    const provider = this.provider
+    const { provider } = this
 
     const torrents = $('div#div2child .resultdiv').slice(0, 10).map(function() {
       return {
         metadata: String($(this).find('.resultdivtop .resultdivtopname').text()).trim(),
         size: $(this).find('.resultdivbotton .resultdivbottonlength').text(),
         seeds: $(this).find('.resultdivbotton .resultdivbottonseed').text(),
-        leechers: undefined,
+        leechers: null,
         magnet: constructMagnet($(this).find('.resultdivbotton .hideinfohash').first().text()),
         _provider: provider
       }

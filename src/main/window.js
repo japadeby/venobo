@@ -3,8 +3,8 @@ import debounce from 'debounce'
 
 import { WINDOW, APP, IS } from '../config'
 import { log } from './log'
-import Menu from './menu'
-import Tray from './tray'
+import Menu from './Menu'
+import Tray from './Tray'
 
 export default class Main {
 
@@ -32,11 +32,11 @@ export default class Main {
       Menu.onToggleFullScreen(win.isFullScreen())
     })
 
-    /*win.webContents.on('will-navigate', (e, url) => {
+    win.webContents.on('will-navigate', (e, url) => {
       // Prevent drag-and-drop from navigating the Electron window, which can happen
       // before our drag-and-drop handlers have been initialized.
       e.preventDefault()
-    })*/
+    })
 
     win.on('blur', this.onWindowBlur)
     win.on('focus', this.onWindowFocus)
@@ -56,21 +56,20 @@ export default class Main {
       win.setMenuBarVisibility(true)
     })
 
-    /*win.on('move', debounce(e => {
+    win.on('move', debounce(e => {
       win.send('windowBoundsChanged', e.sender.getBounds())
-    }, 1000))*/
+    }, 1000))
 
-    /*win.on('resize', debounce(e => {
+    win.on('resize', debounce(e => {
       win.send('windowBoundsChanged', e.sender.getBounds())
-    }, 1000))*/
+    }, 1000))
 
     win.on('close', (e) => {
       if (!Tray.hasTray()) {
-        app.quit()
-        return
+        return app.quit()
       }
 
-      if(!app.isQuitting) {
+      if (!app.isQuitting) {
         e.preventDefault()
         this.hide()
       }
@@ -88,8 +87,7 @@ export default class Main {
   }
 
   static show() {
-    if (!this.win) return
-    this.win.show()
+    if (this.win) this.win.show()
   }
 
   static dispatch(...args) {
@@ -97,13 +95,11 @@ export default class Main {
   }
 
   static hide() {
-    if(!this.win) return
-    this.dispatch('backToList')
-    this.win.hide()
+    if (this.win) this.win.hide()
   }
 
   static toggleDevTools() {
-    let win = this.win
+    const { win } = this
     if (!win) return
 
     log('toggleDevTools')
@@ -115,7 +111,7 @@ export default class Main {
   }
 
   static toggleFullScreen(flag) {
-    const win = this.win
+    const { win } = this
     if (!win || !win.isVisible()) return
 
     if (flag == null) flag = !win.isFullScreen()
@@ -129,22 +125,23 @@ export default class Main {
   }
 
   static setAspectRatio(aspectRatio) {
-    if (!this.win) return
-    this.win.setAspectRatio(aspectRatio)
+    if (this.win) this.win.setAspectRatio(aspectRatio)
   }
 
   static onWindowBlur() {
     Menu.setWindowFocus(false)
 
-    if (Tray.hasTray())
+    if (Tray.hasTray()) {
       Tray.setWindowFocus(false)
+    }
   }
 
   static onWindowFocus() {
     Menu.setWindowFocus(true)
 
-    if (Tray.hasTray())
+    if (Tray.hasTray()) {
       Tray.setWindowFocus(true)
+    }
   }
 
   static getIconPath() {
@@ -155,8 +152,10 @@ export default class Main {
 
   static toggleAlwaysOnTop(flag) {
     if (!this.win) return
-    if (flag === null)
+    if (flag === null) {
       flag = !this.win.isAlwaysOnTop()
+    }
+
     log(`toggleAlwaysOnTop ${flag}`)
     this.win.setAlwaysOnTop(flag)
     Menu.onToggleAlwaysOnTop(flag)

@@ -4,7 +4,7 @@ import classNames from 'classnames'
 
 import dispatch from '../lib/dispatcher'
 
-import { starredActions } from '../pages/Starred/redux'
+import { starredActions } from '../containers/Starred/redux'
 
 @connect(
   state => ({ state: state.app }),

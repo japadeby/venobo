@@ -1,6 +1,6 @@
 console.time('init')
 
-import {ipcMain, app} from 'electron'
+import { ipcMain, app } from 'electron'
 import async from 'async'
 import path from 'path'
 import fs from 'fs'
@@ -8,16 +8,17 @@ import mkdirp from 'mkdirp'
 
 import config from '../config'
 import crashReporter from '../crashReporter'
-import {log} from './log'
+import { log } from './log'
 
-import Menu from './menu'
+import Menu from './Menu'
 import State from '../renderer/lib/state'
 import Main from './window'
 import announcement from './announcement'
 import updater from './updater'
 import ipc from './ipc'
+import render from './render'
 
-class MainProcess {
+export default class MainProcess {
 
   shouldQuit: Boolean = false
   isReady: Boolean = false // app ready, windows can be created
@@ -55,25 +56,19 @@ class MainProcess {
     async.parallel({
       appReady: (done) => app.on('ready', () => done(null)),
       state: (done) => State.load(done)
-    }, (err, res) => {
-      this.onReady(err, res)
-    })
+    }, this.onReady.bind(this))
   }
 
   onReady(err, res) {
     if (err) throw err
 
-    /*if (config.IS.DEV) {
-      require('electron-compile').enableLiveReload({
-        strategy: 'react-hmr'
-      })
-    }*/
-
     this.isReady = true
 
-    // Initialize the menu before Main Window
-    Menu.init()
-    Main.init(res.state)
+    render(res.state, () => {
+      // Initialize the menu before Main Window
+      Menu.init()
+      Main.init(res.state)
+    })
     //WebTorrent.init()
 
     // To keep app startup fast, some code is delayed.
@@ -82,7 +77,7 @@ class MainProcess {
     // Report uncaught exceptions
     process.on('uncaughtException', (err) => {
       console.error(err)
-      const error = {message: err.message, stack: err.stack}
+      const error = { message: err.message, stack: err.stack }
       Main.dispatch('uncaughtError', 'main', error)
     })
 
@@ -125,5 +120,3 @@ class MainProcess {
   }
 
 }
-
-export default new MainProcess

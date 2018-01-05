@@ -1,8 +1,8 @@
-import {dialog} from 'electron'
+import { dialog } from 'electron'
 import axios from 'axios'
 
 import config from '../config'
-import {error} from './log'
+import { error } from './log'
 
 const ANNOUNCEMENT_URL = `${config.APP.ANNOUNCEMENT}/${config.APP.VERSION}/${process.platform}`
 

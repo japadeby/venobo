@@ -8,7 +8,7 @@ import config from '../../config'
 
 @connect(
   state => ({ tooltip: state.tooltip }),
-  { ...tooltipActions }
+  tooltipActions
 )
 export default class Poster extends Component {
 
@@ -21,7 +21,7 @@ export default class Poster extends Component {
       const items = this.props.items.map((item, index) => {
         return (
           <div className="react-item movie" key={index} data-tooltip={index}>
-            <div className="front" onMouseEnter={this.showTooltip} onMouseLeave={this.props.dismissTooltipDelay}>
+            <div className="front" onMouseEnter={this.showTooltip} onMouseLeave={this.props.disable}>
               {item.poster &&
                 <div className="front-image" style={{backgroundImage: `url(${item.poster})`}}>
                   <div className="backdrop medium">
@@ -40,50 +40,52 @@ export default class Poster extends Component {
     }
   }
 
-  showTooltip = (e) => {
+  showTooltip = (event) => {
+    const $front = $(event.target).closest('.react-item')
     if (!this.props.tooltip.enabled) {
-      const $front = $(e.target).closest('.react-item')
-      const $frontPos = $front.offset()
-      const $frontWidth = $front.outerWidth()
+      setTimeout(() => {
+        if ($front.contains(event.target)) {
+          const $frontPos = $front.offset()
+          const $frontWidth = $front.outerWidth()
 
-      console.log($frontPos, $frontWidth)
+          const key = $front.data('tooltip')
+          const data = this.props.items[key]
 
-      const key = $front.data('tooltip')
-      const data = this.props.items[key]
+          data.style = {
+            arrow: 70,
+            class: '',
+            position: {}
+          }
 
-      data.style = {
-        arrow: 70,
-        class: '',
-        position: {}
-      }
+          // tooltip is 300px wide
+          const tooltipWidth = 300
 
-      // tooltip is 300px wide
-      const tooltipWidth = 300
+          let tooltipPosLeft = parseFloat($frontPos.left + $frontWidth) + 10
 
-      let tooltipPosLeft = parseFloat($frontPos.left + $frontWidth) + 10
+          if (tooltipPosLeft + tooltipWidth > $(window).innerWidth()) {
+            tooltipPosLeft -= $frontWidth + tooltipWidth
+            data.style.class += 'left'
+          }
 
-      if (tooltipPosLeft + tooltipWidth > $(window).innerWidth()) {
-        tooltipPosLeft -= $frontWidth + tooltipWidth
-        data.style.class += 'left'
-      }
+          const tooltipPosTop = $frontPos.top - 30
+          if (tooltipPosTop <= 25) {
+            tooltipPosLeft -= 20
+            data.style.class += ' menu-offset fixed-top'
+          } else if (tooltipPosTop >= Math.abs($frontPos.top - $(window).height() + 30)) {
+            tooltipPosLeft -= 20
+            data.style.arrow = 300
+            data.style.class += ' fixed-bottom'
+          } else {
+            data.style.position.top = `${tooltipPosTop}px`
+          }
 
-      const tooltipPosTop = $frontPos.top - 30
-      if (tooltipPosTop <= 25) {
-        tooltipPosLeft -= 20
-        data.style.class += ' menu-offset fixed-top'
-      } else if (tooltipPosTop >= Math.abs($frontPos.top - $(window).height() + 30)) {
-        tooltipPosLeft -= 20
-        data.style.arrow = 300
-        data.style.class += ' fixed-bottom'
-      } else {
-        data.style.position.top = `${tooltipPosTop}px`
-      }
+          data.style.position.left = `${tooltipPosLeft}px`
 
-      data.style.position.left = `${tooltipPosLeft}px`
+          data.pageLink = `/media/${data.type}/${data.tmdb}`
 
-      data.pageLink = `/media/${data.type}/${data.tmdb}`
-
-      this.props.toggleTooltip(data)
+          this.props.toggle({ data })
+        }
+      }, 400)
     }
   }
 
@@ -92,7 +94,7 @@ export default class Poster extends Component {
       <div>
         {this.props.items.map((item, index) => (
           <div className="react-item movie" key={index} data-tooltip={index}>
-            <div className="front" onMouseEnter={this.showTooltip} onMouseLeave={this.props.dismissTooltipDelay}>
+            <div className="front" onMouseEnter={this.showTooltip} onMouseLeave={this.props.disable}>
               <Link to={`/media/${item.type}/${item.tmdb}`}>
                 {item.poster &&
                   <div className="front-image" style={{backgroundImage: `url(${item.poster})`}}>

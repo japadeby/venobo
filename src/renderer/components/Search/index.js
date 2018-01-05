@@ -15,14 +15,17 @@ import {
   Loader
 } from '../Items'
 
-@connect(
-  state => ({ ...state.search }),
-  { ...searchActions }
-)
+@connect(state => state.search, { actions: searchActions })
 class Search extends Component {
 
   static propTypes = {
     translate: PropTypes.func.isRequired,
+    search: PropTypes.shape({
+      filter: PropTypes.func.isRequired,
+      fetch: PropTypes.func.isRequired,
+      toggle: PropTypes.func.isRequired,
+      fetched: PropTypes.func.isRequired
+    }),
     searchAction: PropTypes.func.isRequired,
     searchFilter: PropTypes.func.isRequired,
     filter: PropTypes.string.isRequired,
@@ -47,16 +50,14 @@ class Search extends Component {
 
     this.prevQuery = searchQuery
 
-    this.props.searchAction(searchQuery)
+    this.props.actions.fetch(searchQuery)
   }
 
   setResultsFilter(e, filter, disabled) {
-    const {props} = this
-
     e.preventDefault()
 
-    if (props.filter !== filter && !disabled) {
-      props.searchFilter(filter)
+    if (this.props.filter !== filter && !disabled) {
+      this.props.actions.filter(filter)
     }
     return false // prevent scrolling up
   }

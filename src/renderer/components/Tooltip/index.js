@@ -10,7 +10,7 @@ import { tooltipActions } from './redux'
 
 @connect(
   state => ({ ...state.tooltip }),
-  { ...tooltipActions }
+  tooltipActions
 )
 export default class Tooltip extends Component {
 
@@ -20,7 +20,12 @@ export default class Tooltip extends Component {
     return (
       <div id="tooltip">
         {active &&
-          <section className={classNames('tooltip', data.style.class)} style={data.style.position}>
+          <section
+            onMouseEnter={(e) => this.props.enable('tooltip')}
+            onMouseLeave={this.props.disable}
+            className={classNames('tooltip', data.style.class)}
+            style={data.style.position}
+          >
             <header>
               <h1>
                 <Link to={data.pageLink} className="page-link">

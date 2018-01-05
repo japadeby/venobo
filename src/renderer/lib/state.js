@@ -1,8 +1,8 @@
 import path from 'path'
 import EventEmitter from 'event-emitter-es6'
-import { createMemoryHistory } from 'history'
 import cpFile from 'cp-file'
 import fs from 'fs'
+import createMemoryHistory from 'history/createMemoryHistory'
 import debounce from 'debounce'
 import os from 'os'
 
@@ -11,7 +11,7 @@ import config from '../../config'
 const appConfig = require('application-config')(config.APP.NAME)
 appConfig.filePath = path.join(config.PATH.CONFIG, 'config.json')
 
-class State extends EventEmitter {
+export default new (class State extends EventEmitter {
 
   constructor() {
     super()
@@ -139,7 +139,7 @@ class State extends EventEmitter {
         defaultQuality: '1080p',
         shouldSaveHistory: true
       },
-      history: null,
+      history: createMemoryHistory(),
       starred: {
         movies: [],
         shows: []
@@ -188,6 +188,4 @@ class State extends EventEmitter {
     })
   }
 
-}
-
-export default new State
+})

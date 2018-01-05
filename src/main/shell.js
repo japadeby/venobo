@@ -1,5 +1,5 @@
-import {shell} from 'electron'
-import {log} from './log'
+import { shell } from 'electron'
+import { log } from './log'
 
 /**
  * Open the given external protocol URL in the desktop’s default manner.

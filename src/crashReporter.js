@@ -1,7 +1,7 @@
-import {APP} from './config'
-import {crashReporter} from 'electron'
+import { APP } from './config'
+import { crashReporter } from 'electron'
 
-export default function() {
+export default () => {
   crashReporter.start({
     companyName: APP.NAME,
     productName: APP.NAME,

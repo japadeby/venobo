@@ -26,7 +26,7 @@ export default class KickassTorrentProvider {
   }
 
   cheerio(html: String): Promise {
-    let $ = cheerio.load(html)
+    const $ = cheerio.load(html)
     const provider = this.provider
 
     const torrents = $("table.data tr:not('.firstr')").slice(0, 10).map(function() {
@@ -35,7 +35,7 @@ export default class KickassTorrentProvider {
         magnet: $(this).find('[title="Torrent magnet link"]').attr('href'),
         metadata: $(this).find('a.cellMainLink').text(),
         seeders: parseInt($(this).find('.green.center').text(), 10),
-        //verified: !!$(this).find('[title="Verified Torrent"]').length,
+        verified: !!$(this).find('[title="Verified Torrent"]').length,
         size: $(this).find('.nobr.center').text(),
         _provider: provider
       }

@@ -24,17 +24,16 @@ export default class YtsTorrentProvider {
     }).then(res => res.data)
   }
 
-  formatTorrent(torrent: Object): Object {
-    return {
-      size: torrent.size,
-      quality: torrent.quality,
-      magnet: constructMagnet(torrent.hash),
-      seeders: parseInt(torrent.seeds, 10),
-      leechers: parseInt(torrent.peers, 10),
-      metadata: (String(torrent.url) + String(torrent.hash)) || String(torrent.hash),
-      _provider: this.provider
-    }
-  }
+  formatTorrent = (torrent: Object) => ({
+    size: torrent.size,
+    quality: torrent.quality,
+    magnet: constructMagnet(torrent.hash),
+    seeders: parseInt(torrent.seeds, 10),
+    leechers: parseInt(torrent.peers, 10),
+    metadata: (String(torrent.url) + String(torrent.hash)) || String(torrent.hash),
+    verified: true,
+    _provider: this.provider
+  })
 
   getStatus(): Promise {
     return this.api.get()

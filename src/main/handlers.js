@@ -1,16 +1,16 @@
-import {app} from 'electron'
+import { app } from 'electron'
 import path from 'path'
 
 import config from '../config'
 
 export function install () {
-  if (process.platform === 'win32') { installWin32() }
-  if (process.platform === 'linux') { installLinux() }
+  if (process.platform === 'win32') installWin32()
+  if (process.platform === 'linux') installLinux()
 }
 
 export function uninstall () {
-  if (process.platform === 'win32') { uninstallWin32() }
-  if (process.platform === 'linux') { uninstallLinux() }
+  if (process.platform === 'win32') uninstallWin32()
+  if (process.platform === 'linux') uninstallLinux()
 }
 
 const EXEC_COMMAND = [process.execPath]

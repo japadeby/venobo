@@ -115,16 +115,12 @@ export default class TorrentAdapter {
       )
     )
 
-    const formattedTorrents = {
-      '480p': sortedTorrents.find(torrent => torrent.quality === '480p'),
-      '720p': sortedTorrents.find(torrent => torrent.quality === '720p'),
-      '1080p': sortedTorrents.find(torrent => torrent.quality === '1080p'),
-      '4K': sortedTorrents.find(torrent => torrent.quality === '4k')
-    }
+    const qualities = ['480p', '720p', '1080p', '4k']
+    const formattedTorrents =  qualities.map(quality => {
+      const torrentFound = (sortedTorrents.indexOf(quality) !== -1)
 
-    for (let i in formattedTorrents) {
-      if (formattedTorrents[i] == null) delete formattedTorrents[i]
-    }
+      if (torrentFound) return quality
+    })
 
     return formattedTorrents
   }

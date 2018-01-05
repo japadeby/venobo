@@ -1,30 +1,10 @@
-import { TOGGLE, ENABLE, DISMISS, DISABLE } from './constants'
-import config from '../../../../config'
+import * as tooltip from './constants'
+const create = (action, data = {}) => ({ type: tooltip[action], ...data })
 
-export var timeout
+export const enable = () => create('ENABLE')
 
-export const toggleTooltip = (payload = {}) => {
-  return (dispatch, getState) => {
-    if (!getState().tooltip.active) {
-      dispatch({ type: TOGGLE, payload })
-    }
-  }
-}
+export const disable = () => create('DISABLE')
 
-export const dismissTooltip = () => {
-  return (dispatch, getState) => {
-    if (getState().tooltip.active) {
-      dispatch({ type: DISMISS })
-    }
-  }
-}
+export const toggle = ({ data, eventHandler }) => create('TOGGLE', { data, eventHandler })
 
-export const dismissTooltipDelay = (e) => {
-  return (dispatch, getState) => {
-    timeout = setTimeout(() => {
-      if (!getState().tooltip.active) {
-        dispatch({ type: DISMISS })
-      }
-    }, config.TOOLTIP_DELAY)
-  }
-}
+export const dismiss = () => create('DISMISS')

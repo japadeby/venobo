@@ -1,17 +1,16 @@
-import express from 'express'
-import webpack from 'webpack'
-import path from 'path'
+const express = require('express')
+const webpack = require('webpack')
 
-import config from './webpack.config.renderer.dev'
+const config = require('./config/development')
+//const paths = require('./paths')
 
 const port = process.env.WEBPACK_PORT || 9000
 const compiler = webpack(config)
-const app = express()
 
 const serverOptions = {
-  contentBase: path.join(process.cwd(), 'dist'),//`http://${host}:${port}`,
+  contentBase: `http://localhost:${port}`,
   compress: true,
-  quiet: false,
+  quiet: true,
   noInfo: true,
   hot: true,
   inline: true,
@@ -19,13 +18,10 @@ const serverOptions = {
   publicPath: config.output.publicPath,
   headers: { 'Access-Control-Allow-Origin': '*' },
   stats: { colors: true },
-  watchOptions: {
-    aggregateTimeout: 300,
-    ignored: /node_modules/,
-    poll: 100
-  },
   historyApiFallback: true
 }
+
+const app = express()
 
 app.use(require('webpack-dev-middleware')(compiler, serverOptions))
 app.use(require('webpack-hot-middleware')(compiler))

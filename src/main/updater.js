@@ -1,8 +1,8 @@
-import {autoUpdater} from 'electron'
+import { autoUpdater } from 'electron'
 import axios from 'axios'
 
 import config from '../config'
-import {log, error} from './log'
+import { log, error } from './log'
 import Main from './window'
 
 const AUTO_UPDATE_URL = config.APP.URL +

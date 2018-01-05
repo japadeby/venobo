@@ -1,10 +1,10 @@
-import {app} from 'electron'
+import { app } from 'electron'
 
 import Main from './window'
-import {IS} from '../config'
+import config from '../config'
 
 export function log (...args) {
-  if (IS.DEV) {
+  if (config.IS.DEV) {
     if (app.ipcReady) {
       Main.win.send('log', ...args)
     } else {
@@ -14,7 +14,7 @@ export function log (...args) {
 }
 
 export function error (...args) {
-  if (IS.DEV) {
+  if (config.IS.DEV) {
     if (app.ipcReady) {
       Main.win.send('error', ...args)
     } else {

@@ -1,5 +1,4 @@
 export Carousel from './Carousel'
-export DevTools from './DevTools'
 export Footer from './Footer'
 export Header from './Header'
 export Poster from './Poster'

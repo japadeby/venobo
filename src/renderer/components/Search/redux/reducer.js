@@ -12,7 +12,7 @@ const initialState = {
   fetching: false
 }
 
-export default (state = initialState, action) => {
+export default (state = initialState, action = {}) => {
   switch (action.type) {
     case FETCHING:
       return {
@@ -22,7 +22,15 @@ export default (state = initialState, action) => {
     case FETCHED:
       return {
         ...state,
-        results: action.payload,
+        results: {
+          all: action.result,
+          movies: action.result.filter(
+            media => media.type === 'movie'
+          ),
+          shows: action.result.filter(
+            media => media.type === 'show'
+          )
+        },
         filter: 'all',
         resultsEmpty: false,
         fetching: false
@@ -30,12 +38,7 @@ export default (state = initialState, action) => {
     case TOGGLE:
       return {
         ...state,
-        active: true
-      }
-    case DISMISS:
-      return {
-        ...state,
-        active: false
+        active: !state.active
       }
     case EMPTY:
       return {

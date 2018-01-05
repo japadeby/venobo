@@ -1,18 +1,18 @@
-import {app, ipcMain as ipc} from 'electron'
+import { app, ipcMain as ipc } from 'electron'
 
-import {log} from './log'
-import Menu from './menu'
+import { log } from './log'
+import Menu from './Menu'
 import Main from './window'
 // import dialog from './dialog'
 // import dock from './dock'
-import powerSaveBlocker from './power-save-blocker'
-import Tray from './tray'
+import PowerSaveBlocker from './PowerSaveBlocker'
+import Tray from './Tray'
 import * as thumbar from './thumbar'
 import * as shell from './shell'
 import * as externalPlayer from './external-player'
 
 // Messages from the main process, to be sent once the WebTorrent process starts
-var messageQueueMainToWebTorrent = []
+let messageQueueMainToWebTorrent = []
 
 export default function () {
 
@@ -34,7 +34,7 @@ export default function () {
 
   ipc.on('onPlayerOpen', () => {
     Menu.togglePlaybackControls(true)
-    powerSaveBlocker.enable()
+    PowerSaveBlocker.enable()
     thumbar.enable()
   })
 
@@ -45,17 +45,17 @@ export default function () {
 
   ipc.on('onPlayerClose', () => {
     Menu.togglePlaybackControls(false)
-    powerSaveBlocker.disable()
+    PowerSaveBlocker.disable()
     thumbar.disable()
   })
 
   ipc.on('onPlayerPlay', () => {
-    powerSaveBlocker.enable()
+    PowerSaveBlocker.enable()
     thumbar.onPlayerPlay()
   })
 
   ipc.on('onPlayerPause', () => {
-    powerSaveBlocker.disable()
+    PowerSaveBlocker.disable()
     thumbar.onPlayerPause()
   })
 
