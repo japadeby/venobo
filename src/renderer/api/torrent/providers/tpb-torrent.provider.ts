@@ -19,15 +19,15 @@ export class ThePirateBayTorrentProvider implements ITorrentProvider {
 
     private fetch(query) {
         return this.api.get(`search/${query}/0/99/200`)
-            .then(({ data }) => this.cheerio(data))
+            .then(res => this.cheerio(res.data))
             .catch(() => []);
     }
 
-    cheerio(html) {
+    cheerio(html): any[] {
         const $ = cheerio.load(html);
         const { provider } = this;
 
-        return $('#main-content #searchResult tbody tr').slice(0, 10).map(function() {
+        return $('#main-content #searchResult tbody tr').slice(0, 10).map(function(this: any) {
            const $td = $(this).find('td');
 
            return {

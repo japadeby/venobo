@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 
 import { ProviderUtils } from '../provider-utils';
+import { Utils } from '../../../../utils';
 import { ITorrent, ITorrentProvider } from './torrent-provider.interface';
 
 export class YtsTorrentProvider implements ITorrentProvider {
@@ -17,7 +18,7 @@ export class YtsTorrentProvider implements ITorrentProvider {
         });
     }
 
-    private fetch(imdbId) {
+    public fetch(imdbId) {
         return this.api.get('', {
             params: {
                 query_term: imdbId,
@@ -52,7 +53,7 @@ export class YtsTorrentProvider implements ITorrentProvider {
                     .then(({ data: { data } }) => {
                         if (data.movie_count === 0) return [];
 
-                        return ProviderUtils.merge(
+                        return Utils.merge(
                             data.movies.map(
                                 ({ torrents }) => torrents.map(
                                     (torrent) => this.formatTorrent(torrent)

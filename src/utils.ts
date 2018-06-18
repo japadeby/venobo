@@ -8,4 +8,8 @@ export namespace Utils {
         return false;
     }
 
+    export function merge(results: any[]) {
+        return results.reduce((previous, current) => [...previous, ...current], []);
+    }
+
 }

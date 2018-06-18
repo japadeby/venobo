@@ -20,16 +20,19 @@
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "testMatch": [
+      "**/*.test.ts"
+    ],
     "moduleFileExtensions": [
+      "js",
       "ts",
       "tsx",
-      "js",
-      "jsx",
       "json",
       "node"
     ],
-    "testPathIgnorePatterns": ["/src/", "/node_modules/"],
+    "testPathIgnorePatterns": [
+      "/node_modules/"
+    ],
     "collectCoverage": true
   },
   "config": {
@@ -50,17 +53,17 @@
         "packageManager": "yarn"
       },
       "electronWinstallerConfig": {
-        "name": "new_project"
+        "name": "venobo"
       },
       "electronInstallerDebian": {},
       "electronInstallerRedhat": {},
       "github_repository": {
-        "owner": "",
-        "name": ""
+        "owner": "https://github.com/marcus-sa/venobo",
+        "name": "Marcus S. Abildskov"
       },
       "windowsStoreConfig": {
         "packageName": "",
-        "name": "newproject"
+        "name": "venobo"
       }
     }
   },
@@ -78,13 +81,15 @@
     "vlc-command": "^1.1.1"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/axios-mock-adapter": "^1.10.0",
+    "@types/cheerio": "^0.22.7",
     "@types/electron-devtools-installer": "^2.0.2",
+    "@types/jest": "^23.1.0",
     "@types/react": "^0.14.55",
     "@types/react-dom": "^0.14.20",
-    "@types/axios": "^0.14.0",
-    "@types/cheerio": "^0.22.7",
-    "@types/jest": "^23.1.0",
     "@types/react-hot-loader": "^4.1.0",
+    "axios-mock-adapter": "^1.15.0",
     "babel-plugin-transform-async-to-generator": "^6.24.1",
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",

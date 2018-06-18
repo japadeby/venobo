@@ -23,15 +23,15 @@ export class KickassTorrentProvider implements ITorrentProvider {
                 field: 'seeders',
                 sorder: 'desc',
             }
-        }).then(({ data }) => this.cheerio(data))
+        }).then(res => this.cheerio(res.data))
             .catch(() => []);
     }
 
-    cheerio(html) {
+    cheerio(html): any[] {
         const $ = cheerio.load(html);
         const { provider } = this;
 
-        return $("table.data tr:not('.firstr')").slice(0, 10).map(function() {
+        return $("table.data tr:not('.firstr')").slice(0, 10).map(function(this: any) {
             return {
                 leechers: parseInt($(this).find('.red.lasttd.center').text(), 10),
                 magnet: $(this).find('[title="Torrent magnet link"]').attr('href'),

@@ -1,6 +1,7 @@
 import { ProviderUtils } from './provider-utils';
+import { Utils } from '../../../utils';
 import {
-    iDopeTorrentProvider,
+    //iDopeTorrentProvider,
     KickassTorrentProvider,
     ThePirateBayTorrentProvider,
     YtsTorrentProvider,
@@ -11,10 +12,10 @@ import {
 
 export class TorrentAdapter {
 
-    private availableProviders: any[];
+    private availableProviders: ITorrentProvider[];
 
     private allProviders: ITorrentProvider[] = [
-        new iDopeTorrentProvider(),
+        //new iDopeTorrentProvider(),
         new YtsTorrentProvider(),
         new ThePirateBayTorrentProvider(),
         new KickassTorrentProvider(),
@@ -29,7 +30,7 @@ export class TorrentAdapter {
         this.availableProviders = this.allProviders
             .map((x, i) => [x, resolvedProviderStatuses[i]])
             .filter(provider => !!provider[1])
-            .map(a => a.shift());
+            .map(a => a.shift() as ITorrentProvider);
     }
 
     private async selectTorrents(torrents: ITorrent[]) {
@@ -40,8 +41,8 @@ export class TorrentAdapter {
         );
     }
 
-    private appendAttributes(providerResults: ITorrent[], method: string) {
-        return ProviderUtils.merge(providerResults).map(result => ({
+    private appendAttributes(providerResults: ITorrent[][], method: string) {
+        return Utils.merge(providerResults).map(result => ({
             ...result,
             method,
             health: ProviderUtils.getHealth(result.seeders || 0, result.leechers || 0),

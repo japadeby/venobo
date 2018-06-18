@@ -13,13 +13,13 @@ export type ExtendedDetails = {
 };
 
 export interface ITorrent {
-    metadata: string;
     size: string;
     magnet: string;
     _provider: string;
     seeders: number;
     leechers?: number;
     verified?: boolean;
+    metadata?: string;
     method?: 'shows' | 'movies';
     health?: TorrentHealth;
     quality?: TorrentVideoQuality;
@@ -40,19 +40,21 @@ export interface ITorrentProvider {
      */
     api: AxiosInstance;
 
+    //fetch?(query: string): Promise<ITorrent[]>;
+
     /**
      * Fetch all torrent movies related to query
      * @param {string} query
      * @returns {Promise<ITorrent[]>}
      */
-    fetchMovies?(query: string): Promise<ITorrent[]>;
+    //fetchMovies?(query: string): Promise<ITorrent[]>;
 
     /**
      * Fetch all torrent shows related to query
      * @param {string} query
      * @returns {Promise<ITorrent[]>}
      */
-    fetchShows?(query: string): Promise<ITorrent[]>;
+    // fetchShows?(query: string): Promise<ITorrent[]>;
 
     /**
      * Get status of torrent endpoint
@@ -74,5 +76,5 @@ export interface ITorrentProvider {
      * @param {string} html
      * @returns {ITorrent[]}
      */
-    cheerio?(html: string): ITorrent[] | string[];
+    cheerio?(html: string): ITorrent[];
 }

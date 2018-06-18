@@ -146,10 +146,6 @@ export abstract class ProviderUtils {
         );
     }
 
-    public static merge(results: any[]) {
-        return results.reduce((previous, current) => [...previous, ...current], []);
-    }
-
     public static getHealth(seeders: number, leechers: number = 0): TorrentHealth {
         const ratio = (seeders && !!leechers)
             ? (seeders / leechers)
@@ -165,7 +161,7 @@ export abstract class ProviderUtils {
     public static mergeProviderPromises(promises: Promise<any>[]): Promise<any> {
         return Promise.all(promises)
             .then(res => {
-                return this.merge(res).filter(
+                return Utils.merge(res).filter(
                     (arr) => arr.length !== 0
                 );
             }).catch(() => []);

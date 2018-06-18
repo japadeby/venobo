@@ -17,25 +17,23 @@ export class iDopeTorrentProvider implements ITorrentProvider {
         });
     }
 
-    async fetchMovies(query) {
-        const { data } = await this.api.get(`torrent-list/${query}/`, {
-            params: {
-                c: 1,
-            },
-        });
+  fetchMovies(query) {
+    return this.api.get(`torrent-list/${query}/`, {
+      params: {
+        c: 1,
+      },
+    }).then(res => this.cheerio(res.data))
+      .catch(() => []);
+  }
 
-        return this.cheerio(data);
-    }
-
-    async fetchShows(query) {
-        const { data } = await this.api.get(`torrent-list/${query}/`, {
-            params: {
-                c: 3,
-            },
-        });
-
-        return this.cheerio(data);
-    }
+  fetchShows(query) {
+    return this.api.get(`torrent-list/${query}/`, {
+      params: {
+        c: 3,
+      },
+    }).then(res => this.cheerio(res.data))
+      .catch(() => []);
+  }
 
     getStatus() {
         return this.api.get('')
@@ -43,7 +41,7 @@ export class iDopeTorrentProvider implements ITorrentProvider {
             .catch(() => false);
     }
 
-    cheerio(html: string): any[] {
+    cheerio(html): any[] {
         const $ = cheerio.load(html);
         const { provider } = this;
 
