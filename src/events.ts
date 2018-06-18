@@ -1,0 +1,14 @@
+export const APP_QUIT = 'app-quit';
+export const IPC_READY = 'ipc-ready';
+export const ON_PLAYER_OPEN = 'on-player-open';
+export const ON_PLAYER_CLOSE = 'on-player-close';
+export const ON_PLAYER_PLAY = 'on-player-play';
+export const ON_PLAYER_PAUSE = 'on-player-pause';
+export const OPEN_EXTERNAL = 'open-external';
+export const OPEN_ITEM = 'open-item';
+export const SHOW_ITEM_IN_FOLDER = 'show-item-in-folder';
+export const MOVE_ITEM_TO_TRASH = 'move-item-to-trash';
+export const CHECK_FOR_EXTERNAL_PLAYER = 'check-for-external-player';
+export const EXTERNAL_PLAYER_NOT_FOUND = 'external-player-not-found';
+export const OPEN_EXTERNAL_PLAYER = 'open-external-player';
+export const QUIT_EXTERNAL_PLAYER = 'quit-external-player';
