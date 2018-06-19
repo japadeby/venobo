@@ -1,7 +1,7 @@
 import { ITorrent } from '../../torrent';
 
-export interface TorrentMetadata {
-  iso: string;
+export interface Metadata {
+  iso?: string;
   title: string;
   originalTitle: string;
   tmdb: number;
@@ -11,27 +11,27 @@ export interface TorrentMetadata {
   popularity: string;
   voted: number;
   votes: number;
-  releaseDate: string;
+  released: string | false;
   year: number | string;
   poster: string;
   backdrop: string;
 }
 
-export interface TorrentMovieMetadata extends TorrentMetadata {
+export interface MovieMetadata extends Metadata {
   imdb: string;
   runtime: string;
-  released: boolean;
-  _cacheExpiration: number;
-  //torrents: ITorrent[];
+  //released: boolean;
+  cached: number;
+  torrents?: ITorrent[];
 }
 
-export interface TorrentShowMetadata extends TorrentMetadata {
+export interface ShowMetadata extends Metadata {
   //episodesCount: number;
   seasonsCount: number;
   seasonEpisodes: ITorrent[];
 }
 
-export interface TorrentShowEpisodeMetadata {
+export interface ShowEpisodeMetadata {
   title: string;
   episode: number;
   poster: string;

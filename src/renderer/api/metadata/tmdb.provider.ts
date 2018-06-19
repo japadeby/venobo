@@ -7,7 +7,7 @@ export class TMDbProvider {
     baseURL: tmdb.api,
     params: {
       api_key: tmdb.key,
-      //language: 'da-DK',
+      language: 'da-DK',
       append_to_response: tmdb.append_to_response,
     }
   });

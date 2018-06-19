@@ -2,7 +2,7 @@ import PouchDB from 'pouchdb';
 import findCursor from 'pouchdb-find';
 
 //import { StateDocument, UsersDocument } from './interfaces';
-import { TorrentMovieMetadata } from '../api/metadata';
+import { MovieMetadata } from '../api/metadata';
 import { ITorrent } from '../api/torrent';
 
 PouchDB.plugin(findCursor);
@@ -17,9 +17,12 @@ export function createIndexDatabase<T>(name, fields) {
   return db;
 }
 
-export const metadata = createIndexDatabase<TorrentMovieMetadata[]>('metadata', ['tmdb', 'iso']);
+export const metadata = createIndexDatabase<MovieMetadata[]>('metadata', ['id', 'iso']);
 
-export const movies = createIndexDatabase<ITorrent & { tmdb: number }[]>('movies', ['tmdb']);
+export const movies = createIndexDatabase<{
+  id: number,
+  torrents: ITorrent[]
+}>('movies', ['id']);
 
 //export const state = new PouchDB<StateDocument>('state', { adapter: 'leveldb' });
 

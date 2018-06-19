@@ -47,6 +47,7 @@ export class TorrentAdapter {
         return Utils.merge(providerResults).map(result => ({
             ...result,
             method,
+            cached: Date.now(),
             health: ProviderUtils.getHealth(result.seeders || 0, result.leechers || 0),
             quality: !!result.quality
                 ? result.quality

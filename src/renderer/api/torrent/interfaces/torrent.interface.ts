@@ -19,4 +19,5 @@ export interface ITorrent {
     method?: 'shows' | 'movies';
     health?: TorrentHealth;
     quality?: TorrentVideoQuality;
+    cached?: number;
 }

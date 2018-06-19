@@ -5,14 +5,16 @@ import { ITorrent, TorrentAdapter } from '../torrent';
 import {
   TMDbMovieResponse,
   TMDbShowResponse,
-  TorrentMovieMetadata,
-  TorrentShowMetadata
+  MovieMetadata,
+  ShowMetadata
 } from './interfaces';
+import { Utils } from '../../../utils';
+import { MovieDocument } from '../../documents/interfaces';
 //import {MovieDocument} from '../../documents/interfaces';
 
 export class MetadataAdapter {
 
-  private tmdb = new TMDbProvider();
+  private tmdbProvider = new TMDbProvider();
 
   private torrentAdapter = new TorrentAdapter();
 
@@ -21,16 +23,6 @@ export class MetadataAdapter {
     private readonly state: any,
   ) {}
 
-    /*private iso = 'da-DK';
-
-    public getMovieById(tmdbId: number) {
-        return new Promise((resolve, reject) => {
-            movies.get(this.iso).get(tmdbId).once((movie: TorrentMovieMetadata) => {
-                if (movie && movie._cacheExpiration) return resolve(movie);
-            });
-        });
-    }*/
-
   private formatReleaseYear(date: string) {
     return date ? date.substring(0, 4) : 'Unknown';
   }
@@ -38,11 +30,11 @@ export class MetadataAdapter {
   private formatMovieMetadata = (
     data: TMDbMovieResponse,
     //torrents: ITorrent[],
-  ): TorrentMovieMetadata => ({
+  ): MovieMetadata => ({
     title: data.title,
     originalTitle: data.title,
-    poster: this.tmdb.formatPoster(data.poster_path),
-    backdrop: this.tmdb.formatBackdrop(data.backdrop_path),
+    poster: this.tmdbProvider.formatPoster(data.poster_path),
+    backdrop: this.tmdbProvider.formatBackdrop(data.backdrop_path),
     genres: data.genres.map(genre => genre.name),
     type: 'movie',
     summary: data.overview,
@@ -50,22 +42,23 @@ export class MetadataAdapter {
     tmdb: data.id,
     imdb: data.imdb_id,
     year: this.formatReleaseYear(data.release_date),
-    releaseDate: data.release_date,
+    released: data.release_date, /*data.status === 'Released'
+      ? data.release_date
+      : false,*/
     voted: data.vote_average,
     votes: data.vote_count,
     runtime: data.runtime ? `${data.runtime}min` : 'N/A',
-    released: data.status === 'Released',
-    _cacheExpiration: Date.now(),
+    cached: Date.now(),
   })
 
   private formatShowMetadata = (
     data: TMDbShowResponse,
     torrents: ITorrent[],
-  ): TorrentShowMetadata => ({
+  ): ShowMetadata => ({
     title: data.name,
     originalTitle: data.original_name,
-    poster: this.tmdb.formatPoster(data.poster_path),
-    backdrop: this.tmdb.formatBackdrop(data.backdrop_path),
+    poster: this.tmdbProvider.formatPoster(data.poster_path),
+    backdrop: this.tmdbProvider.formatBackdrop(data.backdrop_path),
     genres: data.genres.map(genre => genre.name),
     type: 'show',
     summary: data.overview,
@@ -73,7 +66,7 @@ export class MetadataAdapter {
     tmdb: data.id,
     //imdb: data.imdb_id,
     year: this.formatReleaseYear(data.first_air_date),
-    releaseDate: data.first_air_date,
+    released: data.first_air_date,
     voted: data.vote_average,
     votes: data.vote_count,
     seasonEpisodes: torrents,
@@ -83,46 +76,50 @@ export class MetadataAdapter {
 
   private async saveMovieMetadata(metadata: TMDbMovieResponse, torrents: ITorrent[]) {
 
-  };
+  }
 
-  private async addMovieTorrents(data: TMDbMovieResponse) {
-    const torrents = await this.torrentAdapter.search(data.imdb_id, 'movies', {
-      search: data.original_title,
+  // @TODO: Clean this psuedo code mess up
+  public async getMovieById(id: number): Promise<MovieMetadata> {
+    const torrentsCursor = movies.find({
+      selector: { id }
     });
 
-    if (!torrents || torrents.length === 0) {
-      throw new Error('No torrents found!');
-    }
+    const metadataCursor = metadata.find({
+      selector: { id, iso: 'da-DK' }
+    });
 
-    const metadata = this.formatMovieMetadata(data);
+    return Promise.all([torrentsCursor, metadataCursor])
+      .then(docs => Utils.selectFirstDocs(docs))
+      .then(async ([movie, _metadata]: [{ id: number, torrents: ITorrent[] }, MovieMetadata]) => {
+        if (!_metadata) {
+          const data = await this.tmdbProvider.get('movie', id);
+          _metadata = this.formatMovieMetadata(data);
 
-    /*const document = {
-      id: metadata.tmdb,
-      metadata,
-      torrents,
-    } as MovieDocument;*/
-  }
+          await metadata.put({
+            id,
+            iso: 'da-DK',
+            ..._metadata,
+          });
+        }
 
-  private async getMovieMetadata(tmdb: number) {
-    const iso = 'da-DK';
+        if (!movie) {
+          const torrents = await this.torrentAdapter.search(_metadata.imdb, 'movie', {
+            search: _metadata.originalTitle
+          });
 
-    try {
-      const docs = await metadata.find({
-        selector: { tmdb, iso }
+          movie = {
+            id,
+            torrents
+          };
+
+          await movies.put(movie);
+        }
+
+        return {
+          ..._metadata,
+          torrents: movie.torrents
+        } as MovieMetadata;
       });
-
-      return docs[0];
-    }
-  }
-
-  public async getMovieById(tmdbId: number) {
-    try {
-      const docs = await movies.get(String(tmdbId));
-
-      return docs[0];
-    } catch (e) {
-      const movie = await this.tmdb.get('movie', tmdbId);
-    }
   }
 
 }
