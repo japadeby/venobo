@@ -11,7 +11,7 @@ import {
     ON_PLAYER_PLAY,*/
 } from '../events';
 
-export function startIpc(venobo: Venobo) {
+export function setupIpcListeners(venobo: Venobo) {
     const externalPlayer = new ExternalPlayer(venobo, '');
 
     ipcMain.once(IPC_READY, () => {

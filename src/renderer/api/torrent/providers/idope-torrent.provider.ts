@@ -1,8 +1,8 @@
 import * as cheerio from 'cheerio';
 import axios, { AxiosInstance } from 'axios';
 
-import { ITorrentProvider, ITorrent } from './torrent-provider.interface';
 import { ProviderUtils } from '../provider-utils';
+import { ITorrentProvider, ITorrent } from '../interfaces';
 
 export class iDopeTorrentProvider implements ITorrentProvider {
 

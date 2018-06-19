@@ -20,7 +20,7 @@ describe('TorrentAdapter', () => {
   }
 
   it('should check providers', () => {
-    return expect(torrentAdapter.checkProviders()).resolves.toBeTruthy();
+    return expect(torrentAdapter.checkProviders()).resolves.toBeUndefined();
   });
 
   // Yts proxy is slow
@@ -28,6 +28,8 @@ describe('TorrentAdapter', () => {
     const result = torrentAdapter.search(null, 'movies', {
       search: 'Escape Plan',
     });
+
+    result.then(console.log);
 
     return validateMovieTorrents(result);
   }, 10000);

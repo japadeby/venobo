@@ -2,11 +2,12 @@ import axios, { AxiosInstance } from 'axios';
 
 import { ProviderUtils } from '../provider-utils';
 import { Utils } from '../../../../utils';
-import { ITorrent, ITorrentProvider } from './torrent-provider.interface';
+import { ITorrent, ITorrentProvider } from '../interfaces';
 
 export class YtsTorrentProvider implements ITorrentProvider {
 
     // Find a way to have dynamic endpoints
+    // ['yts.am', 'yts.unblocked.vet', ...etc]
     endpoint = 'https://yts.unblocked.vet/api/v2/list_movies.json';
     provider = 'Yts';
     api: AxiosInstance;
@@ -14,7 +15,7 @@ export class YtsTorrentProvider implements ITorrentProvider {
     constructor() {
         this.api = axios.create({
             baseURL: this.endpoint,
-            timeout: 2000,
+            timeout: 1000,
         });
     }
 
@@ -30,12 +31,12 @@ export class YtsTorrentProvider implements ITorrentProvider {
     }
 
     public formatTorrent = (torrent: any): ITorrent => ({
+        metadata: (String(torrent.url) + String(torrent.hash)) || String(torrent.hash),
+        magnet: ProviderUtils.constructMagnet(torrent.hash),
         size: torrent.size,
         quality: torrent.quality,
-        magnet: ProviderUtils.constructMagnet(torrent.hash),
         seeders: parseInt(torrent.seeds, 10),
         leechers: parseInt(torrent.peers, 10),
-        metadata: (String(torrent.url) + String(torrent.hash)) || String(torrent.hash),
         verified: true,
         _provider: this.provider,
     })

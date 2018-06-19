@@ -2,7 +2,7 @@ import axios, { AxiosInstance } from 'axios';
 import * as cheerio from 'cheerio';
 
 import { ProviderUtils } from '../provider-utils';
-import { ITorrent, ITorrentProvider } from './torrent-provider.interface';
+import { ITorrent, ITorrentProvider } from '../interfaces';
 
 export class ThePirateBayTorrentProvider implements ITorrentProvider {
 
@@ -13,7 +13,7 @@ export class ThePirateBayTorrentProvider implements ITorrentProvider {
     constructor() {
         this.api = axios.create({
             baseURL: this.endpoint,
-            timeout: 2000,
+            timeout: 3000,
         });
     }
 
@@ -33,12 +33,11 @@ export class ThePirateBayTorrentProvider implements ITorrentProvider {
            return {
                metadata: $td.eq(1).find('.detName .detLink').text(),
                magnet: $td.eq(1).find('[title="Download this torrent using magnet"]').attr('href'),
+               size: $td.eq(1).find('.detDesc').text().split(',')[1].substring(6),//.replace('GiB', 'GB'),
                seeders: parseInt($td.eq(2).text(), 10),
                leechers: parseInt($td.eq(3).text(), 10),
                verified: !!$td.eq(1).find('img[src="https://tpbship.org/static/img/vip.gif"]').length,
                _provider: provider,
-               size: '',
-               //size: $td.eq(1).find('.detDesc').text(), //Uploaded 06-14 18:38, Size 1.38 GiB, ULed by xxxlavalxxx
            } as ITorrent;
         }).get();
     }

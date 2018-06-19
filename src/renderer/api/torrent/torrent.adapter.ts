@@ -4,11 +4,13 @@ import {
     //iDopeTorrentProvider,
     KickassTorrentProvider,
     ThePirateBayTorrentProvider,
-    YtsTorrentProvider,
+    YtsTorrentProvider
+} from './providers';
+import {
     ExtendedDetails,
     ITorrent,
-    ITorrentProvider,
-} from './providers';
+    ITorrentProvider
+} from './interfaces';
 
 export class TorrentAdapter {
 

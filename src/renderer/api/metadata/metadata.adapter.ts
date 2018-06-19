@@ -1,19 +1,23 @@
 import { TMDbProvider } from './tmdb.provider';
+import { metadata, movies} from '../../documents';
 
-import { ITorrent } from '../torrent/providers';
+import { ITorrent, TorrentAdapter } from '../torrent';
 import {
   TMDbMovieResponse,
   TMDbShowResponse,
   TorrentMovieMetadata,
   TorrentShowMetadata
 } from './interfaces';
+//import {MovieDocument} from '../../documents/interfaces';
 
 export class MetadataAdapter {
 
   private tmdb = new TMDbProvider();
 
+  private torrentAdapter = new TorrentAdapter();
+
   constructor(
-    private readonly db: any,
+    //private readonly movies: PouchDB.Database<any>,
     private readonly state: any,
   ) {}
 
@@ -33,7 +37,7 @@ export class MetadataAdapter {
 
   private formatMovieMetadata = (
     data: TMDbMovieResponse,
-    torrents: ITorrent[],
+    //torrents: ITorrent[],
   ): TorrentMovieMetadata => ({
     title: data.title,
     originalTitle: data.title,
@@ -52,7 +56,6 @@ export class MetadataAdapter {
     runtime: data.runtime ? `${data.runtime}min` : 'N/A',
     released: data.status === 'Released',
     _cacheExpiration: Date.now(),
-    torrents,
   })
 
   private formatShowMetadata = (
@@ -77,5 +80,49 @@ export class MetadataAdapter {
     // episodesCount: 0,
     seasonsCount: data.number_of_seasons
   })
+
+  private async saveMovieMetadata(metadata: TMDbMovieResponse, torrents: ITorrent[]) {
+
+  };
+
+  private async addMovieTorrents(data: TMDbMovieResponse) {
+    const torrents = await this.torrentAdapter.search(data.imdb_id, 'movies', {
+      search: data.original_title,
+    });
+
+    if (!torrents || torrents.length === 0) {
+      throw new Error('No torrents found!');
+    }
+
+    const metadata = this.formatMovieMetadata(data);
+
+    /*const document = {
+      id: metadata.tmdb,
+      metadata,
+      torrents,
+    } as MovieDocument;*/
+  }
+
+  private async getMovieMetadata(tmdb: number) {
+    const iso = 'da-DK';
+
+    try {
+      const docs = await metadata.find({
+        selector: { tmdb, iso }
+      });
+
+      return docs[0];
+    }
+  }
+
+  public async getMovieById(tmdbId: number) {
+    try {
+      const docs = await movies.get(String(tmdbId));
+
+      return docs[0];
+    } catch (e) {
+      const movie = await this.tmdb.get('movie', tmdbId);
+    }
+  }
 
 }

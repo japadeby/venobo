@@ -1,8 +1,8 @@
 import axios, { AxiosInstance } from 'axios';
 import * as cheerio from 'cheerio';
 
-import {ITorrent, ITorrentProvider} from './torrent-provider.interface';
-import {ProviderUtils} from '../provider-utils';
+import { ProviderUtils } from '../provider-utils';
+import { ITorrent, ITorrentProvider } from '../interfaces';
 
 export class KickassTorrentProvider implements ITorrentProvider {
 
@@ -13,7 +13,7 @@ export class KickassTorrentProvider implements ITorrentProvider {
     constructor() {
         this.api = axios.create({
             baseURL: this.endpoint,
-            timeout: 2000,
+            timeout: 3000,
         });
     }
 
@@ -33,12 +33,12 @@ export class KickassTorrentProvider implements ITorrentProvider {
 
         return $("table.data tr:not('.firstr')").slice(0, 10).map(function(this: any) {
             return {
-                leechers: parseInt($(this).find('.red.lasttd.center').text(), 10),
-                magnet: $(this).find('[title="Torrent magnet link"]').attr('href'),
                 metadata: $(this).find('a.cellMainLink').text(),
-                seeders: parseInt($(this).find('.green.center').text(), 10),
-                verified: !!$(this).find('[title="Verified Torrent"]').length,
+                magnet: $(this).find('[title="Torrent magnet link"]').attr('href'),
                 size: $(this).find('.nobr.center').text(),
+                seeders: parseInt($(this).find('.green.center').text(), 10),
+                leechers: parseInt($(this).find('.red.lasttd.center').text(), 10),
+                verified: !!$(this).find('[title="Verified Torrent"]').length,
                 _provider: provider
             } as ITorrent;
         }).get();

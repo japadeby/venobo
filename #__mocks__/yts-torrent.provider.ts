@@ -1,4 +1,4 @@
-import { YtsTorrentProvider as Yts } from '../yts-torrent.provider';
+import { YtsTorrentProvider as Yts } from '../src/renderer/api/torrent/providers/yts-torrent.provider';
 
 export class YtsTorrentProvider extends Yts {
 

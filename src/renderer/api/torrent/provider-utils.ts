@@ -1,5 +1,5 @@
 import { Utils } from '../../../utils';
-import { ITorrent, TorrentHealth, TorrentVideoQuality } from './providers';
+import { ITorrent, TorrentHealth, TorrentVideoQuality } from './interfaces';
 
 export abstract class ProviderUtils {
 
