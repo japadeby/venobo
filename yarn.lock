@@ -6400,6 +6400,12 @@ pouchdb-collections@6.4.3:
   version "6.4.3"
   resolved "https://registry.yarnpkg.com/pouchdb-collections/-/pouchdb-collections-6.4.3.tgz#2b70ca3143134c361dba6e466518b4f4d8e92ff4"
 
+pouchdb-erase@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/pouchdb-erase/-/pouchdb-erase-1.0.2.tgz#cbdfdddf2dfcd814d0cad72221514237eeb2c151"
+  dependencies:
+    promise-nodify "^1.0.1"
+
 pouchdb-errors@6.4.3:
   version "6.4.3"
   resolved "https://registry.yarnpkg.com/pouchdb-errors/-/pouchdb-errors-6.4.3.tgz#9fa4a13f64ee50c8d593e3235b18b1458977f8d1"
@@ -6555,6 +6561,10 @@ progress-stream@^1.1.0:
   dependencies:
     speedometer "~0.1.2"
     through2 "~0.2.3"
+
+promise-nodify@^1.0.1:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/promise-nodify/-/promise-nodify-1.0.2.tgz#0d0fb143c33400b0061b47e581257557047d4c5a"
 
 promise@^6.0.1:
   version "6.1.0"

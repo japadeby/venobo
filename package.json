@@ -75,6 +75,7 @@
     "electron-log": "^2.2.15",
     "electron-squirrel-startup": "^1.0.0",
     "pouchdb": "^6.4.3",
+    "pouchdb-erase": "^1.0.2",
     "pouchdb-find": "^6.4.3",
     "react": "^15.4.1",
     "react-dom": "^15.4.1",

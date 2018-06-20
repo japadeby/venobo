@@ -1,5 +1,6 @@
 import { Utils } from '../../../utils';
 import { ITorrent, TorrentHealth, TorrentVideoQuality } from './interfaces';
+import axios from 'axios';
 
 export abstract class ProviderUtils {
 
@@ -166,5 +167,26 @@ export abstract class ProviderUtils {
                 );
             }).catch(() => []);
     }
+
+  private static createApi(baseURL: string) {
+    return axios.create({
+      timeout: 5000,
+      baseURL,
+    });
+  }
+
+  public static async createReliableEndpointApi(endpoints) {
+    const requests = endpoints.map(async (endpoint) => {
+      await axios.get(endpoint, {
+        timeout: 1000
+      });
+
+      return endpoint;
+    });
+
+    const endpoint = await Utils.promiseRaceSuccess<string>(requests);
+
+    return this.createApi(endpoint);
+  }
 
 }

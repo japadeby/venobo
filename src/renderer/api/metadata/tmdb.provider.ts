@@ -3,14 +3,22 @@ import tmdb from '../../../../tmdb.config.json';
 
 export class TMDbProvider {
 
-  public readonly api: AxiosInstance = axios.create({
-    baseURL: tmdb.api,
-    params: {
-      api_key: tmdb.key,
-      language: 'da-DK',
-      append_to_response: tmdb.append_to_response,
-    }
-  });
+  public readonly api: AxiosInstance;
+
+  constructor(iso: string = 'en-US') {
+    this.api = axios.create();
+
+    // Move config to constructor when <https://github.com/axios/axios/issues/1616> is fixed
+    this.api.interceptors.request.use(config => ({
+      ...config,
+      baseURL: tmdb.api,
+      params: {
+        api_key: tmdb.key,
+        language: iso,
+        append_to_response: tmdb.append_to_response,
+      },
+    }));
+  }
 
   private convertType(type: string) {
     return type === 'shows' ? 'tv' : 'movie';

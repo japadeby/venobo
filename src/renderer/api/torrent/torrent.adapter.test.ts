@@ -1,36 +1,27 @@
 import { TorrentAdapter } from './torrent.adapter';
-import { ITorrent } from './providers';
+import { TestUtils } from '../../../test-utils';
+import { MOVIES } from '../../../constants';
 
 describe('TorrentAdapter', () => {
   const torrentAdapter = new TorrentAdapter();
 
-  function validateMovieTorrents(torrents: Promise<ITorrent[]>) {
-    return expect(torrents).resolves.toContainEqual(
-      expect.objectContaining({
-        size: expect.any(String),
-        magnet: expect.any(String),
-        _provider: expect.any(String),
-        seeders: expect.any(Number),
-        quality: expect.any(String),
-        method: expect.any(String),
-        health: expect.any(String),
-        metadata: expect.any(String),
-      })
-    );
-  }
+  beforeAll(() => torrentAdapter.checkProviders());
 
   it('should check providers', () => {
     return expect(torrentAdapter.checkProviders()).resolves.toBeUndefined();
   });
 
-  // Yts proxy is slow
-  it('should fetch movies by search query', () => {
-    const result = torrentAdapter.search(null, 'movies', {
+  it('should fetch torrents by search query', async () => {
+    const torrents = await torrentAdapter.search(null, MOVIES, {
       search: 'Escape Plan',
     });
 
-    result.then(console.log);
+    return TestUtils.validateMovieTorrents(torrents);
+  });
 
-    return validateMovieTorrents(result);
-  }, 10000);
+  it('should fetch torrents by imdb id', async () => {
+    const torrents = await torrentAdapter.search('tt1211956', MOVIES);
+
+    return TestUtils.validateMovieTorrents(torrents);
+  });
 });

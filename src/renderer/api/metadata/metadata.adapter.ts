@@ -1,26 +1,28 @@
+import {ExtendedDetails, ITorrent, TorrentAdapter} from '../torrent';
 import { TMDbProvider } from './tmdb.provider';
-import { metadata, movies} from '../../documents';
-
-import { ITorrent, TorrentAdapter } from '../torrent';
+import { Database } from '../../../database';
+import { MOVIES } from '../../../constants';
 import {
   TMDbMovieResponse,
   TMDbShowResponse,
   MovieMetadata,
   ShowMetadata
 } from './interfaces';
-import { Utils } from '../../../utils';
-import { MovieDocument } from '../../documents/interfaces';
-//import {MovieDocument} from '../../documents/interfaces';
+//import { Utils } from '../../../utils';
+//import { MovieDocument } from '../../database/interfaces';
+//import { MovieDocument } from '../../database/interfaces';
+//import {MovieDocument} from '../../database/interfaces';
 
 export class MetadataAdapter {
 
   private tmdbProvider = new TMDbProvider();
 
-  private torrentAdapter = new TorrentAdapter();
+  //private torrentAdapter = new TorrentAdapter();
 
   constructor(
+    private readonly torrentAdapter: TorrentAdapter,
     //private readonly movies: PouchDB.Database<any>,
-    private readonly state: any,
+    //private readonly state: any,
   ) {}
 
   private formatReleaseYear(date: string) {
@@ -29,7 +31,7 @@ export class MetadataAdapter {
 
   private formatMovieMetadata = (
     data: TMDbMovieResponse,
-    //torrents: ITorrent[],
+    torrents: ITorrent[] = [],
   ): MovieMetadata => ({
     title: data.title,
     originalTitle: data.title,
@@ -49,6 +51,7 @@ export class MetadataAdapter {
     votes: data.vote_count,
     runtime: data.runtime ? `${data.runtime}min` : 'N/A',
     cached: Date.now(),
+    torrents,
   })
 
   private formatShowMetadata = (
@@ -78,48 +81,63 @@ export class MetadataAdapter {
 
   }
 
+  private async getMovieMetadata(id: number, iso: string): Promise<MovieMetadata> {
+    const metadata = await Database.metadata.find<MovieMetadata>({
+      selector: { id, iso }
+    }).docs || [];
+
+    if (metadata.length === 0) {
+      const data = await this.tmdbProvider.get('movie', id);
+      metadata.push(this.formatMovieMetadata(data));
+
+      await Database.metadata.post({
+        id,
+        iso,
+        ...metadata[0],
+      });
+    }
+
+    return metadata[0];
+  }
+
+  private async getMovieTorrents(
+    id: number,
+    imdb: string | null,
+    extendedDetails: ExtendedDetails
+  ): Promise<ITorrent[]> {
+    let torrents = await Database.movies.find<ITorrent[]>({
+      selector: { id }
+    }).docs || [];
+
+    if (torrents.length === 0) {
+      torrents = await this.torrentAdapter.search(imdb, MOVIES, extendedDetails);
+
+      await Promise.all(torrents.map(torrent => {
+        return Database.movies.post({
+          id,
+          ...torrent
+        });
+      }));
+    }
+
+    console.log(imdb, extendedDetails, torrents);
+
+    return torrents;
+  }
+
   // @TODO: Clean this psuedo code mess up
   public async getMovieById(id: number): Promise<MovieMetadata> {
-    const torrentsCursor = movies.find({
-      selector: { id }
+    const iso = 'da-DK';
+
+    const metadata = await this.getMovieMetadata(id, iso);
+    const torrents = await this.getMovieTorrents(id, metadata.imdb, {
+      search: metadata.originalTitle
     });
 
-    const metadataCursor = metadata.find({
-      selector: { id, iso: 'da-DK' }
-    });
-
-    return Promise.all([torrentsCursor, metadataCursor])
-      .then(docs => Utils.selectFirstDocs(docs))
-      .then(async ([movie, _metadata]: [{ id: number, torrents: ITorrent[] }, MovieMetadata]) => {
-        if (!_metadata) {
-          const data = await this.tmdbProvider.get('movie', id);
-          _metadata = this.formatMovieMetadata(data);
-
-          await metadata.put({
-            id,
-            iso: 'da-DK',
-            ..._metadata,
-          });
-        }
-
-        if (!movie) {
-          const torrents = await this.torrentAdapter.search(_metadata.imdb, 'movie', {
-            search: _metadata.originalTitle
-          });
-
-          movie = {
-            id,
-            torrents
-          };
-
-          await movies.put(movie);
-        }
-
-        return {
-          ..._metadata,
-          torrents: movie.torrents
-        } as MovieMetadata;
-      });
+    return {
+      ...metadata,
+      torrents
+    } as MovieMetadata;
   }
 
 }

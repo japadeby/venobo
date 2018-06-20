@@ -11,7 +11,7 @@ export type ExtendedDetails = {
 export interface ITorrent {
     size: string;
     magnet: string;
-    _provider: string;
+    provider: string;
     seeders: number;
     leechers?: number;
     verified?: boolean;
@@ -20,4 +20,5 @@ export interface ITorrent {
     health?: TorrentHealth;
     quality?: TorrentVideoQuality;
     cached?: number;
+    id?: number;
 }

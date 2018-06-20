@@ -1,21 +1,19 @@
 import * as cheerio from 'cheerio';
-import axios, { AxiosInstance } from 'axios';
+import axios from 'axios';
 
 import { ProviderUtils } from '../provider-utils';
+import { Utils } from '../../../../utils';
+import { MOVIES, SHOWS } from '../../../../constants';
 import { ITorrentProvider, ITorrent } from '../interfaces';
 
 export class iDopeTorrentProvider implements ITorrentProvider {
 
-    endpoint = 'https://idope.se';
-    provider = 'iDope';
-    api: AxiosInstance;
-
-    constructor() {
-        this.api = axios.create({
-            baseURL: this.endpoint,
-            timeout: 2000,
-        });
-    }
+  endpoint = 'https://idope.se';
+  provider = 'iDope';
+  api = axios.create({
+    baseURL: this.endpoint,
+    timeout: 2000,
+  });
 
   fetchMovies(query) {
     return this.api.get(`torrent-list/${query}/`, {
@@ -35,44 +33,40 @@ export class iDopeTorrentProvider implements ITorrentProvider {
       .catch(() => []);
   }
 
-    getStatus() {
-        return this.api.get('')
-            .then(() => true)
-            .catch(() => false);
+  getStatus = () => Utils.promiseTryCatch(() => this.api.get(''));
+
+  cheerio(html): any[] {
+    const $ = cheerio.load(html);
+    const { provider } = this;
+
+    // Get the ten first results and create a list
+    return $('.resultdiv').slice(0, 10).map(function() {
+      // a elements are hidden
+      return {
+        metadata: String($(this).find('.resultdivtop .resultdivtopname').text()).trim(),
+        size: $(this).find('.resultdivbotton .resultdivbottonlength').text(),
+        seeders: Number($(this).find('.resultdivbotton .resultdivbottonseed').text()),
+        //leechers: null,
+        // sadly fetching the magnet this way doesnt work lol
+        magnet: ProviderUtils.constructMagnet($(this).find('.resultdivbotton .hideinfohash').first().text()),
+        provider: provider,
+      } as ITorrent;
+    }).get();
+  }
+
+  async provide(imdbId, type, { search, season, episode }) {
+    switch (type) {
+      case MOVIES:
+        return this.fetchMovies(search);
+
+      case SHOWS:
+        return this.fetchShows(
+          `${search} ${ProviderUtils.formatSeasonEpisodeToString(season, episode)}`
+        );
+
+      default:
+        return [];
     }
-
-    cheerio(html): any[] {
-        const $ = cheerio.load(html);
-        const { provider } = this;
-
-        // Get the ten first results and create a list
-        return $('.resultdiv').slice(0, 10).map(function() {
-            // a elements are hidden
-            return {
-                metadata: String($(this).find('.resultdivtop .resultdivtopname').text()).trim(),
-                size: $(this).find('.resultdivbotton .resultdivbottonlength').text(),
-                seeders: Number($(this).find('.resultdivbotton .resultdivbottonseed').text()),
-                //leechers: null,
-                // sadly fetching the magnet this way doesnt work lol
-                magnet: ProviderUtils.constructMagnet($(this).find('.resultdivbotton .hideinfohash').first().text()),
-                _provider: provider,
-            } as ITorrent;
-        }).get();
-    }
-
-    async provide(imdbId, type, { search, season, episode }) {
-        switch (type) {
-            case 'movies':
-                return this.fetchMovies(search);
-
-            case 'shows':
-                return this.fetchShows(
-                    `${search} ${ProviderUtils.formatSeasonEpisodeToString(season, episode)}`
-                );
-
-            default:
-                return [];
-        }
-    }
+  }
 
 }
