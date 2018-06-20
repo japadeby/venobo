@@ -16,7 +16,6 @@ export class Venobo {
   }
 
   public async start() {
-    console.log(this.shouldQuit);
     if (this.shouldQuit) return app.quit();
 
     process.on('uncaughtException', (err) => {

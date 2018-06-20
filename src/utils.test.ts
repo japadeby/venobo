@@ -1,16 +1,37 @@
 import { Utils } from './utils';
 
 describe('Utils', () => {
-  /*it('should merge arrays', () => {
+  describe('promise', () => {
+    describe('didResolve', () => {
+      it('should be true for resolve', async () => {
+        const promise = Promise.resolve();
 
-  });*/
-  it('should race for first successful promise', () => {
-    const promises = [
-      Promise.reject(null),
-      new Promise(resolve => setTimeout(() => resolve('FIRST'), 1))
-    ];
+        const didResolve = Utils.promise.didResolve(() => promise);
+        return expect(didResolve).resolves.toEqual(true);
+      });
 
-    const race = Utils.promiseRaceSuccess<string>(promises);
-    return expect(race).resolves.toEqual('FIRST');
+      it('should be false for reject', () => {
+        const promise = Promise.reject(null);
+
+        const didResolve = Utils.promise.didResolve(() => promise);
+        return expect(didResolve).resolves.toEqual(false);
+      });
+    });
+
+    describe('raceResolve', () => {
+      it('should race for first successful promise', () => {
+        const promises = [
+          Promise.reject(1),
+          new Promise(resolve => {
+            return setTimeout(() => resolve(2), 5);
+          }),
+          Promise.reject(3),
+          Promise.resolve(4),
+        ];
+
+        const promiseRace = Utils.promise.raceResolve<number>(promises);
+        return expect(promiseRace).resolves.toEqual(4);
+      });
+    });
   });
 });
