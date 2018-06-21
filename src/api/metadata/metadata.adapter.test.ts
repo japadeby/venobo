@@ -9,7 +9,7 @@ describe('MetadataAdapter', () => {
 
   beforeAll(async () => {
     //await Database.truncate();
-    await torrentAdapter.checkProviders();
+    await torrentAdapter.createProviders();
   });
 
   it('should fetch movie by id', async () => {

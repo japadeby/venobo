@@ -6,6 +6,7 @@
     "noImplicitReturns": true,
     "suppressImplicitAnyIndexErrors": true,
     "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
     "strictNullChecks": true,
     "noUnusedLocals": true,
     "noImplicitThis": true,

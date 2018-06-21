@@ -1,3 +1,5 @@
+import {ICreateFakePromise} from './renderer/components/ProvideHooks.test';
+
 export namespace Utils {
 
   export function includes(value: any, filters: any[]) {
@@ -9,6 +11,28 @@ export namespace Utils {
   }
 
   export namespace promise {
+
+    export interface IFakePromise<T> {
+      fakePromise: Promise<T>;
+      fakeResolve: () => any;
+      fakeReject: () => any;
+    }
+
+    export function createFake<T>(): IFakePromise<T> {
+      let fakeResolve;
+      let fakeReject;
+
+      const fakePromise = new Promise((resolve, reject) => {
+        fakeResolve = resolve;
+        fakeReject = reject;
+      });
+
+      return {
+        fakePromise,
+        fakeResolve,
+        fakeReject
+      };
+    }
 
     /**
      * Resolve an array of promises and race for the first to succeed

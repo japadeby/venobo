@@ -25,7 +25,7 @@ export class TorrentAdapter {
     new MagnetDlTorrentProvider(),
   ];
 
-  public async checkProviders() {
+  public async createProviders() {
     const providerStatuses = this.allProviders.map(
       provider => provider.getStatus()
     );
@@ -69,7 +69,7 @@ export class TorrentAdapter {
   }
 
   public async search(query: string, type: string, extendedDetails: ExtendedDetails = {}) {
-    if (!this.availableProviders) throw new Error('You must call TorrentAdapter#checkProviders first');
+    if (!this.availableProviders) throw new Error('You must call TorrentAdapter.createProviders() first');
 
     const torrentPromises = this.availableProviders.map(
       provider => provider.provide(query, type, extendedDetails)

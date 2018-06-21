@@ -16,13 +16,7 @@
   "author": "sentinel",
   "license": "MIT",
   "jest": {
-    "testEnvironment": "node",
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testMatch": [
-      "**/*.test.ts"
-    ],
+    "verbose": true,
     "moduleFileExtensions": [
       "js",
       "ts",
@@ -33,7 +27,22 @@
     "testPathIgnorePatterns": [
       "/node_modules/"
     ],
-    "collectCoverage": true
+    "collectCoverage": true,
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "projects": [{
+      "testEnvironment": "jsdom",
+      "testMatch": [
+        "<rootDir>/src/renderer/**/*.test.tsx"
+      ],
+      "setupTestFrameworkScriptFile": "./setupTests.ts"
+    }, {
+      "testEnvironment": "node",
+      "testMatch": [
+        "<rootDir>/src/**/*.test.ts"
+      ]
+    }]
   },
   "config": {
     "forge": {
@@ -77,13 +86,15 @@
     "pouchdb": "^6.4.3",
     "pouchdb-erase": "^1.0.2",
     "pouchdb-find": "^6.4.3",
-    "react": "^15.4.1",
-    "react-dom": "^15.4.1",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
     "react-hot-loader": "^3.0.0-beta.6",
     "react-redux": "^5.0.7",
     "react-router-config": "^1.0.0-beta.4",
     "react-router-redux": "^4.0.8",
     "redux": "^4.0.0",
+    "redux-logger": "^3.0.6",
+    "redux-logic": "^0.15.0",
     "redux-saga": "^0.16.0",
     "redux-saga-thunk": "^0.7.1",
     "reselect": "^3.0.1",
@@ -96,19 +107,30 @@
     "@types/axios-mock-adapter": "^1.10.0",
     "@types/cheerio": "^0.22.7",
     "@types/electron-devtools-installer": "^2.0.2",
+    "@types/enzyme": "^3.1.10",
     "@types/jest": "^23.1.0",
     "@types/pouchdb": "^6.3.2",
     "@types/pouchdb-find": "^6.3.2",
-    "@types/react": "^0.14.55",
+    "@types/react": "^16.4.1",
     "@types/react-dom": "^0.14.20",
     "@types/react-hot-loader": "^4.1.0",
+    "@types/react-redux": "^6.0.2",
+    "@types/react-router-config": "^1.0.7",
+    "@types/react-test-renderer": "^16.0.1",
+    "@types/redux": "^3.6.0",
+    "@types/redux-logger": "^3.0.6",
+    "@types/redux-saga": "^0.10.5",
     "axios-mock-adapter": "^1.15.0",
     "babel-plugin-transform-async-to-generator": "^6.24.1",
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
     "electron-forge": "^5.2.2",
     "electron-prebuilt-compile": "2.0.2",
+    "enzyme": "^3.3.0",
+    "enzyme-adapter-react-16": "^1.1.1",
     "jest": "^23.1.0",
+    "react-test-renderer": "^16.4.1",
+    "redux-mock-store": "^1.5.3",
     "spectron": "^3.8.0",
     "ts-jest": "^22.4.6",
     "tslint": "^5.1.0",
