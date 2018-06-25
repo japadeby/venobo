@@ -12,13 +12,12 @@
     "no-unused-expression": true,
     "no-use-before-declare": true,
     "no-var-requires": true,
-    "one-line": [true,
+    "one-line": [
+      true,
       "check-else",
       "check-whitespace",
-      "check-open-brace"],
-    "quotemark": [true,
-      "single",
-      "avoid-escape"],
+      "check-open-brace"
+    ],
     "semicolon": [true, "always"],
     "typedef-whitespace": [true, {
       "call-signature": "nospace",

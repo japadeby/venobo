@@ -12,3 +12,6 @@ export const CHECK_FOR_EXTERNAL_PLAYER = 'check-for-external-player';
 export const EXTERNAL_PLAYER_NOT_FOUND = 'external-player-not-found';
 export const OPEN_EXTERNAL_PLAYER = 'open-external-player';
 export const QUIT_EXTERNAL_PLAYER = 'quit-external-player';
+export const RENDERER_FINISHED_PRELOADING = 'renderer-finished-preloading';
+export const RENDERER_FINISHED_LOADING = 'renderer-finished-loading';
+export const RENDERER_CONTINUE_LOADING  = 'renderer-continue-loading';

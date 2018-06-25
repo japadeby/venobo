@@ -1,6 +1,6 @@
 import { app } from 'electron';
 
-import { MainWindow } from './windows';
+import { MainWindow, LoadingWindow } from './windows';
 import { setupIpcListeners } from './ipc';
 
 export class Venobo {
@@ -9,10 +9,11 @@ export class Venobo {
   //public isReady: boolean = false;
   public ipcReady: boolean = false;
   //public isQuitting: boolean = false;
+  public loadingWindow: Electron.BrowserWindow;
   public mainWindow: Electron.BrowserWindow;
 
-  constructor(public readonly isDevMode: RegExpMatchArray | null) {
-      this.shouldQuit = app.makeSingleInstance(() => null);
+  constructor() {
+    this.shouldQuit = app.makeSingleInstance(() => null);
   }
 
   public async start() {
@@ -24,7 +25,7 @@ export class Venobo {
     });
 
     app.on('ready', async () => {
-      this.mainWindow = await MainWindow.create(this.isDevMode);
+      this.mainWindow = await MainWindow.create();
 
       setupIpcListeners(this);
 
@@ -33,7 +34,11 @@ export class Venobo {
 
     app.on('activate', async () => {
       if (!this.mainWindow) {
-        this.mainWindow = await MainWindow.create(this.isDevMode);
+        this.mainWindow = await MainWindow.create();
+      }
+
+      if (!this.loadingWindow) {
+        this.loadingWindow = await LoadingWindow.create();
       }
     });
 

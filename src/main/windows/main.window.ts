@@ -1,11 +1,12 @@
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
+import isDevMode from 'electron-is-dev';
 import { BrowserWindow } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 
 export namespace MainWindow {
 
-  export async function create(isDevMode) {
+  export async function create() {
     // Create the browser window.
     const mainWindow = new BrowserWindow({
       width: 800,

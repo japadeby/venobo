@@ -1,7 +1,7 @@
-import { ITorrent } from './renderer/api/torrent';
-import { MovieMetadata } from './renderer/api/metadata/interfaces';
+import { ITorrent } from './api/torrent/interfaces';
+import { MovieMetadata } from './api/metadata/interfaces';
 
-import tmdb from '../tmdb.config.json';
+import tmdb from '../config/tmdb.config.json';
 
 export namespace TestUtils {
 
@@ -23,15 +23,14 @@ export namespace TestUtils {
 
   export function validateMovieMetadata(metadata: MovieMetadata) {
     return expect(metadata).toMatchObject({
-      //expect.objectContaining({
-      //id: expect.any(Number),
-      //iso: expect.any(String),
+      id: expect.any(Number),
+      iso: expect.any(String),
       title: expect.any(String),
       originalTitle: expect.any(String),
-      //poster: expect.stringMatching(tmdb.poster),
-      //backdrop: expect.stringMatching(tmdb.backdrop),
+      poster: expect.stringContaining(tmdb.poster),
+      backdrop: expect.stringContaining(tmdb.backdrop),
       genres: expect.arrayContaining([expect.any(String)]),
-      //type: expect.stringMatching('movie'),
+      type: expect.stringMatching('movie'),
       summary: expect.any(String),
       popularity: expect.any(Number),
       tmdb: expect.any(Number),
@@ -42,9 +41,8 @@ export namespace TestUtils {
       votes: expect.any(Number),
       runtime: expect.any(String),
       cached: expect.any(Number),
-      //torrents: expect.anything(),*/
-    //})
-  });
+      torrents: expect.anything(),
+    });
   }
 
 }

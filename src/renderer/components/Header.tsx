@@ -1,11 +1,14 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { RootState } from '../reducers/interfaces';
 
-@connect(
+@connect((state: RootState) => ({ ...state }))
+export class Header extends React.Component<null, null> {
 
-)
-export class Header extends React.Component<> {
+  render() {
+    return (
 
-
+    );
+  }
 
 }

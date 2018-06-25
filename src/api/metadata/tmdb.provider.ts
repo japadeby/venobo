@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
-import tmdb from '../../../tmdb.config.json';
+import tmdb from '../../../config/tmdb.config.json';
 
 export class TMDbProvider {
 

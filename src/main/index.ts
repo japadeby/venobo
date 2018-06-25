@@ -1,10 +1,9 @@
 import { enableLiveReload } from 'electron-compile';
+import isDevMode from 'electron-is-dev';
 import logger from 'electron-log';
 import { Venobo } from './main';
 
 (async () => {
-  const isDevMode = process.execPath.match(/[\\/]electron/);
-
   if (isDevMode) {
     // HMR for React
     enableLiveReload({ strategy: 'react-hmr' });
@@ -17,7 +16,7 @@ import { Venobo } from './main';
     logger,
   });
 
-  const venobo = new Venobo(isDevMode);
+  const venobo = new Venobo();
 
   await venobo.start();
 })();

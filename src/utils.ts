@@ -1,5 +1,3 @@
-import {ICreateFakePromise} from './renderer/components/ProvideHooks.test';
-
 export namespace Utils {
 
   export function includes(value: any, filters: any[]) {
