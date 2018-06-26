@@ -26,19 +26,20 @@ export class Venobo {
 
     app.on('ready', async () => {
       this.mainWindow = await MainWindow.create();
+      this.loadingWindow = await LoadingWindow.create();
 
       setupIpcListeners(this);
 
-      this.mainWindow.show();
+      //this.mainWindow.show();
     });
 
     app.on('activate', async () => {
-      if (!this.mainWindow) {
-        this.mainWindow = await MainWindow.create();
-      }
-
       if (!this.loadingWindow) {
         this.loadingWindow = await LoadingWindow.create();
+      }
+
+      if (!this.mainWindow) {
+        this.mainWindow = await MainWindow.create();
       }
     });
 

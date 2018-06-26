@@ -13,12 +13,14 @@ import { TorrentAdapter } from '../api/torrent';
 import { MetadataAdapter } from '../api/metadata';
 import { RENDERER_FINISHED_LOADING } from '../events';
 import { ConfigStore } from './stores/config.store';
+import { createI18n } from '../i18n';
 
 (async () => {
   const memoryHistory = createMemoryHistory();
   const configStore = new ConfigStore();
 
   const config = await configStore.load();
+  const i18n = createI18n(config.user.prefs.ietf);
 
   const torrentAdapter = new TorrentAdapter();
   const metadataAdapter = new MetadataAdapter(torrentAdapter, config);

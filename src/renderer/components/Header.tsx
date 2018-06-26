@@ -5,7 +5,8 @@ import { ipcRenderer } from 'electron';
 import { observer, inject } from 'mobx-react';
 import * as classNames from 'classnames';
 
-import { SearchStore } from 'src/renderer/stores/search.store';
+import { SearchStore } from '../stores/search.store';
+import { ConfigState } from '../stores/config.store';
 
 export interface HeaderState {
   hoverActive: boolean;
@@ -13,10 +14,11 @@ export interface HeaderState {
 
 export interface HeaderProps extends InjectedTranslateProps {
   search: SearchStore;
+  config: ConfigState;
 }
 
 @translate()
-@inject(['search', 'user'])
+@inject(['search', 'config'])
 @observer
 export class Header extends React.Component<HeaderProps, HeaderState> {
 
@@ -28,12 +30,12 @@ export class Header extends React.Component<HeaderProps, HeaderState> {
     this.setState({
       hoverActive: !this.state.hoverActive
     });
-  }
+  };
 
   private quitApp = () => ipcRenderer.emit('appQuit');
 
   render() {
-    const { user, search, t } = this.props;
+    const { config: { user }, search, t } = this.props;
 
     const pageHeaderClass = classNames(
       'block page-header',
@@ -50,7 +52,7 @@ export class Header extends React.Component<HeaderProps, HeaderState> {
         <div className="scaffold">
           <div className="logo">
             <NavLink to="/home">
-              <img src={config.APP.LARGE_LOGO} width="144" height="35" />
+              <img src={'/some/url'} width="144" height="35" />
             </NavLink>
           </div>
           <nav className="sections">
@@ -65,7 +67,7 @@ export class Header extends React.Component<HeaderProps, HeaderState> {
             <div className="details authenticated" onMouseEnter={this.hoverDetails} onMouseLeave={this.hoverDetails}>
               <div className="summary">
                 <button className="user-name">
-                  <div>{user.username}</div>
+                  <div>{user.id}</div>
                 </button>
               </div>
               <div className="dropdown">

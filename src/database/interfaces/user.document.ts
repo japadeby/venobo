@@ -1,8 +1,8 @@
 // @TODO: Declare types for user config etc
 import { History } from 'history';
 
-import { MovieMetadata, ShowMetadata } from 'src/api/metadata';
-import { TorrentVideoQuality } from 'src/api/torrent';
+import { MovieMetadata, ShowMetadata } from '../../api/metadata';
+import { TorrentVideoQuality } from '../../api/torrent';
 //import { ITorrent } from 'src/api/torrent/interfaces';
 
 export interface UserDocument {

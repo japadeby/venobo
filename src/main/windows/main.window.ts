@@ -11,7 +11,7 @@ export namespace MainWindow {
     const mainWindow = new BrowserWindow({
       width: 800,
       height: 600,
-      show: false,
+      show: isDevMode,
       titleBarStyle: 'hiddenInset',
       useContentSize: true,
     });

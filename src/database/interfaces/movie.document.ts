@@ -1,5 +1,5 @@
-import { MovieMetadata } from 'src/api/metadata';
-import { ITorrent } from 'src/api/torrent';
+import { MovieMetadata } from '../../api/metadata';
+import { ITorrent } from '../../api/torrent';
 
 // @TODO: Create document interface for torrent shows
 export interface MovieDocument {

@@ -6,13 +6,13 @@ import * as path from 'path';
 import * as fse from 'fs-extra';
 import * as os from 'os';
 
-import { Database } from 'src/database'
-import { UserDocument } from 'src/database/interfaces';
+import { Database } from '../../database'
+import { UserDocument } from '../../database/interfaces';
 
 export interface ConfigState {
   userId: string; // Refers to id in <rootDir>/src/database/interfaces/user.document.ts
   version: string;
-  user?: UserDocument;
+  user: UserDocument;
 }
 
 export class ConfigStore {
@@ -26,16 +26,23 @@ export class ConfigStore {
   public getConfigPath(): string {
     return isDevMode
       ? path.join(this.getTempPath(), pckg.productName)
-      : appConfigPath(pckg.productName).filePath;
+      : appConfigPath(pckg.productName);
+  }
+
+  public getConfigFilePath(): string {
+    return path.join(this.getConfigPath(), 'config.json');
   }
 
   public async trash() {
-    return fse.remove(this.getConfigPath());
+    return fse.rmdir(this.getConfigPath());
   }
 
   public async load(): Promise<ConfigState> {
-    const configPath = this.getConfigPath();
+    const configPath = this.getConfigFilePath();
     let config;
+    let users;
+
+    await fse.ensureFile(configPath);
 
     try {
       config = await fse.readJson(configPath);
@@ -44,14 +51,14 @@ export class ConfigStore {
       await fse.writeJson(configPath, config);
     }
 
-    let users = await Database.users.find<UserDocument>({
-      selector: { id: config.id },
-    }).docs || [];
+    try {
+      users = await Database.findOne<UserDocument>('users', {
+        selector: { id: config.id },
+      });
+    } catch (e) {
+      users = this.getDefaultUserConfig();
 
-    if (users.length === 0) {
-      users.push(this.getDefaultUserConfig());
-
-      await Database.users.put(users[0]);
+      await Database.users.put(users);
     }
 
     return {
@@ -60,7 +67,7 @@ export class ConfigStore {
     };
   }
 
-  private getDefaultConfig = (): ConfigState => ({
+  private getDefaultConfig = () => ({
     userId: os.hostname(),
     version: pckg.version,
   });

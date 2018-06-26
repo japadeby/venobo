@@ -14,7 +14,6 @@ describe('MetadataAdapter', () => {
 
   it('should fetch movie by id', async () => {
     const id = 427641;
-
     const data = await metadataAdapter.getMovieById(id);
 
     TestUtils.validateMovieMetadata(data);

@@ -3,7 +3,7 @@ import { ConfigStore } from './config.store';
 
 describe('ConfigStore', () => {
   const configStore = new ConfigStore();
-  const configPath = configStore.getConfigPath();
+  const configPath = configStore.getConfigFilePath();
 
   it('should load config', async () => {
     const config = configStore.load();

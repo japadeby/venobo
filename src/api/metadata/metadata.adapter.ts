@@ -1,8 +1,8 @@
 import { ExtendedDetails, ITorrent, TorrentAdapter } from '../torrent';
 import { TMDbProvider } from './tmdb.provider';
-import { Database } from 'src/database';
-import { MOVIES } from 'src/constants';
-import { ConfigState } from 'src/renderer/stores/config.store';
+import { Database } from '../../database';
+import { MOVIES } from '../../constants';
+import { ConfigState } from '../../renderer/stores/config.store';
 import {
   TMDbMovieResponse,
   TMDbShowResponse,
@@ -87,7 +87,7 @@ export class MetadataAdapter {
       metadata = {
         ...this.formatMovieMetadata(data),
         id,
-        ietf
+        ietf,
       };
 
       await Database.metadata.post(metadata);
@@ -123,9 +123,7 @@ export class MetadataAdapter {
 
   // @TODO: Clean this psuedo code mess up
   public async getMovieById(id: number): Promise<MovieMetadata> {
-    const ietf = 'da-DK';
-
-    const metadata = await this.getMovieMetadata(id, ietf);
+    const metadata = await this.getMovieMetadata(id, this.config.user.prefs.ietf);
     //const imdbId = searchByImdbId ? metadata.imdb : null;
     const torrents = await this.getMovieTorrents(
       metadata.tmdb, // same as id

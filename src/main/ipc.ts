@@ -22,9 +22,7 @@ export function setupIpcListeners(venobo: Venobo) {
 
   // Renderer
   ipcMain.on(RENDERER_FINISHED_PRELOADING, () => {
-    // Now you can finally show the main window and render UI
-    //ipcMain.emit(RENDERER_CONTINUE_LOADING);
-
+    console.log(RENDERER_FINISHED_PRELOADING);
     venobo.mainWindow.show();
     venobo.loadingWindow.close();
   });
@@ -44,7 +42,7 @@ export function setupIpcListeners(venobo: Venobo) {
   /**
    * External media player
    */
-  ipcMain.on(CHECK_FOR_EXTERNAL_PLAYER, async (e, path) => {
+  ipcMain.on(CHECK_FOR_EXTERNAL_PLAYER, async () => {
     const error = await externalPlayer.checkInstall();
 
     venobo.mainWindow.emit(CHECK_FOR_EXTERNAL_PLAYER, !error);

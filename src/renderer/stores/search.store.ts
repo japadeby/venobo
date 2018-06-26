@@ -1,6 +1,5 @@
 import { observable, action } from 'mobx';
-import { fromPromise } from 'rxjs/observable';
-import { MetadataAdapter } from 'src/api/metadata';
+import { MetadataAdapter } from '../../api/metadata';
 
 export class SearchStore {
 

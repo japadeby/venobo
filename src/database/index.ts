@@ -2,8 +2,8 @@ import PouchDB from 'pouchdb';
 import findCursor from 'pouchdb-find';
 import erase from 'pouchdb-erase';
 
-import { MovieMetadata } from 'src/api/metadata';
-import { ITorrent } from 'src/api/torrent';
+import { MovieMetadata } from '../api/metadata';
+import { ITorrent } from '../api/torrent';
 import { UserDocument } from './interfaces';
 
 //PouchDB.debug.enable('*');

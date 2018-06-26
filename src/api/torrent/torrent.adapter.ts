@@ -1,6 +1,6 @@
 import { ProviderUtils } from './provider-utils';
-import { Utils } from 'src/utils';
-import { MOVIES, SHOWS } from 'src/constants';
+import { Utils } from '../../utils';
+import { MOVIES, SHOWS } from '../../constants';
 import {
   KickassTorrentProvider,
   ThePirateBayTorrentProvider,

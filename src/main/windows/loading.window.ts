@@ -10,6 +10,11 @@ export namespace LoadingWindow {
       height: 600,
       titleBarStyle: 'hiddenInset',
       useContentSize: true,
+      frame: false,
+      movable: true,
+      resizable: false,
+      closable: false,
+      alwaysOnTop: true,
     });
 
     const startUrl = url.format({
