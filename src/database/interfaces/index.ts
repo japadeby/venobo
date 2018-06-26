@@ -1,3 +1,3 @@
 export * from './movie.document';
-export * from './users.document';
+export * from './user.document';
 export * from './state.document';

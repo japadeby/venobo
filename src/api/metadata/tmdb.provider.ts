@@ -1,20 +1,22 @@
 import axios, { AxiosInstance } from 'axios';
 import tmdb from '../../../config/tmdb.config.json';
+import { ConfigState } from 'src/renderer/stores/config.store';
+import { UserDocument } from 'src/database/interfaces';
 
 export class TMDbProvider {
 
   public readonly api: AxiosInstance;
 
-  constructor(iso: string = 'en-US') {
+  constructor(private readonly config: ConfigState) {
     this.api = axios.create();
 
     // Move config to constructor when <https://github.com/axios/axios/issues/1616> is fixed
-    this.api.interceptors.request.use(config => ({
-      ...config,
+    this.api.interceptors.request.use(_config => ({
+      ..._config,
       baseURL: tmdb.api,
       params: {
         api_key: tmdb.key,
-        language: iso,
+        language: (this.config.user as UserDocument).prefs.ietf,
         append_to_response: tmdb.append_to_response,
       },
     }));

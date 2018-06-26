@@ -17,4 +17,7 @@ module.exports = {
     transform: {
         '^.+\\.tsx?$': 'ts-jest',
     },
+    globals: {
+        'ELECTRON_IS_DEV': 1
+    },
 };

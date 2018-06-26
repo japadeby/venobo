@@ -1,29 +1,22 @@
-import {ExtendedDetails, ITorrent, TorrentAdapter} from '../torrent/index';
+import { ExtendedDetails, ITorrent, TorrentAdapter } from '../torrent';
 import { TMDbProvider } from './tmdb.provider';
-import { Database } from '../../database/index';
-import { MOVIES } from '../../constants';
+import { Database } from 'src/database';
+import { MOVIES } from 'src/constants';
+import { ConfigState } from 'src/renderer/stores/config.store';
 import {
   TMDbMovieResponse,
   TMDbShowResponse,
   MovieMetadata,
   ShowMetadata
-} from './interfaces/index';
-import metadata = Database.metadata;
-//import { Utils } from '../../../utils';
-//import { MovieDocument } from '../../database/interfaces';
-//import { MovieDocument } from '../../database/interfaces';
-//import {MovieDocument} from '../../database/interfaces';
+} from './interfaces';
 
 export class MetadataAdapter {
 
-  private tmdbProvider = new TMDbProvider();
-
-  //private torrentAdapter = new TorrentAdapter();
+  private readonly tmdbProvider = new TMDbProvider(this.config);
 
   constructor(
     private readonly torrentAdapter: TorrentAdapter,
-    //private readonly movies: PouchDB.Database<any>,
-    //private readonly state: any,
+    private readonly config: ConfigState,
   ) {}
 
   private formatReleaseYear(date: string) {
@@ -53,7 +46,7 @@ export class MetadataAdapter {
     runtime: data.runtime ? `${data.runtime}min` : 'N/A',
     cached: Date.now(),
     torrents,
-  })
+  });
 
   private formatShowMetadata = (
     data: TMDbShowResponse,
@@ -76,29 +69,31 @@ export class MetadataAdapter {
     seasonEpisodes: torrents,
     // episodesCount: 0,
     seasonsCount: data.number_of_seasons
-  })
+  });
 
   private async saveMovieMetadata(metadata: TMDbMovieResponse, torrents: ITorrent[]) {
 
   }
 
-  private async getMovieMetadata(id: number, iso: string): Promise<MovieMetadata> {
-    const metadata = await Database.metadata.find<MovieMetadata>({
-      selector: { id, iso }
-    }).docs || [];
+  private async getMovieMetadata(id: number, ietf: string): Promise<MovieMetadata> {
+    let metadata;
 
-    if (metadata.length === 0) {
-      const data = await this.tmdbProvider.get('movie', id);
-      metadata.push(this.formatMovieMetadata(data));
-
-      await Database.metadata.post({
-        id,
-        iso,
-        ...metadata[0],
+    try {
+      metadata = await Database.findOne<MovieMetadata>('metadata', {
+        selector: { id, ietf }
       });
+    } catch (e) {
+      const data = await this.tmdbProvider.get('movie', id);
+      metadata = {
+        ...this.formatMovieMetadata(data),
+        id,
+        ietf
+      };
+
+      await Database.metadata.post(metadata);
     }
 
-    return metadata[0];
+    return metadata;
   }
 
   private async getMovieTorrents(
@@ -106,11 +101,13 @@ export class MetadataAdapter {
     title: string,
     extendedDetails: ExtendedDetails
   ): Promise<ITorrent[]> {
-    let torrents = await Database.movies.find<ITorrent[]>({
-      selector: { id }
-    }).docs || [];
+    let torrents;
 
-    if (torrents.length === 0) {
+    try {
+      torrents = await Database.find<ITorrent[]>('movies', {
+        selector: { id }
+      });
+    } catch (e) {
       torrents = await this.torrentAdapter.search(title, MOVIES, extendedDetails);
 
       await Promise.all(torrents.map(torrent => {
@@ -126,9 +123,9 @@ export class MetadataAdapter {
 
   // @TODO: Clean this psuedo code mess up
   public async getMovieById(id: number): Promise<MovieMetadata> {
-    const iso = 'da-DK';
+    const ietf = 'da-DK';
 
-    const metadata = await this.getMovieMetadata(id, iso);
+    const metadata = await this.getMovieMetadata(id, ietf);
     //const imdbId = searchByImdbId ? metadata.imdb : null;
     const torrents = await this.getMovieTorrents(
       metadata.tmdb, // same as id

@@ -24,7 +24,7 @@ export namespace TestUtils {
   export function validateMovieMetadata(metadata: MovieMetadata) {
     return expect(metadata).toMatchObject({
       id: expect.any(Number),
-      iso: expect.any(String),
+      ietf: expect.any(String),
       title: expect.any(String),
       originalTitle: expect.any(String),
       poster: expect.stringContaining(tmdb.poster),

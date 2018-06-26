@@ -1,11 +1,11 @@
-import { MovieMetadata } from '../../renderer/api/metadata/index';
-import { ITorrent } from '../../renderer/api/torrent/index';
+import { MovieMetadata } from 'src/api/metadata';
+import { ITorrent } from 'src/api/torrent';
 
 // @TODO: Create document interface for torrent shows
 export interface MovieDocument {
   id: number;
   metadata: {
-    [iso: string]: MovieMetadata;
+    [ietf: string]: MovieMetadata;
   };
   torrents: ITorrent[];
 }

@@ -1,0 +1,30 @@
+{
+  "logout": "Log out",
+  "nav": {
+    "search": "Search",
+    "movies": "Movies",
+    "series": "Series"
+  },
+  "show": {
+    "more": "Show more"
+  },
+  "choose": {
+    "category": "Choose category"
+  },
+  "starred": "Starred",
+  "watched": "Activity list",
+  "preferences": "Preferences",
+  "genres": {
+    "action": "Action",
+    "comedy": "Comedy",
+    "drama": "Drama",
+    "documentary": "Documentary",
+    "horror": "Horror",
+    "classic": "Classical",
+    "family": "Family movies",
+    "romantic": "Romantic",
+    "scifi": "Science fiction",
+    "thriller": "Thriller",
+    "kids": "Kids movies"
+  }
+}

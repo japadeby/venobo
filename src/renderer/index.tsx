@@ -1,34 +1,43 @@
 import * as React from 'react';
 import { ipcRenderer } from 'electron';
-import { Provider } from 'react-redux';
-import { ConnectedRouter } from 'react-router-redux';
+import { Provider } from 'mobx-react';
 import * as ReactDOM from 'react-dom';
 import { renderRoutes } from 'react-router-config';
+import { Router } from 'react-router';
+import { syncHistoryWithStore } from 'mobx-react-router';
 import { AppContainer } from 'react-hot-loader';
 import { createMemoryHistory } from 'history';
 
-import { configureStore } from './store';
+import { createStores } from './stores';
 import { TorrentAdapter } from '../api/torrent';
 import { MetadataAdapter } from '../api/metadata';
 import { RENDERER_FINISHED_LOADING } from '../events';
+import { ConfigStore } from './stores/config.store';
 
 (async () => {
-  const history = createMemoryHistory();
+  const memoryHistory = createMemoryHistory();
+  const configStore = new ConfigStore();
+
+  const config = await configStore.load();
+
   const torrentAdapter = new TorrentAdapter();
-  const metadataAdapter = new MetadataAdapter(torrentAdapter);
+  const metadataAdapter = new MetadataAdapter(torrentAdapter, config);
 
   await torrentAdapter.createProviders();
-  const store = await configureStore(history, metadataAdapter);
+  const stores = createStores(metadataAdapter);
+  const history = syncHistoryWithStore(memoryHistory, stores.router);
+
+  stores.config = config;
 
   const render = async () => {
     const { routes } = await import('./routes');
 
     ReactDOM.render(
       <AppContainer>
-        <Provider store={store}>
-          <ConnectedRouter history={history}>
+        <Provider {...stores}>
+          <Router history={history}>
             {renderRoutes(routes)}
-          </ConnectedRouter>
+          </Router>
         </Provider>
       </AppContainer>,
       document.getElementById('App') as HTMLElement
