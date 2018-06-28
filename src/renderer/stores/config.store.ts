@@ -1,13 +1,12 @@
 import { createMemoryHistory } from 'history';
 import appConfigPath from 'application-config-path';
 import isDevMode from 'electron-is-dev';
-import * as pckg from '../../../package.json';
 import * as path from 'path';
 import * as fse from 'fs-extra';
 import * as os from 'os';
 
-import { Database } from '../../database'
-import { UserDocument } from '../../database/interfaces';
+import { Database, UserDocument } from '../../database';
+import * as pckg from '../../../package.json';
 
 export interface ConfigState {
   userId: string; // Refers to id in <rootDir>/src/database/interfaces/user.document.ts
@@ -20,7 +19,7 @@ export class ConfigStore {
   public getTempPath() {
     return process.platform === 'win32'
       ? 'C:\\Windows\\Temp'
-      : '/tmp'
+      : '/tmp';
   }
 
   public getConfigPath(): string {
@@ -40,9 +39,9 @@ export class ConfigStore {
   public async load(): Promise<ConfigState> {
     const configPath = this.getConfigFilePath();
     let config;
-    let users;
+    let user;
 
-    await fse.ensureFile(configPath);
+    await fse.ensureDir(configPath);
 
     try {
       config = await fse.readJson(configPath);
@@ -52,18 +51,18 @@ export class ConfigStore {
     }
 
     try {
-      users = await Database.findOne<UserDocument>('users', {
+      user = await Database.findOne<UserDocument>('users', {
         selector: { id: config.id },
       });
     } catch (e) {
-      users = this.getDefaultUserConfig();
+      user = this.getDefaultUserConfig();
 
-      await Database.users.put(users);
+      await Database.users.put(user);
     }
 
     return {
       ...config,
-      users: users[0],
+      user,
     };
   }
 

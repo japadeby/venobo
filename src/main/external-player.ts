@@ -1,6 +1,6 @@
 import { spawn, ChildProcess } from 'child_process';
 import * as path from 'path';
-import vlcCommand from 'vlc-command';
+import * as vlcCommand from 'vlc-command';
 
 import { EXTERNAL_PLAYER_NOT_FOUND } from '../events';
 import { Venobo } from './main';

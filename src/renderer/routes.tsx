@@ -3,7 +3,7 @@ import { RouteConfig } from 'react-router-config';
 import { View } from './components';
 import { Home } from './containers';
 
-export const routes = [{
+export const routes: RouteConfig[] = [{
   component: View,
   routes: [
     {
@@ -12,4 +12,4 @@ export const routes = [{
       component: Home
     }
   ],
-}] as RouteConfig[];
+}];

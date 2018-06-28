@@ -5,8 +5,8 @@ import { reactI18nextModule } from 'react-i18next';
 export const requireLocale = (ietf: string) => require(`../../static/locales/${ietf}.json`);
 
 export function createResources(ietfs: string[]) {
-  return ietfs.reduce((translations, ietf) => ({
-    ...translations,
+  return ietfs.reduce((locales, ietf) => ({
+    ...locales,
     [ietf]: requireLocale(ietf),
   }), {});
 }

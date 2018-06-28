@@ -45,12 +45,12 @@ export interface ITorrentProvider {
 
   /**
    * Fetch movies / shows depending on IMDb ID
-   * @param {string} imdbId
+   * @param {string} search
    * @param {string} type
    * @param {ExtendedDetails} extendedDetails
    * @returns {Promise<ITorrent[]>}
    */
-  provide(imdbId: string | null, type: string, extendedDetails: ExtendedDetails): Promise<ITorrent[]>;
+  provide(search: string, type: string, extendedDetails: ExtendedDetails): Promise<ITorrent[]>;
 
   /**
    * Transform html into a torrent list

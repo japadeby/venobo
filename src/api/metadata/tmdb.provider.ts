@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 import { ConfigState } from '../../renderer/stores/config.store';
-import { UserDocument } from '../../database/interfaces';
-import tmdb from '../../../config/tmdb.config.json';
+import * as tmdb from '../../../config/tmdb.config.json';
+import { UserDocument } from '../../database';
 
 export class TMDbProvider {
 

@@ -1,58 +1,33 @@
-import * as React from 'react';
-import { ipcRenderer } from 'electron';
-import { Provider } from 'mobx-react';
-import * as ReactDOM from 'react-dom';
-import { renderRoutes } from 'react-router-config';
-import { Router } from 'react-router';
 import { syncHistoryWithStore } from 'mobx-react-router';
-import { AppContainer } from 'react-hot-loader';
-import { createMemoryHistory } from 'history';
+import { ipcRenderer } from 'electron';
 
-import { createStores } from './stores';
-import { TorrentAdapter } from '../api/torrent';
-import { MetadataAdapter } from '../api/metadata';
 import { RENDERER_FINISHED_LOADING } from '../events';
-import { ConfigStore } from './stores/config.store';
+import { MetadataAdapter } from '../api/metadata';
+import { TorrentAdapter } from '../api/torrent';
 import { createI18n } from '../i18n';
 
+import { ConfigStore } from './stores/config.store';
+import { createStores } from './stores';
+import { createApp } from './app';
+
 (async () => {
-  const memoryHistory = createMemoryHistory();
   const configStore = new ConfigStore();
 
   const config = await configStore.load();
-  const i18n = createI18n(config.user.prefs.ietf);
+  createI18n(config.user.prefs.ietf);
 
   const torrentAdapter = new TorrentAdapter();
   const metadataAdapter = new MetadataAdapter(torrentAdapter, config);
 
-  await torrentAdapter.createProviders();
   const stores = createStores(metadataAdapter);
-  const history = syncHistoryWithStore(memoryHistory, stores.router);
+  const history = syncHistoryWithStore(config.user.history, stores.router);
 
   stores.config = config;
 
-  const render = async () => {
-    const { routes } = await import('./routes');
-
-    ReactDOM.render(
-      <AppContainer>
-        <Provider {...stores}>
-          <Router history={history}>
-            {renderRoutes(routes)}
-          </Router>
-        </Provider>
-      </AppContainer>,
-      document.getElementById('App') as HTMLElement
-    );
-  };
-
-  await render();
+  await torrentAdapter.createProviders();
+  await createApp(stores, history);
 
   // Tell the main process that the render has finished
   // so it can show this window instead of the loading one
   ipcRenderer.emit(RENDERER_FINISHED_LOADING);
-
-  if (module.hot) {
-    module.hot.accept(render);
-  }
 })();

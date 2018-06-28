@@ -1,4 +1,4 @@
-import { app } from 'electron';
+import { app, BrowserWindow } from 'electron';
 
 import { MainWindow, LoadingWindow } from './windows';
 import { setupIpcListeners } from './ipc';
@@ -9,8 +9,8 @@ export class Venobo {
   //public isReady: boolean = false;
   public ipcReady: boolean = false;
   //public isQuitting: boolean = false;
-  public loadingWindow: Electron.BrowserWindow;
-  public mainWindow: Electron.BrowserWindow;
+  public loadingWindow: BrowserWindow;
+  public mainWindow: BrowserWindow;
 
   constructor() {
     this.shouldQuit = app.makeSingleInstance(() => null);

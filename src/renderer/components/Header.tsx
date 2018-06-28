@@ -18,7 +18,7 @@ export interface HeaderProps extends InjectedTranslateProps {
 }
 
 @translate()
-@inject(['search', 'config'])
+@inject(({ search, config }) => ({ search, config }))
 @observer
 export class Header extends React.Component<HeaderProps, HeaderState> {
 

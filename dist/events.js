@@ -1,0 +1,20 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.APP_QUIT = 'app-quit';
+exports.IPC_READY = 'ipc-ready';
+exports.ON_PLAYER_OPEN = 'on-player-open';
+exports.ON_PLAYER_CLOSE = 'on-player-close';
+exports.ON_PLAYER_PLAY = 'on-player-play';
+exports.ON_PLAYER_PAUSE = 'on-player-pause';
+exports.OPEN_EXTERNAL = 'open-external';
+exports.OPEN_ITEM = 'open-item';
+exports.SHOW_ITEM_IN_FOLDER = 'show-item-in-folder';
+exports.MOVE_ITEM_TO_TRASH = 'move-item-to-trash';
+exports.CHECK_FOR_EXTERNAL_PLAYER = 'check-for-external-player';
+exports.EXTERNAL_PLAYER_NOT_FOUND = 'external-player-not-found';
+exports.OPEN_EXTERNAL_PLAYER = 'open-external-player';
+exports.QUIT_EXTERNAL_PLAYER = 'quit-external-player';
+exports.RENDERER_FINISHED_PRELOADING = 'renderer-finished-preloading';
+exports.RENDERER_FINISHED_LOADING = 'renderer-finished-loading';
+exports.RENDERER_CONTINUE_LOADING = 'renderer-continue-loading';
+//# sourceMappingURL=events.js.map

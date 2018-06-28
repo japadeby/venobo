@@ -10,13 +10,13 @@ export namespace Utils {
 
   export namespace promise {
 
-    export interface IFakePromise<T> {
-      fakePromise: Promise<T>;
+    export interface IFakePromise {
+      fakePromise: Promise<any>;
       fakeResolve: () => any;
       fakeReject: () => any;
     }
 
-    export function createFake<T>(): IFakePromise<T> {
+    export function createFake(): IFakePromise {
       let fakeResolve;
       let fakeReject;
 
