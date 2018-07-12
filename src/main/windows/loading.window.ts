@@ -18,7 +18,7 @@ export namespace LoadingWindow {
     });
 
     const startUrl = url.format({
-      pathname: path.join(__dirname, '..', '..', '..', 'static', 'loading.html'),
+      pathname: path.join(process.cwd(), 'static', 'loading.html'),
       protocol: 'file:',
       slashes: true,
     });

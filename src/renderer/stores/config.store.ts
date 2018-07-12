@@ -5,7 +5,7 @@ import * as path from 'path';
 import * as fse from 'fs-extra';
 import * as os from 'os';
 
-import { Database, UserDocument } from '../../database';
+import { Database, UserDocument } from '../../common/database';
 import * as pckg from '../../../package.json';
 
 export interface ConfigState {

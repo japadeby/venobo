@@ -8,7 +8,7 @@ import {
   CHECK_FOR_EXTERNAL_PLAYER,
   QUIT_EXTERNAL_PLAYER,
   RENDERER_FINISHED_PRELOADING
-} from '../events';
+} from '../common/events';
 
 export function setupIpcListeners(venobo: Venobo) {
   const externalPlayer = new ExternalPlayer(venobo, '');

@@ -9,8 +9,8 @@ export class Venobo {
   //public isReady: boolean = false;
   public ipcReady: boolean = false;
   //public isQuitting: boolean = false;
-  public loadingWindow: BrowserWindow;
-  public mainWindow: BrowserWindow;
+  public loadingWindow!: BrowserWindow;
+  public mainWindow!: BrowserWindow;
 
   constructor() {
     this.shouldQuit = app.makeSingleInstance(() => null);

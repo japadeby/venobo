@@ -16,13 +16,17 @@ export namespace MainWindow {
       useContentSize: true,
     });
 
-    const startUrl = url.format({
-      pathname: path.join(__dirname, '..', '..', '..', 'static', 'index.html'),
-      protocol: 'file:',
-      slashes: true,
-    });
-
-    mainWindow.loadURL(startUrl);
+    if (isDevMode) {
+      mainWindow.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`);
+    } else {
+      mainWindow.loadURL(
+        url.format({
+          pathname: path.join(__dirname, '..', 'index.html'),
+          protocol: 'file:',
+          slashes: true,
+        })
+      );
+    }
 
     if (isDevMode) {
       await installExtension(REACT_DEVELOPER_TOOLS);

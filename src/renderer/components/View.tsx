@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Header } from './Header';
 
 export class View extends React.Component<null, null> {
 
@@ -7,8 +8,8 @@ export class View extends React.Component<null, null> {
       <React.Fragment>
         <Header />
         {this.props.children}
-        <Search />
-        <Tooltip />
+        {/*<Search />
+        <Tooltip />*/}
       </React.Fragment>
     );
   }

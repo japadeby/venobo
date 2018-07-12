@@ -7,6 +7,7 @@ import { AppContainer } from 'react-hot-loader';
 import { History } from 'history';
 
 import { RootStore } from './stores';
+import './app.css';
 
 export async function createApp(stores: RootStore, history: History) {
   const render = async () => {
@@ -20,7 +21,7 @@ export async function createApp(stores: RootStore, history: History) {
           </Router>
         </Provider>
       </AppContainer>,
-      document.getElementById('app') as HTMLDivElement,
+      document.getElementById('app') as HTMLElement,
     );
   };
 

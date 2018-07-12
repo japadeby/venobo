@@ -1,5 +1,5 @@
 import { observable, action } from 'mobx';
-import { MetadataAdapter } from '../../api/metadata';
+import { MetadataAdapter } from '../../common/api/metadata';
 
 export class SearchStore {
 

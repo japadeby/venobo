@@ -1,6 +1,6 @@
 import { RouterStore } from 'mobx-react-router';
 
-import { MetadataAdapter } from '../../api/metadata';
+import { MetadataAdapter } from '../../common/api/metadata';
 import { SearchStore } from './search.store';
 import { ConfigState } from './config.store';
 
