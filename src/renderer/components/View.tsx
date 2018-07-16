@@ -4,12 +4,14 @@ import { Header } from './Header';
 export class View extends React.Component<{}, {}> {
 
   render() {
-    return [
-      <Header />,
-      this.props.children,
-      {/*<Search />
-      <Tooltip />*/}
-    ];
+    return (
+      <React.Fragment>
+        <Header />
+        {this.props.children}
+        {/*<Search />
+        <Tooltip />*/}
+      </React.Fragment>
+    );
   }
 
 }

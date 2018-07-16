@@ -2,6 +2,7 @@ import axios, { AxiosInstance } from 'axios';
 import { ConfigState } from '../../../renderer/stores/config.store';
 
 import tmdb from '../../../../config/tmdb.config.json';
+import { TMDbMovieResponse, TMDbResponse, TMDbShowResponse } from './interfaces';
 
 export class TMDbProvider {
 
@@ -43,23 +44,23 @@ export class TMDbProvider {
     return tmdb.poster + path;
   }
 
-  public getSimilar(type: string, tmdbId: number) {
+  public getSimilar(type: string, tmdbId: number): Promise<TMDbResponse> {
     return this.getData(`${this.convertType(type)}/${tmdbId}/similar`);
   }
 
-  public getRecommendations(type: string, tmdbId: number) {
+  public getRecommendations(type: string, tmdbId: number): Promise<TMDbResponse> {
     return this.getData(`${this.convertType(type)}/${tmdbId}/recommendations`);
   }
 
-  public getPopular(type: string, page: number = 1) {
+  public getPopular(type: string, page: number = 1): Promise<TMDbResponse> {
     return this.getData(`${this.convertType(type)}/popular`, { page });
   }
 
-  public getTopRated(type: string, page: number = 1) {
+  public getTopRated(type: string, page: number = 1): Promise<TMDbResponse> {
     return this.getData(`${this.convertType(type)}/top_rated`, { page });
   }
 
-  public get(type: string, tmdbId: number) {
+  public get(type: string, tmdbId: number): Promise<TMDbMovieResponse & TMDbShowResponse>  {
     return this.getData(`${this.convertType(type)}/${tmdbId}`);
   }
 
@@ -71,7 +72,7 @@ export class TMDbProvider {
     return this.getData(`tv/${tmdbId}/season/${season}/episode/${episode}`);
   }
 
-  public searchAll(query: string, page: number = 1): Promise<any[]> {
+  public searchAll(query: string, page: number = 1): Promise<TMDbResponse> {
     return this.getData('search/multi', {
       include_adult: true,
       page,
@@ -79,7 +80,7 @@ export class TMDbProvider {
     });
   }
 
-  public discover(type: string, params?: any) {
+  public discover(type: string, params?: any): Promise<TMDbResponse> {
     return this.getData(`discover/${this.convertType(type)}`, params);
   }
 

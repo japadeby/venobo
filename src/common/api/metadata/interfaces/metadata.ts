@@ -1,7 +1,7 @@
 import { ITorrent } from '../../torrent/index';
 
 export interface Metadata {
-  iso?: string;
+  ietf?: string;
   title: string;
   originalTitle: string;
   tmdb: number;
@@ -31,13 +31,14 @@ export interface ShowMetadata extends Metadata {
   seasonEpisodes: ITorrent[];
 }
 
-export interface ShowEpisodeMetadata {
+export interface ShowEpisodeMetadata extends Metadata {
   title: string;
   episode: number;
+  season: number;
   poster: string;
   summary: string;
   votes: number;
   voted: number;
   airDate: string;
-  //torrents: ITorrent[];
+  torrents: ITorrent[];
 }

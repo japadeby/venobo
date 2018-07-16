@@ -4,7 +4,7 @@ export namespace Utils {
     return filters.some(filter => value.includes(filter));
   }
 
-  export function merge(results: any[]) {
+  export function merge<T>(results: T[][]): T[] {
     return results.reduce((previous, current) => [...previous, ...current], []);
   }
 
@@ -48,6 +48,13 @@ export namespace Utils {
         errors => Promise.reject(errors),
         val => Promise.resolve(val),
       );
+    }
+
+    export function filterResolved<F>(from: F[], to: boolean[]): F[] {
+      return from
+        .map((x, i) => [x, to[i]])
+        .filter(provider => !!provider[1])
+        .map(a => a.shift()) as F[];
     }
 
     export async function didResolve(promise: () => Promise<any>) {

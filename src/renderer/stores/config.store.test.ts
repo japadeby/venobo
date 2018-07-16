@@ -3,7 +3,7 @@ import { ConfigStore } from './config.store';
 
 describe('ConfigStore', () => {
   const configStore = new ConfigStore();
-  const configPath = configStore.getConfigFilePath();
+  const configPath = ConfigStore.getConfigFilePath();
 
   it('should load config', async () => {
     const config = configStore.load();
@@ -13,7 +13,7 @@ describe('ConfigStore', () => {
   });
 
   it('should truncate config', async () => {
-    await configStore.trash();
+    await ConfigStore.trash();
 
     await expect(fse.pathExists(configPath)).rejects.toBeCalled();
   });

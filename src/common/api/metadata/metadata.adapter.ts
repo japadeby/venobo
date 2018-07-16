@@ -1,15 +1,17 @@
 import { ExtendedDetails, ITorrent, TorrentAdapter } from '../torrent';
 import { TMDbProvider } from './tmdb.provider';
 import { Database } from '../../database';
-import { MOVIES } from '../../constants';
+import { MOVIES, SHOWS } from '../../constants';
 import { ConfigState } from '../../../renderer/stores/config.store';
 import {
   TMDbMovieResponse,
   TMDbShowResponse,
   MovieMetadata,
   ShowMetadata,
-  Metadata
+  TMDbResponse,
 } from './interfaces';
+
+export type PromiseMetadata = Promise<(ShowMetadata & MovieMetadata)[]>;
 
 export class MetadataAdapter {
 
@@ -72,15 +74,23 @@ export class MetadataAdapter {
     seasonsCount: data.number_of_seasons
   });
 
-  private async saveMovieMetadata(metadata: TMDbMovieResponse, torrents: ITorrent[]) {
+  /*private async getShowMetadata(id: number, ietf: string): Promise<ShowMetadata> {
+    let metadata;
 
-  }
+    try {
+      metadata = await Database.findOne<ShowMetadata>('metadata', {
+        selector: { id, ietf },
+      });
+    } catch (e) {
+      const data = await this.tmdbProvider.get('show', id);
+    }
+  }*/
 
   private async getMovieMetadata(id: number, ietf: string): Promise<MovieMetadata> {
     let metadata;
 
     try {
-      metadata = await Database.findOne<MovieMetadata>('metadata', {
+      metadata = await Database.findOne<MovieMetadata>('metadata.movies', {
         selector: { id, ietf }
       });
     } catch (e) {
@@ -91,28 +101,54 @@ export class MetadataAdapter {
         ietf,
       };
 
-      await Database.metadata.post(metadata);
+      await Database.metadata.movies.post(metadata);
     }
 
     return metadata;
   }
 
-  private async getMovieTorrents(
+  private async getShowTorrents(
     id: number,
     title: string,
-    extendedDetails: ExtendedDetails
+    extendedDetails: ExtendedDetails,
   ): Promise<ITorrent[]> {
     let torrents;
 
     try {
-      torrents = await Database.find<ITorrent[]>('movies', {
+      torrents = await Database.find<ShowMetadata>('metadata.shows', {
+        selector: { id, ...extendedDetails }
+      });
+    } catch (e) {
+      torrents = await this.torrentAdapter.search(title, SHOWS, extendedDetails);
+
+      await Promise.all(torrents.map(torrent => {
+        return Database.metadata.shows.post({
+          id,
+          ...extendedDetails,
+          ...torrent,
+        });
+      }));
+    }
+
+    return torrents;
+  }
+
+  private async getMovieTorrents(
+    id: number,
+    title: string,
+    { imdbId }: ExtendedDetails,
+  ): Promise<ITorrent[]> {
+    let torrents;
+
+    try {
+      torrents = await Database.find<MovieMetadata>('metadata.movies', {
         selector: { id }
       });
     } catch (e) {
-      torrents = await this.torrentAdapter.search(title, MOVIES, extendedDetails);
+      torrents = await this.torrentAdapter.search(title, MOVIES, { imdbId });
 
       await Promise.all(torrents.map(torrent => {
-        return Database.movies.post({
+        return Database.metadata.movies.post({
           id,
           ...torrent
         });
@@ -122,9 +158,13 @@ export class MetadataAdapter {
     return torrents;
   }
 
+  /*public async getShowById(id: number): Promise<MovieMetadata> {
+
+  }*/
+
   public async getMovieById(id: number): Promise<MovieMetadata> {
     const metadata = await this.getMovieMetadata(id, this.config.user.prefs.ietf);
-    //const imdbId = searchByImdbId ? metadata.imdb : null;
+
     const torrents = await this.getMovieTorrents(
       metadata.tmdb, // same as id
       metadata.originalTitle,
@@ -137,16 +177,32 @@ export class MetadataAdapter {
     } as MovieMetadata;
   }
 
-  public async quickSearch(query: string, limit: number = 100) {
-    const data = await this.tmdbProvider.searchAll(query);
-
-    return await Promise.all(data.map(res => {
+  private getTorrentsFromResults(data: TMDbResponse): PromiseMetadata {
+    return Promise.all(data.results.map(res => {
       const method = res.media_type === 'tv'
         ? 'checkShow'
         : 'getMovieById';
 
-      return this[method](res.id) as Metadata;
+      return this[method](res.id) as ShowMetadata & MovieMetadata;
     }));
+  }
+
+  public async getTopRated(type: string): PromiseMetadata {
+    const data = await this.tmdbProvider.getTopRated(type);
+
+    return this.getTorrentsFromResults(data);
+  }
+
+  public async getPopular(type: string): PromiseMetadata {
+    const data = await this.tmdbProvider.getPopular(type);
+
+    return this.getTorrentsFromResults(data);
+  }
+
+  public async quickSearch(query: string/*, limit: number = 100*/): PromiseMetadata {
+    const data = await this.tmdbProvider.searchAll(query);
+
+    return this.getTorrentsFromResults(data);
   }
 
 }

@@ -1,4 +1,5 @@
 import { syncHistoryWithStore } from 'mobx-react-router';
+import { createBrowserHistory } from 'history';
 import { ipcRenderer } from 'electron';
 
 import { RENDERER_FINISHED_LOADING } from '../common/events';
@@ -7,7 +8,7 @@ import { TorrentAdapter } from '../common/api/torrent';
 import { createI18n } from '../common/i18n';
 
 import { ConfigStore } from './stores/config.store';
-import { createStores } from './stores';
+import { createRootStore } from './stores';
 import { createApp } from './app';
 
 (async () => {
@@ -19,15 +20,21 @@ import { createApp } from './app';
   const torrentAdapter = new TorrentAdapter();
   const metadataAdapter = new MetadataAdapter(torrentAdapter, config);
 
-  const stores = createStores(metadataAdapter);
-  const history = syncHistoryWithStore(config.user.history, stores.router);
+  const rootStore = createRootStore(metadataAdapter);
+  const browserHistory = createBrowserHistory( {
+    forceRefresh: true,
+  });
+  const history = syncHistoryWithStore(browserHistory, rootStore.router);
 
-  stores.config = config;
+  history.listen(console.log);
+
+  rootStore.config = config;
 
   await torrentAdapter.createProviders();
-  await createApp(stores, history);
+  await createApp(rootStore, history);
 
   // Tell the main process that the render has finished
   // so it can show this window instead of the loading one
+  console.log(RENDERER_FINISHED_LOADING);
   ipcRenderer.emit(RENDERER_FINISHED_LOADING);
 })();

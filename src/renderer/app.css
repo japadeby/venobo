@@ -1071,9 +1071,9 @@ html footer.block.page-footer {
     margin-top: 40px;
     display: inline-block;
     padding: 0;
-    background-image: url(resources/footer_logo_on_dark-a674526d3adffe2baaeb71258594f01b.png);
+    /*background-image: url(resources/footer_logo_on_dark-a674526d3adffe2baaeb71258594f01b.png);
     background-repeat: no-repeat;
-    background-position: top left;
+    background-position: top left;*/
     background-size: contain;
     width: 80px;
     height: 90px;
@@ -1173,7 +1173,7 @@ html footer.block.page-footer {
 .startpage .page-footer .upper .logo {
     background: #f9f9fb; }
 .startpage .page-footer .upper .logo .logo-viaplay {
-    background-image: url(resources/footer_logo_on_light-80c771f869cd4acce43a6ad5ca2a96d2.png); }
+    /*background-image: url(resources/footer_logo_on_light-80c771f869cd4acce43a6ad5ca2a96d2.png);*/ }
 
 .startpage .page-footer .lower {
     border-top: 1px solid #e5e5e5;
@@ -1197,9 +1197,9 @@ html footer.block.page-footer {
 
 @media screen and (-webkit-min-device-pixel-ratio: 2), screen and (min-device-pixel-ratio: 2), screen and (-webkit-min-resolution: 192dpi), screen and (min-resolution: 192dpi) {
     .page-footer .upper .logo .logo-viaplay {
-        background-image: url(resources/footer_logo_on_dark_large-552133962c239f06eaee5d3ddcff7a9a.png); }
+        /*background-image: url(resources/footer_logo_on_dark_large-552133962c239f06eaee5d3ddcff7a9a.png);*/ }
     .startpage .page-footer .upper .logo .logo-viaplay {
-        background-image: url(resources/footer_logo_on_light_large-5980ae1e879141807f501d00e173f371.png); } }
+        /*background-image: url(resources/footer_logo_on_light_large-5980ae1e879141807f501d00e173f371.png);*/ } }
 
 .overlays {
     margin: 0; }
@@ -1890,7 +1890,7 @@ section[data-viaplay-module-id="FeatureBox"] {
     height: 440px;
     overflow: hidden;
     position: relative;
-    background: #51adcd url(resources/himmelsol-6cd13c231ddda6902925f395fcd6fc89.jpg) bottom center no-repeat; }
+    background: #51adcd/* url(resources/himmelsol-6cd13c231ddda6902925f395fcd6fc89.jpg) bottom center no-repeat;*/ }
 .featurebox.children .viewport .grass {
     z-index: 8;
     bottom: 0;
@@ -3486,14 +3486,14 @@ section[data-viaplay-module-id="FeatureBox"] {
     padding: 0;
     left: 0;
     margin: 0;
-    background: url(resources/tooltip-arrow-left-24e0122480fd6fe0200a1103d9c0d4aa.png) no-repeat; }
+    /*background: url(resources/tooltip-arrow-left-24e0122480fd6fe0200a1103d9c0d4aa.png) no-repeat;*/ }
 #tooltip .tooltip.left .gutter {
     left: auto;
     right: -18px; }
 #tooltip .tooltip.left .gutter .arrow {
     left: auto;
     right: 0;
-    background: url(resources/tooltip-arrow-right-6fd77780a2a130cdeb378a2a7d659f34.png) no-repeat; }
+    /*background: url(resources/tooltip-arrow-right-6fd77780a2a130cdeb378a2a7d659f34.png) no-repeat;*/ }
 
 .device-activate {
     background-color: #f9f9fb;
@@ -4454,11 +4454,11 @@ span.flags {
     position: relative;
     background: no-repeat center #ffffff; }
 #content section.error.notfound {
-    background-image: url(resources/404-ee70710af46e027b8ab30e40884e0378.png); }
+    /*background-image: url(resources/404-ee70710af46e027b8ab30e40884e0378.png);*/ }
 #content section.error.server {
-    background-image: url(resources/500-d69e6a146cbef89db6f4290eda1efcd9.png); }
+    /*background-image: url(resources/500-d69e6a146cbef89db6f4290eda1efcd9.png);*/ }
 #content section.error.timeout {
-    background-image: url(resources/503-b247776bc788fa34b389b48c9f72fefe.png); }
+    /*background-image: url(resources/503-b247776bc788fa34b389b48c9f72fefe.png);*/ }
 #content section.error h1 {
     margin: 0 0 20px 0;
     display: inline-block;
@@ -8027,7 +8027,7 @@ input[type="reset"]::-moz-focus-inner {
 .vask-container .curtain .curtain-logo {
     height: 100px;
     margin: 160px auto 0;
-    background: url(resources/logo-947f4685013e1c22a40bb08823622d54.png) top center no-repeat; }
+    /*background: url(resources/logo-947f4685013e1c22a40bb08823622d54.png) top center no-repeat;*/ }
 .vask-container .curtain .curtain-loader {
     background-color: #ffffff;
     position: absolute;
@@ -8096,7 +8096,7 @@ input[type="reset"]::-moz-focus-inner {
     width: 100px;
     height: 100px;
     z-index: 2;
-    background: url(resources/viaplay-logo-23712dc188661bf846b58894e5757885.png) center no-repeat; }
+    /*background: url(resources/viaplay-logo-23712dc188661bf846b58894e5757885.png) center no-repeat;*/ }
 
 .vask-container .nextentry {
     position: absolute;
@@ -8180,7 +8180,7 @@ input[type="reset"]::-moz-focus-inner {
     width: 100%;
     height: 100%; }
 #vp-spinner-sheet-container .sheet-container {
-    background-image: url(resources/spinner_sheet-0c392d8873bd79c95ef97cc2ddf93354.png);
+    /*background-image: url(resources/spinner_sheet-0c392d8873bd79c95ef97cc2ddf93354.png);*/
     position: absolute;
     width: 90px;
     height: 90px;
@@ -8253,11 +8253,11 @@ input[type="reset"]::-moz-focus-inner {
 
 .vask-container .curtain .expired {
     color: #ffffff;
-    background-color: #000000;
+    /*background-color: #000000;
     background-image: url(resources/viaplay-logo-23712dc188661bf846b58894e5757885.png);
     background-repeat: no-repeat;
     background-position: bottom 7.5% right 7.5%;
-    background-size: 6.5%;
+    background-size: 6.5%;*/
     width: 100%;
     height: 100%;
     display: flex;

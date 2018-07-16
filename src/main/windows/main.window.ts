@@ -14,6 +14,9 @@ export namespace MainWindow {
       show: isDevMode,
       titleBarStyle: 'hiddenInset',
       useContentSize: true,
+      webPreferences: {
+        webSecurity: false,
+      },
     });
 
     if (isDevMode) {

@@ -16,32 +16,32 @@ export interface ConfigState {
 
 export class ConfigStore {
 
-  public getTempPath() {
+  public static getTempPath() {
     return process.platform === 'win32'
       ? 'C:\\Windows\\Temp'
       : '/tmp';
   }
 
-  public getConfigPath(): string {
+  public static getConfigPath(): string {
     return isDevMode
-      ? path.join(this.getTempPath(), pckg.productName)
+      ? path.join(ConfigStore.getTempPath(), pckg.productName)
       : appConfigPath(pckg.productName);
   }
 
-  public getConfigFilePath(): string {
-    return path.join(this.getConfigPath(), 'config.json');
+  public static getConfigFilePath(): string {
+    return path.join(ConfigStore.getConfigPath(), 'config.json');
   }
 
-  public async trash() {
-    return fse.rmdir(this.getConfigPath());
+  public static async trash() {
+    return fse.rmdir(ConfigStore.getConfigPath());
   }
 
   public async load(): Promise<ConfigState> {
-    const configPath = this.getConfigFilePath();
+    const configPath = ConfigStore.getConfigFilePath();
     let config;
     let user;
 
-    await fse.ensureDir(configPath);
+    await fse.ensureFile(configPath);
 
     try {
       config = await fse.readJson(configPath);
@@ -57,7 +57,7 @@ export class ConfigStore {
     } catch (e) {
       user = this.getDefaultUserConfig();
 
-      await Database.users.put(user);
+      await Database.users.post(user);
     }
 
     return {

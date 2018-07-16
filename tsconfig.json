@@ -8,7 +8,7 @@
     "suppressImplicitAnyIndexErrors": true,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
-    "strictNullChecks": true,
+    "strictNullChecks": false,
     "importHelpers": true,
     "noEmitHelpers": true,
     "pretty": true,

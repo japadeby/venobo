@@ -1,9 +1,15 @@
 import { AxiosInstance } from 'axios';
 
 import { ProviderUtils } from '../provider-utils';
-import {ExtendedDetails, ITorrent, ITorrentProvider} from '../interfaces';
 import { MOVIES } from '../../../constants';
 import { Utils } from '../../../utils';
+import {
+  ExtendedDetails,
+  ITorrentProvider,
+  YtsMovieTorrent,
+  YtsResponse,
+  ITorrent,
+} from '../interfaces';
 
 export class YtsTorrentProvider implements ITorrentProvider {
 
@@ -13,7 +19,7 @@ export class YtsTorrentProvider implements ITorrentProvider {
 
   private createEndpoint = (domain: string) => `https://${domain}/api/v2/list_movies.json`;
 
-  private fetch(query: string) {
+  private fetch(query: string): Promise<YtsResponse> {
     return this.api.get('', {
       params: {
         query_term: query,
@@ -21,16 +27,16 @@ export class YtsTorrentProvider implements ITorrentProvider {
         sort_by: 'seeds',
         limit: 50,
       }
-    });
+    }).then(res => res.data);
   }
 
-  private formatTorrent = (torrent: any): ITorrent => ({
+  private formatTorrent = (torrent: YtsMovieTorrent): ITorrent => ({
     metadata: String((torrent.url + torrent.hash) || torrent.hash),
     magnet: ProviderUtils.constructMagnet(torrent.hash),
     size: torrent.size,
     quality: torrent.quality,
-    seeders: parseInt(torrent.seeds, 10),
-    leechers: parseInt(torrent.peers, 10),
+    seeders: torrent.seeds,
+    leechers: torrent.peers,
     verified: true,
     provider: this.provider,
   });
@@ -47,10 +53,10 @@ export class YtsTorrentProvider implements ITorrentProvider {
     switch (type) {
       case MOVIES:
         return this.fetch(<string>imdbId || search)
-          .then(({ data: { data } }) => {
+          .then(({ data }) => {
             if (data.movie_count === 0) return [];
 
-            return Utils.merge(
+            return Utils.merge<ITorrent>(
               data.movies.map(
                 ({ torrents }) => torrents.map(
                   (torrent) => this.formatTorrent(torrent)

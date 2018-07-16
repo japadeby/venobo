@@ -7,7 +7,7 @@ import {
   APP_QUIT,
   CHECK_FOR_EXTERNAL_PLAYER,
   QUIT_EXTERNAL_PLAYER,
-  RENDERER_FINISHED_PRELOADING
+  RENDERER_FINISHED_LOADING
 } from '../common/events';
 
 export function setupIpcListeners(venobo: Venobo) {
@@ -21,8 +21,8 @@ export function setupIpcListeners(venobo: Venobo) {
   ipcMain.on(APP_QUIT, () => app.quit());
 
   // Renderer
-  ipcMain.on(RENDERER_FINISHED_PRELOADING, () => {
-    console.log(RENDERER_FINISHED_PRELOADING);
+  ipcMain.on(RENDERER_FINISHED_LOADING, () => {
+    console.error(RENDERER_FINISHED_LOADING);
     venobo.mainWindow.show();
     venobo.loadingWindow.close();
   });

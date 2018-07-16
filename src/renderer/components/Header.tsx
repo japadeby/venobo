@@ -7,6 +7,7 @@ import * as classNames from 'classnames';
 
 import { SearchStore } from '../stores/search.store';
 import { ConfigState } from '../stores/config.store';
+import Header = Electron.Header;
 
 export interface HeaderState {
   hoverActive: boolean;
@@ -17,10 +18,9 @@ export interface HeaderProps extends InjectedTranslateProps {
   config: ConfigState;
 }
 
-//@translate()
 @inject(({ search, config }) => ({ search, config }))
 @observer
-export class Header extends React.Component<HeaderProps, HeaderState> {
+class HeaderComp extends React.Component<Partial<HeaderProps>, HeaderState> {
 
   state = {
     hoverActive: false,
@@ -35,7 +35,7 @@ export class Header extends React.Component<HeaderProps, HeaderState> {
   private quitApp = () => ipcRenderer.emit('appQuit');
 
   render() {
-    const { config: { user }, search, t } = this.props;
+    const { config: { user }, search, t } = this.props as HeaderProps; // Work around for this ?
 
     const pageHeaderClass = classNames(
       'block page-header',
@@ -110,3 +110,6 @@ export class Header extends React.Component<HeaderProps, HeaderState> {
   }
 
 }
+
+// Fucking errors with decorators not written natively in TS
+export const Header = translate()(HeaderComp);

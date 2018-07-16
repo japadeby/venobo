@@ -30,12 +30,11 @@ export class TorrentAdapter {
       provider => provider.create()
     );
     const resolvedProviderStatuses = await Promise.all(providerStatuses);
-    console.log(resolvedProviderStatuses);
 
-    this.availableProviders = this.allProviders
-      .map((x, i) => [x, resolvedProviderStatuses[i]])
-      .filter(provider => !!provider[1])
-      .map(a => a.shift()) as ITorrentProvider[];
+    this.availableProviders = Utils.promise.filterResolved<ITorrentProvider>(
+      this.allProviders,
+      resolvedProviderStatuses
+    );
   }
 
   private async selectTorrents(torrents: ITorrent[]) {
@@ -46,8 +45,8 @@ export class TorrentAdapter {
     );
   }
 
-  private appendAttributes(providerResults: ITorrent[][], method: string): ITorrent[] {
-    return Utils.merge(providerResults).map((result: ITorrent) => ({
+  private appendAttributes(providerResults: ITorrent[][], method: 'movies' | 'shows') {
+    return Utils.merge(providerResults).map(result => ({
       ...result,
       method,
       cached: Date.now(),

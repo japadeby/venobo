@@ -7,7 +7,10 @@ export const requireLocale = (ietf: string) => require(`../../static/locales/${i
 export function createResources(ietfs: string[]) {
   return ietfs.reduce((locales, ietf) => ({
     ...locales,
-    [ietf]: requireLocale(ietf),
+    [ietf]: {
+      // Needs a namespace for some fucked up reason ?
+      translation: requireLocale(ietf),
+    },
   }), {});
 }
 
@@ -16,6 +19,8 @@ export function createI18n(ietf: string) {
     'da-DK',
     'en-US'
   ]);
+
+  console.log(resources);
 
   return i18next
     .use(reactI18nextModule)
