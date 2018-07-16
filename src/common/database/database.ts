@@ -34,7 +34,7 @@ export namespace Database {
   export async function find<T>(database: string, opts) {
     if (!Database[database]) throw new UnknownDatabaseException(database);
 
-    const res = await (Database[database] as PouchDB.Database<T>).find(opts).docs;
+    const res = (await (Database[database] as PouchDB.Database<T>).find(opts)).docs;
 
     if (res.length === 0) throw new Error('Empty result');
 

@@ -10,11 +10,7 @@ export class SearchStore {
   @action toggle = () => this.active = !this.active;
 
   @action async search(query: string) {
-    try {
-      const result = await this.metadataAdapter.quickSearch(query);
-    } catch (e) {
-
-    }
+    const result = await this.metadataAdapter.quickSearch(query);
   }
 
 }

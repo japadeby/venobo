@@ -1,9 +1,9 @@
-import { RouteConfig } from 'react-router-config';
+// import { RouteConfig } from 'react-router-config';
 
 import { View } from './components';
 import { Home } from './containers';
 
-export const routes: RouteConfig[] = [{
+export const routes = [{
   component: View,
   routes: [
     {
@@ -12,4 +12,4 @@ export const routes: RouteConfig[] = [{
       component: Home
     }
   ],
-}];
+}]; /*: RouteConfig[]*/

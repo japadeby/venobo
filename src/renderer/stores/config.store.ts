@@ -6,7 +6,7 @@ import * as fse from 'fs-extra';
 import * as os from 'os';
 
 import { Database, UserDocument } from '../../common/database';
-import * as pckg from '../../../package.json';
+import pckg from '../../../package.json';
 
 export interface ConfigState {
   userId: string; // Refers to id in <rootDir>/src/database/interfaces/user.document.ts

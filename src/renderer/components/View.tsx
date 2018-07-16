@@ -1,17 +1,15 @@
 import * as React from 'react';
 import { Header } from './Header';
 
-export class View extends React.Component<null, null> {
+export class View extends React.Component<{}, {}> {
 
   render() {
-    return (
-      <React.Fragment>
-        <Header />
-        {this.props.children}
-        {/*<Search />
-        <Tooltip />*/}
-      </React.Fragment>
-    );
+    return [
+      <Header />,
+      this.props.children,
+      {/*<Search />
+      <Tooltip />*/}
+    ];
   }
 
 }

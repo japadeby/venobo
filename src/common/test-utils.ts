@@ -1,7 +1,7 @@
 import { ITorrent } from './api/torrent/interfaces';
 import { MovieMetadata } from './api/metadata/interfaces';
 
-import tmdb from '../config/tmdb.config.json';
+import tmdb from '../../config/tmdb.config.json';
 
 export namespace TestUtils {
 

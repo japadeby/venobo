@@ -46,8 +46,8 @@ export class TorrentAdapter {
     );
   }
 
-  private appendAttributes(providerResults: ITorrent[][], method: string) {
-    return Utils.merge(providerResults).map(result => ({
+  private appendAttributes(providerResults: ITorrent[][], method: string): ITorrent[] {
+    return Utils.merge(providerResults).map((result: ITorrent) => ({
       ...result,
       method,
       cached: Date.now(),
@@ -58,7 +58,7 @@ export class TorrentAdapter {
     }));
   }
 
-  private filterShows(show, { season, episode }: ExtendedDetails) {
+  private filterShows(show: ITorrent, { season, episode }: ExtendedDetails) {
     return (
       show.metadata.toLowerCase().includes(
         ProviderUtils.formatSeasonEpisodeToString(

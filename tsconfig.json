@@ -1,8 +1,7 @@
 {
   "extends": "./node_modules/electron-webpack/tsconfig-base.json",
   "compilerOptions": {
-    "strict": true,
-    "noImplicitThis": false,
+    "strict": false,
     "resolveJsonModule": true,
     "removeComments": false,
     "preserveConstEnums": true,
@@ -10,11 +9,11 @@
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "strictNullChecks": true,
-    "noUnusedParameters": false,
     "importHelpers": true,
     "noEmitHelpers": true,
     "pretty": true,
     "skipLibCheck": true,
+    "noUnusedLocals": false,
     "jsx": "react",
     "lib": ["es2015", "es2016", "es2017", "dom"]
   },

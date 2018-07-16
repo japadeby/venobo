@@ -4,7 +4,7 @@ import * as cheerio from 'cheerio';
 import { ProviderUtils } from '../provider-utils';
 import { Utils } from '../../../utils';
 import { MOVIES, SHOWS } from '../../../constants';
-import { ITorrent, ITorrentProvider } from '../interfaces/index';
+import {ExtendedDetails, ITorrent, ITorrentProvider} from '../interfaces/index';
 
 export class ThePirateBayTorrentProvider implements ITorrentProvider {
 
@@ -43,14 +43,17 @@ export class ThePirateBayTorrentProvider implements ITorrentProvider {
     });
   }
 
-  async provide(search, type, { season, episode }) {
+  async provide(search: string, type: string, { season, episode }: ExtendedDetails): Promise<ITorrent[]> {
     switch (type) {
       case MOVIES:
         return this.fetch(search);
 
       case SHOWS:
         return this.fetch(
-          `${search} ${ProviderUtils.formatSeasonEpisodeToString(season, episode)}`
+          `${search} ${ProviderUtils.formatSeasonEpisodeToString(
+            <string>season,
+            <string>episode
+          )}`
         );
 
       default:

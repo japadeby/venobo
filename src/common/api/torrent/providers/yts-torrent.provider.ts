@@ -1,7 +1,7 @@
 import { AxiosInstance } from 'axios';
 
 import { ProviderUtils } from '../provider-utils';
-import { ITorrent, ITorrentProvider } from '../interfaces';
+import {ExtendedDetails, ITorrent, ITorrentProvider} from '../interfaces';
 import { MOVIES } from '../../../constants';
 import { Utils } from '../../../utils';
 
@@ -43,10 +43,10 @@ export class YtsTorrentProvider implements ITorrentProvider {
     });
   }
 
-  async provide(search, type, { imdbId }) {
+  async provide(search: string, type: string, { imdbId }: ExtendedDetails): Promise<ITorrent[]> {
     switch (type) {
       case MOVIES:
-        return this.fetch(imdbId || search)
+        return this.fetch(<string>imdbId || search)
           .then(({ data: { data } }) => {
             if (data.movie_count === 0) return [];
 

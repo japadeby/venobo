@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Provider } from 'mobx-react';
 import * as ReactDOM from 'react-dom';
-import { renderRoutes } from 'react-router-config';
+import { renderRoutes, RouteConfig } from 'react-router-config';
 import { Router } from 'react-router';
 import { AppContainer } from 'react-hot-loader';
 import { History } from 'history';
@@ -17,7 +17,7 @@ export async function createApp(stores: RootStore, history: History) {
       <AppContainer>
         <Provider {...stores}>
           <Router history={history}>
-            {renderRoutes(routes)}
+            {renderRoutes(routes as RouteConfig[])}
           </Router>
         </Provider>
       </AppContainer>,

@@ -26,7 +26,7 @@ export class KickassTorrentProvider implements ITorrentProvider {
     const $ = cheerio.load(html);
     const { provider } = this;
 
-    return $("table.data tr:not('.firstr')").slice(0, 10).map(function(this: any) {
+    return $("table.data tr:not('.firstr')").slice(0, 10).map(function() {
       return {
         metadata: $(this).find('a.cellMainLink').text(),
         magnet: $(this).find('[title="Torrent magnet link"]').attr('href'),
@@ -53,7 +53,9 @@ export class KickassTorrentProvider implements ITorrentProvider {
       case SHOWS:
         return this.fetch(
           `${search} ${ProviderUtils.formatSeasonEpisodeToString(
-            <string>season, episode)}`
+            <string>season,
+            <string>episode
+          )}`
         );
 
       default:

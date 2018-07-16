@@ -48,7 +48,10 @@ export class MagnetDlTorrentProvider implements ITorrentProvider {
 
       case SHOWS:
         return this.fetch(
-          `${search} ${ProviderUtils.formatSeasonEpisodeToString(season, episode)}`
+          `${search} ${ProviderUtils.formatSeasonEpisodeToString(
+            <string>season,
+            <string>episode
+          )}`
         );
 
       default:
