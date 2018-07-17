@@ -18,7 +18,16 @@ import { ElectronService } from './providers/electron.service';
 import { WebviewDirective } from './directives/webview.directive';
 
 import { AppComponent } from './app.component';
-import { HomeComponent } from './components/home/home.component';
+import { ComponentsModule } from './components';
+import { MetadataModule } from './modules/metadata/metadata.module';
+import { AppConfig } from '../environments';
+import {
+  TorrentModule,
+  YtsTorrentProvider,
+  KickassTorrentProvider,
+  MagnetDlTorrentProvider,
+  ThePirateBayTorrentProvider,
+} from './modules/torrent';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient) {
@@ -28,21 +37,28 @@ export function HttpLoaderFactory(http: HttpClient) {
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent,
     WebviewDirective
   ],
   imports: [
+    ComponentsModule,
     BrowserModule,
     FormsModule,
     HttpClientModule,
     AppRoutingModule,
+    TorrentModule.forRoot([
+      new YtsTorrentProvider(),
+      new ThePirateBayTorrentProvider(),
+      new KickassTorrentProvider(),
+      new MagnetDlTorrentProvider(),
+    ]),
+    MetadataModule.forRoot(AppConfig),
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
-        useFactory: (HttpLoaderFactory),
+        useFactory: HttpLoaderFactory,
         deps: [HttpClient]
       }
-    })
+    }),
   ],
   providers: [ElectronService],
   bootstrap: [AppComponent]

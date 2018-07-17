@@ -37,6 +37,10 @@
     "e2e": "npm run postinstall:web && ng e2e"
   },
   "dependencies": {
+    "@ngrx/effects": "^6.0.1",
+    "@ngrx/router-store": "^6.0.1",
+    "@ngrx/store": "^6.0.1",
+    "cheerio": "^1.0.0-rc.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "0.6.3",
@@ -53,6 +57,7 @@
     "@angular/router": "6.0.5",
     "@ngx-translate/core": "10.0.1",
     "@ngx-translate/http-loader": "3.0.1",
+    "@types/cheerio": "^0.22.8",
     "@types/jasmine": "2.8.7",
     "@types/jasminewd2": "2.0.3",
     "@types/node": "8.9.4",

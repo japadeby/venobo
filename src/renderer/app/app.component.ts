@@ -9,10 +9,11 @@ import { AppConfig } from '../environments/environment';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  constructor(public electronService: ElectronService,
-    private translate: TranslateService) {
-
-    translate.setDefaultLang('en');
+  constructor(
+    public readonly electronService: ElectronService,
+    private readonly translate: TranslateService
+  ) {
+    translate.setDefaultLang('en-US');
     console.log('AppConfig', AppConfig);
 
     if (electronService.isElectron()) {

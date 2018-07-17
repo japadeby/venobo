@@ -2,14 +2,15 @@ import { app, BrowserWindow, screen } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 
-let win, serve;
+let win;
 const args = process.argv.slice(1);
-serve = args.some(val => val === '--serve');
+const serve = args.some(val => val === '--serve');
+
+const projectRoot = require(path.join(__dirname, '..', '..'));
 
 function createWindow() {
 
-  const electronScreen = screen;
-  const size = electronScreen.getPrimaryDisplay().workAreaSize;
+  const size = screen.getPrimaryDisplay().workAreaSize;
 
   // Create the browser window.
   win = new BrowserWindow({
@@ -20,12 +21,14 @@ function createWindow() {
   });
 
   if (serve) {
-    require('electron-reload')(__dirname, {
-     electron: require(`${__dirname}/node_modules/electron`)});
+    require('electron-reload')(projectRoot, {
+     electron: require(path.join(projectRoot, 'node_modules', 'electron')),
+    });
+
     win.loadURL('http://localhost:4200');
   } else {
     win.loadURL(url.format({
-      pathname: path.join(__dirname, 'dist/index.html'),
+      pathname: path.join(projectRoot, 'dist/index.html'),
       protocol: 'file:',
       slashes: true
     }));

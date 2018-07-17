@@ -1,0 +1,44 @@
+<div class="block page-header">
+  <div class="scaffold">
+    <div class="logo">
+      <a routerLink="/">
+        <img src="" width="144" height="35" />
+      </a>
+    </div>
+    <div class="sections">
+      <div class="details authenticated" (mouseenter)="hoverDetails()" (mouseleave)="hoverDetails()">
+        <div class="summary">
+          <button class="user-name">{{ user.id }}</button>
+        </div>
+        <div class="dropdown">
+          <div class="box-shadow">
+            <ul>
+              <li>
+                <a routerLink="/watched" class="icon watched">
+                  <span>{{ 'watched' | translate }}</span>
+                </a>
+              </li>
+              <li>
+                <a routerLink="/starred" class="icon starred">
+                  <span>{{ 'starred' | translate }}</span>
+                </a>
+              </li>
+              <li>
+                <a routerLink="/preferences" class="icon settings">
+                  <span>{{ 'preferences' | translate }}</span>
+                </a>
+              </li>
+            </ul>
+            <!--<ul>
+            <li><a href="/package" class="package">Bestil pakke</a></li>
+            <li><a href="http://kundeservice.viaplay.dk" class="customer-service">Kundeservice</a></li>
+          </ul>-->
+            <ul class="footer">
+              <li><a (click)="quitApp()" class="logout">Quit</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

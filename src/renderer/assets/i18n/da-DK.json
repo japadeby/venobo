@@ -1,0 +1,30 @@
+{
+  "logout": "Log ud",
+  "nav": {
+    "search": "Søg",
+    "movies": "Film",
+    "series": "Serier"
+  },
+  "show": {
+    "more": "Vis mere"
+  },
+  "choose": {
+    "category": "Vælg kategori"
+  },
+  "starred": "Stjernemærket",
+  "watched": "Aktivitetslist",
+  "preferences": "Indstillinger",
+  "genres": {
+    "action": "Action",
+    "comedy": "Komedie",
+    "drama": "Drama",
+    "documentary": "Dokumentar",
+    "horror": "Gys",
+    "classic": "Klassiker",
+    "family": "Familiefilm",
+    "romantic": "Romantisk",
+    "scifi": "Science fiction",
+    "thriller": "Thriller",
+    "kids": "Børnefilm"
+  }
+}
