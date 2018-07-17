@@ -1,4 +1,4 @@
-<div class="block page-header">
+<div class="block page-header" [class.active-search]="(search | async).active">
   <div class="scaffold">
     <div class="logo">
       <a routerLink="/">
@@ -6,9 +6,17 @@
       </a>
     </div>
     <div class="sections">
+      <a routerLink="/discover/shows/all/popularity.desc">
+        {{ 'nav.series' | translate }}
+      </a>
+      <a routerLink="/discover/movies/all/popularity.desc">
+        {{ 'nav.movies' | translate }}
+      </a>
+    </div>
+    <div class="user">
       <div class="details authenticated" (mouseenter)="hoverDetails()" (mouseleave)="hoverDetails()">
         <div class="summary">
-          <button class="user-name">{{ user.id }}</button>
+          <button class="user-name">Username goes here</button>
         </div>
         <div class="dropdown">
           <div class="box-shadow">
@@ -41,4 +49,8 @@
       </div>
     </div>
   </div>
+  <div class="search" (click)="toggleSearch()" [class.active]="(search | async).active">
+    <div class="search-icon"></div>
+  </div>
+  <div class="search-backdrop"></div>
 </div>

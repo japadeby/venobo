@@ -1,6 +1,7 @@
 import { AxiosInstance } from 'axios';
 
 import { Utils } from '../../../../../common';
+import { ProviderUtils } from '../provider-utils';
 import { BaseTorrentProvider } from './base-torrent.provider';
 import {
   ExtendedDetails,
@@ -32,7 +33,7 @@ export class YtsTorrentProvider extends BaseTorrentProvider {
 
   private formatTorrent = (torrent: YtsMovieTorrent): ITorrent => ({
     metadata: String((torrent.url + torrent.hash) || torrent.hash),
-    magnet: this.constructMagnet(torrent.hash),
+    magnet: ProviderUtils.constructMagnet(torrent.hash),
     size: torrent.size,
     quality: torrent.quality,
     seeders: torrent.seeds,
@@ -49,7 +50,7 @@ export class YtsTorrentProvider extends BaseTorrentProvider {
     });
   }
 
-  async provide(search: string, type: string, { imdbId }: ExtendedDetails): ITorrent[] {
+  async provide(search: string, type: string, { imdbId }: ExtendedDetails): Promise<ITorrent[]> {
     switch (type) {
       case 'movies':
         return this.fetch(<string>imdbId || search)

@@ -1,29 +1,28 @@
 import { Injectable, OnInit, Inject } from '@angular/core';
 
 import { USE_TORRENT_PROVIDERS } from './tokens';
-import { ITorrentProvider, ExtendedDetails } from './interfaces';
-import { BaseTorrentProvider } from './providers/base-torrent.provider';
+import { ExtendedDetails, ITorrent } from './interfaces';
+import { ProviderUtils } from './provider-utils';
+import { BaseTorrentProvider } from './providers';
 import { Utils } from '../../../../common';
 
 @Injectable()
 export class TorrentService implements OnInit {
 
-  private baseTorrentProvider = new BaseTorrentProvider();
-
-  private availableProviders!: ITorrentProvider[];
+  private availableProviders: BaseTorrentProvider[];
 
   constructor(
     @Inject(USE_TORRENT_PROVIDERS)
-    private readonly allProviders: ITorrentProvider[],
+    private readonly allProviders: BaseTorrentProvider[],
   ) {}
 
-  protected async ngOnInit() {
+  async ngOnInit() {
     const providerStatuses = this.allProviders
       .map(provider => provider.create());
 
     const resolvedProviderStatuses = await Promise.all(providerStatuses);
 
-    this.availableProviders = Utils.promise.filterResolved<ITorrentProvider>(
+    this.availableProviders = Utils.promise.filterResolved<BaseTorrentProvider>(
       this.allProviders,
       resolvedProviderStatuses
     );
@@ -52,11 +51,8 @@ export class TorrentService implements OnInit {
   private filterShows(show: ITorrent, { season, episode }: ExtendedDetails) {
     return (
       show.metadata.toLowerCase().includes(
-        ProviderUtils.formatSeasonEpisodeToString(
-          <string>season,
-          <string>episode,
-        )
-      ) && show.seeders !== 0
+        ProviderUtils.formatSeasonEpisodeToString(season, episode)
+      ) && show.seeders > 0
     );
   }
 

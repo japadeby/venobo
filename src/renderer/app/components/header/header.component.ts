@@ -1,5 +1,11 @@
 import { Component } from '@angular/core';
+import { select, Store } from '@ngrx/store';
 import { ipcRenderer } from 'electron';
+import { Observable } from 'rxjs';
+
+import { AppState } from '../../app-store.module';
+import * as SearchActions from '../search/search.actions';
+import { SearchState } from '../search';
 
 @Component({
   selector: 'app-header',
@@ -7,10 +13,16 @@ import { ipcRenderer } from 'electron';
 })
 export class HeaderComponent {
 
-  protected hoverActive = false;
+  readonly search: Observable<SearchState> = this.store.pipe(select('search'));
 
-  protected hoverDetails = () => this.hoverActive = !this.hoverActive;
+  hoverActive = false;
 
-  protected quitApp = () => ipcRenderer.emit('appQuit');
+  constructor(private readonly store: Store<AppState>) {}
+
+  toggleSearch = () => this.store.dispatch(new SearchActions().Toggle());
+
+  hoverDetails = () => this.hoverActive = !this.hoverActive;
+
+  quitApp = () => ipcRenderer.emit('appQuit');
 
 }

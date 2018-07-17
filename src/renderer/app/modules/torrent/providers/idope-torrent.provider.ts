@@ -2,11 +2,11 @@ import * as cheerio from 'cheerio';
 import axios from 'axios';
 
 import { ProviderUtils } from '../provider-utils';
-import { Utils } from '../../../utils';
-import { MOVIES, SHOWS } from '../../../constants';
+import { Utils } from '../../../../../common';
 import { BaseTorrentProvider } from './base-torrent.provider';
 import { ITorrent, ExtendedDetails} from '../interfaces';
 
+// tslint:disable-next-line
 export class iDopeTorrentProvider extends BaseTorrentProvider {
 
   endpoint = 'https://idope.se';
@@ -34,11 +34,13 @@ export class iDopeTorrentProvider extends BaseTorrentProvider {
       .catch(() => []);
   }
 
-  create = () => Utils.promise.didResolve(async () => this.api.get(''));
+  create() {
+    return Utils.promise.didResolve(async () => this.api.get(''));
+  }
 
   cheerio(html: string) {
     const $ = cheerio.load(html);
-    const { provider, constructMagnet } = this;
+    const { provider } = this;
 
     // Get the ten first results and create a list
     return $('.resultdiv').slice(0, 10).map(function() {
@@ -49,7 +51,7 @@ export class iDopeTorrentProvider extends BaseTorrentProvider {
         seeders: Number($(this).find('.resultdivbotton .resultdivbottonseed').text()),
         // leechers: null,
         // sadly fetching the magnet this way doesnt work lol
-        magnet: constructMagnet($(this).find('.resultdivbotton .hideinfohash').first().text()),
+        magnet: ProviderUtils.constructMagnet($(this).find('.resultdivbotton .hideinfohash').first().text()),
         provider,
       } as ITorrent;
     }).get() as any[];
@@ -57,12 +59,12 @@ export class iDopeTorrentProvider extends BaseTorrentProvider {
 
   async provide(search: string, type: string, { season, episode }: ExtendedDetails) {
     switch (type) {
-      case MOVIES:
+      case 'movies':
         return this.fetchMovies(search);
 
-      case SHOWS:
+      case 'shows':
         return this.fetchShows(
-          `${search} ${this.formatSeasonEpisodeToString(season, episode)}`
+          `${search} ${ProviderUtils.formatSeasonEpisodeToString(season, episode)}`
         );
 
       default:

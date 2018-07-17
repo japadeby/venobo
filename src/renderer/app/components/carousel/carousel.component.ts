@@ -1,14 +1,14 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, AfterViewInit, ViewChild } from '@angular/core';
 
-export interface CarouselComponentState {
-  navPrevDisabled: boolean;
-  navNextDisabled?: boolean;
-  startPoint?: number;
-  itemsShownTotal?: number;
-  itemWidth?: number;
-  innerWidth?: number;
-  itemsFitSlide?: number;
-  itemsLength?: number;
+export class CarouselComponentState {
+  navPrevDisabled!: boolean;
+  navNextDisabled!: boolean;
+  startPoint!: number;
+  itemsShownTotal!: number;
+  itemWidth!: number;
+  innerWidth!: number;
+  itemsFitSlide!: number;
+  itemsLength!: number;
 }
 
 @Component({
@@ -16,9 +16,11 @@ export interface CarouselComponentState {
   templateUrl: './carousel.component.html',
   styleUrls: ['./carousel.component.css'],
 })
-export class CarouselComponent implements CarouselComponentState, OnInit {
+export class CarouselComponent extends CarouselComponentState implements AfterViewInit {
 
-  navPrevDisabled = true;
+  @ViewChild('poster') poster: HTMLElement;
+
+  @ViewChild('wrapper') wrapper: HTMLElement;
 
   @Input() readonly items: any[];
 
@@ -26,18 +28,37 @@ export class CarouselComponent implements CarouselComponentState, OnInit {
 
   @Input() readonly title?: string;
 
-  ngOnInit() {
+  ngAfterViewInit() {
     this.updateCarousel();
   }
 
-  protected updateCarousel() {
+  updateCarousel() {
+    const posterItems = this.poster.querySelectorAll('.react-item');
+    const startPoint = this.poster.style.marginLeft;
+    const maxw = this.wrapper.offsetWidth;
+
+    const itemsFitSlide = Array.from(posterItems).filter((item: HTMLElement) => {
+      const rect = item.getBoundingClientRect();
+
+      return rect.left < maxw;
+    }).length;
+
+    this.navPrevDisabled = true;
+    this.innerWidth = -startPoint;
+    this.startPoint = -startPoint;
+    this.itemsShownTotal = itemsFitSlide;
+    this.itemWidth = this.poster.offsetWidth;
+    this.navNextDisabled = itemsFitSlide === posterItems.length;
+    this.itemsLength = posterItems.length;
+    this.itemsFitSlide = itemsFitSlide;
+
+    console.log(this);
+  }
+
+  handlePrev() {
 
   }
 
-  protected handlePrev() {
-
-  }
-
-  protected handleNext() {}
+  handleNext() {}
 
 }

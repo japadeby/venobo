@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import axios from 'axios';
 
 import { Utils } from '../../../../common';
@@ -8,22 +7,21 @@ import {
   TorrentVideoQuality
 } from './interfaces';
 
-@Injectable()
-export class ProviderUtilsService {
+export abstract class ProviderUtils {
 
   /**
    * Construct magnet link from torrent hash
    * @param {string} hash
    * @returns {string}
    */
-  public constructMagnet = (hash: string) => `magnet:?xt=urn:btih:${hash}`;
+  public static constructMagnet = (hash: string) => `magnet:?xt=urn:btih:${hash}`;
 
   /**
    * Check if torrent file name includes hardcoded subs
    * @param {string} metadata
    * @returns {boolean}
    */
-  private hasHardcodedSubtitles(metadata: string) {
+  private static hasHardcodedSubtitles(metadata: string) {
     return metadata.includes('hc') || metadata.includes('korsub');
   }
 
@@ -32,7 +30,7 @@ export class ProviderUtilsService {
    * @param {string} metadata
    * @returns {boolean}
    */
-  private isCamRecorded(metadata: string) {
+  private static isCamRecorded(metadata: string) {
     return Utils.includes(metadata, [
       'cam',
       'tc',
@@ -47,7 +45,7 @@ export class ProviderUtilsService {
    * @param {string} metadata
    * @returns {boolean}
    */
-  private hasNonEnglishLanguage(metadata: string) {
+  private static hasNonEnglishLanguage(metadata: string) {
     return Utils.includes(metadata, [
       'french',
       'german',
@@ -70,7 +68,7 @@ export class ProviderUtilsService {
    * @param {string} metadata
    * @returns {boolean}
    */
-  private hasSubtitles(metadata: string) {
+  private static hasSubtitles(metadata: string) {
     return metadata.includes('sub');
   }
 
@@ -87,7 +85,7 @@ export class ProviderUtilsService {
    * @param {string} magnet
    * @returns {null}
    */
-  public determineQuality(metadata: string, magnet: string): TorrentVideoQuality {
+  public static determineQuality(metadata: string, magnet: string): TorrentVideoQuality {
     const fileName = (metadata || magnet).toLowerCase();
 
     // Filter videos recorded with a camera
@@ -137,7 +135,7 @@ export class ProviderUtilsService {
     return null;
   }
 
-  public sortTorrentsBySeeders(torrents: ITorrent[]) {
+  public static sortTorrentsBySeeders(torrents: ITorrent[]) {
     return torrents.sort((prev, next) => {
       if (prev.seeders === next.seeders) return 0;
 
@@ -147,14 +145,14 @@ export class ProviderUtilsService {
     });
   }
 
-  public formatSeasonEpisodeToString(season: number | string, episode: number | string) {
+  public static formatSeasonEpisodeToString(season: number | string, episode: number | string) {
     return (
       ('s' + (String(season).length === 1 ? '0' + season : season)) +
       ('e' + (String(episode).length === 1 ? '0' + episode : episode))
     );
   }
 
-  public getHealth(seeders: number, leechers: number = 0): TorrentHealth {
+  public static getHealth(seeders: number, leechers: number = 0): TorrentHealth {
     const ratio = (seeders && !!leechers)
       ? (seeders / leechers)
       : seeders;
@@ -174,26 +172,5 @@ export class ProviderUtilsService {
         );
       }).catch(() => []);
   }*/
-
-  private createApi(baseURL: string) {
-    return axios.create({
-      timeout: 5000,
-      baseURL,
-    });
-  }
-
-  public async createReliableEndpointApi(endpoints: string[]) {
-    const requests = endpoints.map(async (endpoint) => {
-      await axios.get(endpoint, {
-        timeout: 1000
-      });
-
-      return endpoint;
-    });
-
-    const endpoint = await Utils.promise.raceResolve<string>(requests);
-
-    return this.createApi(endpoint);
-  }
 
 }

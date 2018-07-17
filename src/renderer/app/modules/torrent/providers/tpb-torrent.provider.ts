@@ -2,8 +2,9 @@ import { AxiosInstance } from 'axios';
 import * as cheerio from 'cheerio';
 
 import { BaseTorrentProvider } from './base-torrent.provider';
+import { ProviderUtils } from '../provider-utils';
 import { Utils } from '../../../../../common';
-import {ExtendedDetails, ITorrent} from '../interfaces/index';
+import { ExtendedDetails, ITorrent } from '../interfaces/index';
 
 export class ThePirateBayTorrentProvider extends BaseTorrentProvider {
 
@@ -12,9 +13,10 @@ export class ThePirateBayTorrentProvider extends BaseTorrentProvider {
   provider = 'ThePirateBay';
 
   private fetch(query: string) {
-    return this.api.get(`search/${query}/0/99/200`)
-      .then(res => this.cheerio(res.data))
-      .catch(() => []);
+    return <Promise<ITorrent[]>>
+      this.api.get(`search/${query}/0/99/200`)
+        .then(res => this.cheerio(res.data))
+        .catch(() => []);
   }
 
   cheerio(html: string) {
@@ -42,14 +44,14 @@ export class ThePirateBayTorrentProvider extends BaseTorrentProvider {
     });
   }
 
-  async provide(search: string, type: string, { season, episode }: ExtendedDetails): ITorrent[] {
+  async provide(search: string, type: string, { season, episode }: ExtendedDetails): Promise<ITorrent[]> {
     switch (type) {
-      case MOVIES:
+      case 'movies':
         return this.fetch(search);
 
-      case SHOWS:
+      case 'shows':
         return this.fetch(
-          `${search} ${this.formatSeasonEpisodeToString(season, episode)}`
+          `${search} ${ProviderUtils.formatSeasonEpisodeToString(season, episode)}`
         );
 
       default:

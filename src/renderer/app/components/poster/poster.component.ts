@@ -9,8 +9,8 @@ export class PosterComponent {
 
   @Input() readonly items: any[];
 
-  protected showTooltip() {}
+  showTooltip() {}
 
-  protected dismissTooltipDelay() {}
+  dismissTooltipDelay() {}
 
 }

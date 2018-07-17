@@ -1,21 +1,43 @@
 import { NgModule } from '@angular/core';
+import { EffectsModule } from '@ngrx/effects';
 
-export { ViewComponent } from './view/view.component';
-export { HomeComponent } from './home/home.component';
+export * from './search';
+export * from './view';
+export * from './home';
 
-import { HomeComponent } from './home/home.component';
-import { HeaderComponent } from './header/header.component';
-import { ViewComponent } from './view/view.component';
-import { CarouselComponent } from './carousel/carousel.component';
-import { PosterComponent } from './poster/poster.component';
+import { HomeComponent } from './home';
+import { HeaderComponent } from './header';
+import { ViewComponent } from './view';
+import { CarouselComponent } from './carousel';
+import { PosterComponent } from './poster';
+import { SearchModule, searchReducer } from './search';
 
+import { CommonModule } from '../common.module';
+
+// Fuck this shit is retarded
 @NgModule({
+  imports: [
+    /*EffectsModule.forRoot([
+      search: searchReducer,
+    ]),*/
+    CommonModule,
+    SearchModule,
+  ],
   declarations: [
     HomeComponent,
     HeaderComponent,
     ViewComponent,
     CarouselComponent,
     PosterComponent,
-  ]
+  ],
+  exports: [
+    EffectsModule,
+    SearchModule,
+    HomeComponent,
+    HeaderComponent,
+    ViewComponent,
+    CarouselComponent,
+    PosterComponent,
+  ],
 })
 export class ComponentsModule {}

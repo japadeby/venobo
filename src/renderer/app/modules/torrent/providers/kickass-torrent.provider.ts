@@ -2,6 +2,7 @@ import { AxiosInstance } from 'axios';
 import * as cheerio from 'cheerio';
 
 import { Utils } from '../../../../../common';
+import { ProviderUtils } from '../provider-utils';
 import { BaseTorrentProvider } from './base-torrent.provider';
 import { ExtendedDetails, ITorrent } from '../interfaces';
 
@@ -47,12 +48,12 @@ export class KickassTorrentProvider extends BaseTorrentProvider {
 
   async provide(search: string, type: string, { season, episode }: ExtendedDetails) {
     switch (type) {
-      case MOVIES:
+      case 'movies':
         return this.fetch(search);
 
-      case SHOWS:
+      case 'shows':
         return this.fetch(
-          `${search} ${this.formatSeasonEpisodeToString(season, episode)}`
+          `${search} ${ProviderUtils.formatSeasonEpisodeToString(season, episode)}`
         );
 
       default:

@@ -1,6 +1,6 @@
 import { NgModule, ModuleWithProviders } from '@angular/core';
 
-import { BaseTorrentProvider } from './providers/base-torrent.provider';
+import { BaseTorrentProvider } from './providers';
 import { TorrentService } from './torrent.service';
 import { USE_TORRENT_PROVIDERS } from './tokens';
 

@@ -17,12 +17,7 @@
             "tsConfig": "src/renderer/tsconfig.app.json",
             "polyfills": "src/renderer/polyfills.ts",
             "assets": [
-              "src/renderer/assets",
-              "src/renderer/favicon.ico",
-              "src/renderer/favicon.png",
-              "src/renderer/favicon.icns",
-              "src/renderer/favicon.256x256.png",
-              "src/renderer/favicon.512x512.png"
+              "src/assets"
             ],
             "styles": [
               "src/renderer/styles.css"
@@ -98,12 +93,7 @@
               "src/renderer/styles.css"
             ],
             "assets": [
-              "src/renderer/assets",
-              "src/renderer/favicon.ico",
-              "src/renderer/favicon.png",
-              "src/renderer/favicon.icns",
-              "src/renderer/favicon.256x256.png",
-              "src/renderer/favicon.512x512.png"
+              "src/assets"
             ]
           }
         },

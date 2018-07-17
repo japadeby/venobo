@@ -1,7 +1,8 @@
 import {AxiosInstance} from 'axios';
 
 import { ExtendedDetails, ITorrent } from '../interfaces';
-import {Utils} from '../../../../../common';
+import { Utils } from '../../../../../common';
+import { ProviderUtils } from '../provider-utils';
 import { BaseTorrentProvider } from './base-torrent.provider';
 
 export class MagnetDlTorrentProvider extends BaseTorrentProvider {
@@ -36,18 +37,18 @@ export class MagnetDlTorrentProvider extends BaseTorrentProvider {
 
   create() {
     return Utils.promise.didResolve(async () => {
-      this.api = await ProviderUtils.createReliableEndpointApi(this.endpoints);
+      this.api = await this.createReliableEndpointApi(this.endpoints);
     });
   }
 
   async provide(search: string, type: string, { season, episode }: ExtendedDetails) {
     switch (type) {
-      case MOVIES:
+      case 'movies':
         return this.fetch(search);
 
-      case SHOWS:
+      case 'shows':
         return this.fetch(
-          `${search} ${this.formatSeasonEpisodeToString(season, episode)}`
+          `${search} ${ProviderUtils.formatSeasonEpisodeToString(season, episode)}`
         );
 
       default:

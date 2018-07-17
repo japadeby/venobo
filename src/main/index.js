@@ -3,12 +3,12 @@ exports.__esModule = true;
 var electron_1 = require("electron");
 var path = require("path");
 var url = require("url");
-var win, serve;
+var win;
 var args = process.argv.slice(1);
-serve = args.some(function (val) { return val === '--serve'; });
+var serve = args.some(function (val) { return val === '--serve'; });
+var projectRoot = path.join(__dirname, '..', '..');
 function createWindow() {
-    var electronScreen = electron_1.screen;
-    var size = electronScreen.getPrimaryDisplay().workAreaSize;
+    var size = electron_1.screen.getPrimaryDisplay().workAreaSize;
     // Create the browser window.
     win = new electron_1.BrowserWindow({
         x: 0,
@@ -17,14 +17,14 @@ function createWindow() {
         height: size.height
     });
     if (serve) {
-        require('electron-reload')(__dirname, {
-            electron: require(__dirname + "/node_modules/electron")
+        require('electron-reload')(projectRoot, {
+            electron: require(path.join(projectRoot, 'node_modules', 'electron'))
         });
         win.loadURL('http://localhost:4200');
     }
     else {
         win.loadURL(url.format({
-            pathname: path.join(__dirname, 'dist/index.html'),
+            pathname: path.join(projectRoot, 'dist', 'renderer', 'index.html'),
             protocol: 'file:',
             slashes: true
         }));

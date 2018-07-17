@@ -6,10 +6,9 @@ let win;
 const args = process.argv.slice(1);
 const serve = args.some(val => val === '--serve');
 
-const projectRoot = require(path.join(__dirname, '..', '..'));
+const projectRoot = path.join(__dirname, '..', '..');
 
 function createWindow() {
-
   const size = screen.getPrimaryDisplay().workAreaSize;
 
   // Create the browser window.
@@ -28,7 +27,7 @@ function createWindow() {
     win.loadURL('http://localhost:4200');
   } else {
     win.loadURL(url.format({
-      pathname: path.join(projectRoot, 'dist/index.html'),
+      pathname: path.join(projectRoot, 'dist', 'renderer', 'index.html'),
       protocol: 'file:',
       slashes: true
     }));
