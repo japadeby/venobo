@@ -1,4 +1,4 @@
-import { Injectable, OnInit, Inject } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 
 import { USE_TORRENT_PROVIDERS } from './tokens';
 import { ExtendedDetails, ITorrent } from './interfaces';
@@ -7,7 +7,7 @@ import { BaseTorrentProvider } from './providers';
 import { Utils } from '../../../../common';
 
 @Injectable()
-export class TorrentService implements OnInit {
+export class TorrentService {
 
   private availableProviders: BaseTorrentProvider[];
 
@@ -16,7 +16,7 @@ export class TorrentService implements OnInit {
     private readonly allProviders: BaseTorrentProvider[],
   ) {}
 
-  async ngOnInit() {
+  async create() {
     const providerStatuses = this.allProviders
       .map(provider => provider.create());
 
@@ -57,7 +57,7 @@ export class TorrentService implements OnInit {
   }
 
   public async search(query: string, type: string, extendedDetails: ExtendedDetails = {}) {
-    if (!this.availableProviders) throw new Error('You must wait for TorrentService.ngOnOnit()');
+    if (!this.availableProviders) throw new Error('You need to call TorrentService.create() first');
 
     const torrentPromises = this.availableProviders.map(
       provider => provider.provide(query, type, extendedDetails)

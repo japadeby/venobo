@@ -12,7 +12,6 @@ import { AppStoreModule } from './app-store.module';
 
 @NgModule({
   exports: [
-    AppStoreModule,
     TranslateModule,
     RouterModule,
     HttpClientModule,
@@ -29,4 +28,4 @@ import { AppStoreModule } from './app-store.module';
     AppRoutingModule,
   ],
 })
-export class CommonModule {}
+export class SharedModule {}

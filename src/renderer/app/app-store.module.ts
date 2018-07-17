@@ -9,6 +9,7 @@ import {
   searchReducer,
   SearchState
 } from './components/search';
+import { EffectsModule } from '@ngrx/effects';
 
 export interface AppState {
   search: SearchState;
@@ -19,6 +20,7 @@ export interface AppState {
   exports: [
     StoreModule,
     StoreRouterConnectingModule,
+    EffectsModule,
   ],
   imports: [
     StoreModule.forRoot({
@@ -28,6 +30,7 @@ export interface AppState {
     StoreRouterConnectingModule.forRoot({
       stateKey: 'router',
     }),
+    EffectsModule.forRoot([]),
   ],
 })
 export class AppStoreModule {}

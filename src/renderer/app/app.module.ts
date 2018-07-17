@@ -11,7 +11,7 @@ import { ComponentsModule } from './components';
 import { AppComponent } from './app.component';
 
 import { MetadataModule, TMDbProvider } from './modules/metadata';
-import { CommonModule } from './common.module';
+import { SharedModule } from './shared.module';
 import { AppConfig } from '../environments';
 import {
   TorrentModule,
@@ -50,8 +50,8 @@ export function HttpLoaderFactory(http: HttpClient) {
         deps: [HttpClient],
       },
     }),
+    SharedModule,
     ComponentsModule,
-    CommonModule,
   ],
   providers: [ElectronService],
   bootstrap: [AppComponent],

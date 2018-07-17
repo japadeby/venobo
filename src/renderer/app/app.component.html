@@ -1,3 +1,5 @@
-<app-view>
-  <router-outlet></router-outlet>
-</app-view>
+<ng-container *ngIf="appReady | async">
+  <app-view>
+    <router-outlet></router-outlet>
+  </app-view>
+</ng-container>

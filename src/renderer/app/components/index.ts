@@ -12,7 +12,7 @@ import { CarouselComponent } from './carousel';
 import { PosterComponent } from './poster';
 import { SearchModule, searchReducer } from './search';
 
-import { CommonModule } from '../common.module';
+import { SharedModule } from '../shared.module';
 
 // Fuck this shit is retarded
 @NgModule({
@@ -20,7 +20,7 @@ import { CommonModule } from '../common.module';
     /*EffectsModule.forRoot([
       search: searchReducer,
     ]),*/
-    CommonModule,
+    SharedModule,
     SearchModule,
   ],
   declarations: [
@@ -31,7 +31,6 @@ import { CommonModule } from '../common.module';
     PosterComponent,
   ],
   exports: [
-    EffectsModule,
     SearchModule,
     HomeComponent,
     HeaderComponent,

@@ -4,8 +4,7 @@ import { ipcRenderer } from 'electron';
 import { Observable } from 'rxjs';
 
 import { AppState } from '../../app-store.module';
-import * as SearchActions from '../search/search.actions';
-import { SearchState } from '../search';
+import { SearchState, SearchToggle } from '../search';
 
 @Component({
   selector: 'app-header',
@@ -19,7 +18,7 @@ export class HeaderComponent {
 
   constructor(private readonly store: Store<AppState>) {}
 
-  toggleSearch = () => this.store.dispatch(new SearchActions().Toggle());
+  toggleSearch = () => this.store.dispatch(new SearchToggle());
 
   hoverDetails = () => this.hoverActive = !this.hoverActive;
 

@@ -6,17 +6,17 @@ export enum SearchActionTypes {
   ALL = '[Search] All',
 }
 
-export class Toggle implements Action {
+export class SearchToggle implements Action {
   readonly type = SearchActionTypes.TOGGLE;
 }
 
-export class Dismiss implements Action {
+export class SearchDismiss implements Action {
   readonly type = SearchActionTypes.DISMISS;
 }
 
 
-export class All implements Action {
+export class SearchAll implements Action {
   readonly type = SearchActionTypes.ALL;
 }
 
-export type SearchActionsUnion = Toggle | Dismiss | All;
+export type SearchActionsUnion = SearchToggle | SearchDismiss | SearchAll;

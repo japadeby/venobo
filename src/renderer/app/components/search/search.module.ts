@@ -7,7 +7,7 @@ import { SearchEffects } from './search.effects';
 @NgModule({
   declarations: [SearchComponent],
   imports: [EffectsModule.forFeature([SearchEffects])],
-  exports: [EffectsModule, SearchComponent],
+  exports: [SearchComponent],
 })
 export class SearchModule {}
 
