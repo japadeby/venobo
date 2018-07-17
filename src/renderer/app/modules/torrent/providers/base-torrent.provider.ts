@@ -5,10 +5,10 @@ import {
   ITorrent,
   TorrentHealth,
   TorrentVideoQuality,
-  ExtendedDetails, ITorrentProvider,
+  ExtendedDetails,
 } from '../interfaces';
 
-export abstract class BaseTorrentProvider {
+export class BaseTorrentProvider {
 
   /**
    * Endpoint domains for torrent provider
