@@ -11,14 +11,12 @@ import { Utils } from '../../../../common';
 @Injectable()
 export class TorrentService {
 
-  private availableProviders: Observable<BaseTorrentProvider[]>;
+  public availableProviders: Observable<BaseTorrentProvider>;
 
   constructor(
     @Inject(TORRENT_PROVIDERS)
     private readonly allProviders: BaseTorrentProvider[],
-  ) {
-    console.log(allProviders);
-  }
+  ) {}
 
   async create() {
     const providerStatuses = this.allProviders
@@ -66,9 +64,9 @@ export class TorrentService {
     if (!this.availableProviders) throw new Error('You need to call TorrentService.create() first');
 
     return this.availableProviders.pipe(
-      mergeMap(provider => {
-        return provider.provide(query, type, extendedDetails);
-      }),
+      mergeMap(provider =>
+        provider.provide(query, type, extendedDetails),
+      ),
       mergeAll(),
       switchMap((results: ITorrent[]) => {
         switch (type) {

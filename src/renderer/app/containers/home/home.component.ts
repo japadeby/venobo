@@ -13,7 +13,7 @@ export class HomeComponent implements OnInit {
   constructor(private readonly route: ActivatedRoute) {}
 
   ngOnInit() {
-    this.data = this.route.snapshot.data.data;
+    this.data = this.route.snapshot.data.home;
     console.log(this.data);
   }
 

@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
-import { Utils } from '../../../../../common';
-import { ProviderUtils } from '../provider-utils';
+import { UnknownTorrentProviderApiException } from '../../../exceptions';
 import { BaseTorrentProvider } from './base-torrent.provider';
+import { ProviderUtils } from '../provider-utils';
+import { Utils } from '../../../../../common';
 import {
   ExtendedDetails,
   YtsMovieTorrent,
@@ -12,7 +12,6 @@ import {
   ITorrent,
 } from '../interfaces';
 
-@Injectable()
 export class YtsTorrentProvider extends BaseTorrentProvider {
 
   domains = ['yts.am', 'yts.unblocked.vet'];
@@ -21,7 +20,13 @@ export class YtsTorrentProvider extends BaseTorrentProvider {
   private createEndpoint = (domain: string) => `https://${domain}/api/v2/list_movies.json`;
 
   private fetch(query: string): Observable<YtsResponse> {
-    return this.http.get(this.api, {
+    if (!this.api) {
+      throw new UnknownTorrentProviderApiException(
+        YtsTorrentProvider,
+      );
+    }
+
+    return this.http.get<YtsResponse>(this.api, {
       params: {
         query_term: query,
         order_by: 'desc',
@@ -50,7 +55,7 @@ export class YtsTorrentProvider extends BaseTorrentProvider {
     });
   }
 
- async provide(search: string, type: string, { imdbId }: ExtendedDetails): Observable<ITorrent[]> {
+ provide(search: string, type: string, { imdbId }: ExtendedDetails = {}): Observable<ITorrent[]> {
     switch (type) {
       case 'movies':
         return this.fetch(<string>imdbId || search)

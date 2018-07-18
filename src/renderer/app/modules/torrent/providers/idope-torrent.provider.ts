@@ -1,14 +1,13 @@
-import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import * as cheerio from 'cheerio';
 
-import { ProviderUtils } from '../provider-utils';
-import { Utils } from '../../../../../common';
+import { UnknownTorrentProviderApiException } from '../../../exceptions';
 import { BaseTorrentProvider } from './base-torrent.provider';
 import { ITorrent, ExtendedDetails} from '../interfaces';
+import { ProviderUtils } from '../provider-utils';
+import { Utils } from '../../../../../common';
 
-@Injectable()
 // tslint:disable-next-line
 export class iDopeTorrentProvider extends BaseTorrentProvider {
 
@@ -16,12 +15,21 @@ export class iDopeTorrentProvider extends BaseTorrentProvider {
   api = 'https://idope.se';
 
   private fetch(type: string, query: string): Observable<ITorrent[]> {
+    if (!this.api) {
+      throw new UnknownTorrentProviderApiException(
+        iDopeTorrentProvider,
+      );
+    }
+
     return this.http.get(
-      `${this.api}/torrent-list/${query}/`, {
-      params: {
-        c: String(type === 'movies' ? 1 : 3),
-      },
-    }).pipe(
+      `${this.api}/torrent-list/${query}/`,
+      {
+        responseType: 'text',
+        params: {
+          c: String(type === 'movies' ? 1 : 3),
+        },
+      }
+    ).pipe(
       switchMap(res => this.cheerio(res)),
       catchError(() => of([])),
     );
@@ -29,7 +37,9 @@ export class iDopeTorrentProvider extends BaseTorrentProvider {
 
   create() {
     return Utils.promise.didResolve(() => {
-      return this.http.get(this.api).toPromise();
+      return this.http.get(this.api, {
+        responseType: 'text',
+      }).toPromise();
     });
   }
 
@@ -48,11 +58,11 @@ export class iDopeTorrentProvider extends BaseTorrentProvider {
         // sadly fetching the magnet this way doesnt work lol
         magnet: ProviderUtils.constructMagnet($(this).find('.resultdivbotton .hideinfohash').first().text()),
         provider,
-      } as ITorrent;
+      };
     }).get() as any[];
   }
 
-  provide(search: string, type: string, extendedDetails: ExtendedDetails): Observable<ITorrent[]> {
+  provide(search: string, type: string, extendedDetails: ExtendedDetails = {}): Observable<ITorrent[]> {
     switch (type) {
       case 'movies':
         return this.fetch(type, search);

@@ -1,16 +1,31 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { HomeComponent, HomeResolver } from './containers/home';
+import { AppResolver } from './resolvers';
+import {
+  ViewComponent,
+  HomeComponent,
+  HomeResolver
+} from './containers';
 
 const routes: Routes = [
   {
     path: '',
-    component: HomeComponent,
     resolve: {
-      data: HomeResolver,
+      root: AppResolver,
     },
-  }
+    children: [{
+      path: '',
+      component: ViewComponent,
+      children: [{
+        path: '',
+        component: HomeComponent,
+        resolve: {
+          home: HomeResolver,
+        },
+      }],
+    }],
+  },
 ];
 
 @NgModule({

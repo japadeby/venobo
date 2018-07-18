@@ -25,7 +25,7 @@
     "build": "npm run postinstall:electron && npm run electron:tsc && ng build",
     "build:dev": "npm run build -- -c dev",
     "build:prod": "npm run build -- -c production",
-    "ng:serve": "ng serve",
+    "ng:serve": "ng serve --aot",
     "ng:serve:web": "npm run postinstall:web && ng serve -o",
     "electron:tsc": "tsc src/main/index.ts",
     "electron:serve": "wait-on http-get://localhost:4200/ && npm run electron:tsc && electron . --serve",
@@ -40,7 +40,8 @@
     "@ngrx/effects": "^6.0.1",
     "@ngrx/router-store": "^6.0.1",
     "@ngrx/store": "^6.0.1",
-    "cheerio": "^1.0.0-rc.2"
+    "cheerio": "^1.0.0-rc.2",
+    "rxjs-compat": "^6.2.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "0.6.3",

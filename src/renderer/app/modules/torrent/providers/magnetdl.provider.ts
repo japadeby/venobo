@@ -1,20 +1,27 @@
-import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { switchMap, catchError } from 'rxjs/operators';
 
-import { ExtendedDetails, ITorrent } from '../interfaces';
-import { Utils } from '../../../../../common';
-import { ProviderUtils } from '../provider-utils';
+import { UnknownTorrentProviderApiException } from '../../../exceptions';
 import { BaseTorrentProvider } from './base-torrent.provider';
+import { ExtendedDetails, ITorrent } from '../interfaces';
+import { ProviderUtils } from '../provider-utils';
+import { Utils } from '../../../../../common';
 
-@Injectable()
 export class MagnetDlTorrentProvider extends BaseTorrentProvider {
 
   endpoints = ['http://www.magnetdl.com', 'https://magnetdl.unblocked.vet'];
   provider = 'MagnetDl';
 
   private fetch(query: string): Observable<ITorrent[]> {
-    return this.http.get(`${this.api}/${query.substring(0, 1)}/${query}`)
+    if (!this.api) {
+      throw new UnknownTorrentProviderApiException(
+        MagnetDlTorrentProvider,
+      );
+    }
+
+    return this.http.get(`${this.api}/${query.substring(0, 1)}/${query}`, {
+      responseType: 'text',
+    })
       .pipe(
         switchMap(res => this.cheerio(res)),
         catchError(() => of([])),
@@ -41,11 +48,13 @@ export class MagnetDlTorrentProvider extends BaseTorrentProvider {
 
   create() {
     return Utils.promise.didResolve(async () => {
-      this.api = await this.createReliableEndpoint(this.endpoints);
+      this.api = await this.createReliableEndpoint(this.endpoints, {
+        responseType: 'text',
+      });
     });
   }
 
-  provide(search: string, type: string, extendedDetails: ExtendedDetails): Observable<ITorrent[]> {
+  provide(search: string, type: string, extendedDetails: ExtendedDetails = {}): Observable<ITorrent[]> {
     switch (type) {
       case 'movies':
         return this.fetch(search);

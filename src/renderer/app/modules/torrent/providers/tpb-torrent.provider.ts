@@ -1,21 +1,28 @@
-import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import * as cheerio from 'cheerio';
 
+import { UnknownTorrentProviderApiException } from '../../../exceptions';
 import { BaseTorrentProvider } from './base-torrent.provider';
+import { ExtendedDetails, ITorrent } from '../interfaces';
 import { ProviderUtils } from '../provider-utils';
 import { Utils } from '../../../../../common';
-import { ExtendedDetails, ITorrent } from '../interfaces/index';
 
-@Injectable()
 export class ThePirateBayTorrentProvider extends BaseTorrentProvider {
 
   endpoints = ['https://thepiratebay.org', 'https://tpbship.org'];
   provider = 'ThePirateBay';
 
   private fetch(query: string): Observable<ITorrent[]> {
-    return this.http.get(`${this.api}/search/${query}/0/99/200`)
+    if (!this.api) {
+      throw new UnknownTorrentProviderApiException(
+        ThePirateBayTorrentProvider
+      );
+    }
+
+    return this.http.get(`${this.api}/search/${query}/0/99/200`, {
+      responseType: 'text',
+    })
       .pipe(
         switchMap(res => this.cheerio(res)),
         catchError(() => of([])),
@@ -43,11 +50,13 @@ export class ThePirateBayTorrentProvider extends BaseTorrentProvider {
 
   create() {
     return Utils.promise.didResolve(async () => {
-      this.api = await this.createReliableEndpoint(this.endpoints);
+      this.api = await this.createReliableEndpoint(this.endpoints, {
+        responseType: 'text',
+      });
     });
   }
 
-  provide(search: string, type: string, extendedDetails: ExtendedDetails): Observable<ITorrent[]> {
+  provide(search: string, type: string, extendedDetails: ExtendedDetails = {}): Observable<ITorrent[]> {
     switch (type) {
       case 'movies':
         return this.fetch(search);

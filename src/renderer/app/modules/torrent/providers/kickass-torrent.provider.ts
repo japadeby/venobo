@@ -1,21 +1,27 @@
-import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import * as cheerio from 'cheerio';
 
-import { Utils } from '../../../../../common';
-import { ProviderUtils } from '../provider-utils';
+import { UnknownTorrentProviderApiException } from '../../../exceptions';
 import { BaseTorrentProvider } from './base-torrent.provider';
 import { ExtendedDetails, ITorrent } from '../interfaces';
+import { ProviderUtils } from '../provider-utils';
+import { Utils } from '../../../../../common';
 
-@Injectable()
 export class KickassTorrentProvider extends BaseTorrentProvider {
 
   endpoints = ['https://kickassto.org', 'https://kat.unblocked.vet/'];
   provider = 'Kickass';
 
   private fetch(query: string): Observable<ITorrent[]> {
+    if (!this.api) {
+      throw new UnknownTorrentProviderApiException(
+        KickassTorrentProvider,
+      );
+    }
+
     return this.http.get(`${this.api}/usearch/${query}/`, {
+      responseType: 'text',
       params: {
         field: 'seeders',
         sorder: 'desc',
@@ -46,11 +52,13 @@ export class KickassTorrentProvider extends BaseTorrentProvider {
 
   create() {
     return Utils.promise.didResolve(async () => {
-      this.api = await this.createReliableEndpoint(this.endpoints);
+      this.api = await this.createReliableEndpoint(this.endpoints, {
+        responseType: 'text',
+      });
     });
   }
 
-  provide(search: string, type: string, extendedDetails: ExtendedDetails): Observable<ITorrent[]> {
+  provide(search: string, type: string, extendedDetails: ExtendedDetails = {}): Observable<ITorrent[]> {
     switch (type) {
       case 'movies':
         return this.fetch(search);
@@ -61,7 +69,7 @@ export class KickassTorrentProvider extends BaseTorrentProvider {
         );
 
       default:
-        return [];
+        return of([]);
     }
   }
 

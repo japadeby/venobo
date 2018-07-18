@@ -1,4 +1,5 @@
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { Utils } from '../../../../../common';
@@ -7,6 +8,12 @@ import {
   ExtendedDetails,
 } from '../interfaces';
 
+export interface EndpointOptions {
+  timeout?: number;
+  responseType: any;
+}
+
+@Injectable()
 export abstract class BaseTorrentProvider {
 
   /**
@@ -21,7 +28,7 @@ export abstract class BaseTorrentProvider {
   /**
    * Torrent provider
    */
-  protected readonly provider: string;
+  protected abstract readonly provider: string;
 
   protected api!: string;
 
@@ -40,37 +47,26 @@ export abstract class BaseTorrentProvider {
    * @param {ExtendedDetails} extendedDetails
    * @returns {Promise<ITorrent[]>}
    */
-  abstract provide(search: string, type: string, extendedDetails: ExtendedDetails): Observable<ITorrent[]>;
+  abstract provide(search: string, type: string, extendedDetails: ExtendedDetails = {}): Observable<ITorrent[]>;
 
   /**
-   * Transform html into a torrent list
-   * @param {string} html
-   * @returns {ITorrent[]}
+   * Create endpoint url by requesting the different domains and picking
+   * the first one that is succesfully resolved
+   * @param {string[]} endpoints
+   * @param {3000} timeout
+   * @param {"json"} responseType
+   * @returns {Promise<string>}
    */
-  cheerio?(html: string): any[]; // ITorrent[];
-
-  /*private createApi(baseURL: string) {
-    return axios.create({
-      timeout: 5000,
-      baseURL,
-    });
-  }
-
-  protected async createReliableEndpointApi(endpoints: string[], timeout: number = 3000) {
+  protected async createReliableEndpoint(
+    endpoints: string[],
+    { timeout = 3000,
+      responseType = 'json',
+    }?: EndpointOptions,
+  ): Promise<string> {
     const requests = endpoints.map(async (endpoint) => {
-      await axios.get(endpoint, { timeout });
-
-      return endpoint;
-    });
-
-    const endpoint = await Utils.promise.raceResolve<string>(requests);
-
-    return this.createApi(endpoint);
-  }*/
-
-  protected async createReliableEndpoint(endpoints: string[], timeout: number = 3000): Promise<string> {
-    const requests = endpoints.map(async (endpoint) => {
-      await this.http.get(endpoint).toPromise();
+      await (this.http.get(endpoint, {
+        responseType,
+      }).timeout(timeout)).toPromise();
 
       return endpoint;
     });

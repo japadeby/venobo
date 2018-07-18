@@ -1,19 +1,22 @@
 import 'zone.js/dist/zone-mix';
 import 'reflect-metadata';
+import 'rxjs/add/operator/toPromise';
+import 'rxjs/add/operator/timeout';
 import '../polyfills';
 import { NgModule } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
-import { ElectronService } from './providers';
+import { ServicesModule } from './services';
+import { ResolversModule } from './resolvers';
 import { ContainersModule } from './containers';
 import { ComponentsModule } from './components';
-import { AppComponent } from './app.component';
+import { SharedModule } from './shared.module';
 
 import { MetadataModule, TMDbProvider } from './modules/metadata';
-import { SharedModule } from './shared.module';
 import { AppConfig } from '../environments';
+import { AppComponent } from './app.component';
 import {
   TorrentModule,
   YtsTorrentProvider,
@@ -29,10 +32,12 @@ export function HttpLoaderFactory(http: HttpClient) {
 }
 
 @NgModule({
-  declarations: [
-    AppComponent,
-  ],
+  declarations: [AppComponent],
+  bootstrap: [AppComponent],
   imports: [
+    ServicesModule,
+    ResolversModule,
+    SharedModule,
     TorrentModule.forRoot([
       YtsTorrentProvider,
       ThePirateBayTorrentProvider,
@@ -51,11 +56,8 @@ export function HttpLoaderFactory(http: HttpClient) {
         deps: [HttpClient],
       },
     }),
-    SharedModule,
     ComponentsModule,
     ContainersModule,
   ],
-  providers: [ElectronService],
-  bootstrap: [AppComponent],
 })
 export class AppModule {}

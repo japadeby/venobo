@@ -1,15 +1,17 @@
 import { Injectable } from '@angular/core';
 import { Resolve } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { delay } from 'rxjs/operators';
 
-import { MetadataService } from '../../modules/metadata/index';
+import { ITorrent, TorrentService, YtsTorrentProvider } from '../../modules/torrent';
 
 @Injectable()
-export class HomeResolver implements Resolve<Observable<string>> {
-  constructor(private readonly metadataService: MetadataService) {}
+export class HomeResolver implements Resolve<Observable<ITorrent[]>> {
+  constructor(
+    private readonly torrentService: TorrentService,
+    private readonly yts: YtsTorrentProvider,
+  ) {}
 
   resolve() {
-    return of('test').pipe(delay(2000));
+    return this.yts.provide('Rampage 2018', 'movies');
   }
 }
