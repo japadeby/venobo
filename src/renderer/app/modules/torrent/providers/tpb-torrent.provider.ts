@@ -1,4 +1,6 @@
-import { AxiosInstance } from 'axios';
+import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
 import * as cheerio from 'cheerio';
 
 import { BaseTorrentProvider } from './base-torrent.provider';
@@ -6,17 +8,18 @@ import { ProviderUtils } from '../provider-utils';
 import { Utils } from '../../../../../common';
 import { ExtendedDetails, ITorrent } from '../interfaces/index';
 
+@Injectable()
 export class ThePirateBayTorrentProvider extends BaseTorrentProvider {
 
   endpoints = ['https://thepiratebay.org', 'https://tpbship.org'];
-  api!: AxiosInstance;
   provider = 'ThePirateBay';
 
-  private fetch(query: string) {
-    return <Promise<ITorrent[]>>
-      this.api.get(`search/${query}/0/99/200`)
-        .then(res => this.cheerio(res.data))
-        .catch(() => []);
+  private fetch(query: string): Observable<ITorrent[]> {
+    return this.http.get(`${this.api}/search/${query}/0/99/200`)
+      .pipe(
+        switchMap(res => this.cheerio(res)),
+        catchError(() => of([])),
+      );
   }
 
   cheerio(html: string) {
@@ -40,22 +43,22 @@ export class ThePirateBayTorrentProvider extends BaseTorrentProvider {
 
   create() {
     return Utils.promise.didResolve(async () => {
-      this.api = await this.createReliableEndpointApi(this.endpoints);
+      this.api = await this.createReliableEndpoint(this.endpoints);
     });
   }
 
-  async provide(search: string, type: string, { season, episode }: ExtendedDetails): Promise<ITorrent[]> {
+  provide(search: string, type: string, extendedDetails: ExtendedDetails): Observable<ITorrent[]> {
     switch (type) {
       case 'movies':
         return this.fetch(search);
 
       case 'shows':
         return this.fetch(
-          `${search} ${ProviderUtils.formatSeasonEpisodeToString(season, episode)}`
+          `${search} ${ProviderUtils.formatSeasonEpisodeToString(extendedDetails)}`
         );
 
       default:
-        return [];
+        return of([]);
     }
   }
 

@@ -1,4 +1,6 @@
-import { AxiosInstance } from 'axios';
+import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 import { Utils } from '../../../../../common';
 import { ProviderUtils } from '../provider-utils';
@@ -10,25 +12,23 @@ import {
   ITorrent,
 } from '../interfaces';
 
+@Injectable()
 export class YtsTorrentProvider extends BaseTorrentProvider {
 
   domains = ['yts.am', 'yts.unblocked.vet'];
   provider = 'Yts';
-  api!: AxiosInstance;
 
   private createEndpoint = (domain: string) => `https://${domain}/api/v2/list_movies.json`;
 
-  private async fetch(query: string): Promise<YtsResponse> {
-    const { data } = await this.api.get('', {
+  private fetch(query: string): Observable<YtsResponse> {
+    return this.http.get(this.api, {
       params: {
         query_term: query,
         order_by: 'desc',
         sort_by: 'seeds',
-        limit: 50,
-      }
+        limit: String(50),
+      },
     });
-
-    return data;
   }
 
   private formatTorrent = (torrent: YtsMovieTorrent): ITorrent => ({
@@ -44,30 +44,30 @@ export class YtsTorrentProvider extends BaseTorrentProvider {
 
   create() {
     return Utils.promise.didResolve(async () => {
-      this.api = await this.createReliableEndpointApi(
+      this.api = await this.createReliableEndpoint(
         this.domains.map(domain => this.createEndpoint(domain))
       );
     });
   }
 
-  async provide(search: string, type: string, { imdbId }: ExtendedDetails): Promise<ITorrent[]> {
+ async provide(search: string, type: string, { imdbId }: ExtendedDetails): Observable<ITorrent[]> {
     switch (type) {
       case 'movies':
         return this.fetch(<string>imdbId || search)
-          .then(({ data }) => {
+          .pipe(switchMap(({ data }) => {
             if (data.movie_count === 0) return [];
 
-            return Utils.merge<ITorrent>(
+            return of(Utils.merge<ITorrent>(
               data.movies.map(
                 ({ torrents }) => torrents.map(
                   (torrent) => this.formatTorrent(torrent)
                 )
               )
-            );
-          });
+            ));
+          }));
 
       default:
-          return [];
+          return of([]);
     }
   }
 

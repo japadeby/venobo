@@ -1,41 +1,36 @@
+import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
 import * as cheerio from 'cheerio';
-import axios from 'axios';
 
 import { ProviderUtils } from '../provider-utils';
 import { Utils } from '../../../../../common';
 import { BaseTorrentProvider } from './base-torrent.provider';
 import { ITorrent, ExtendedDetails} from '../interfaces';
 
+@Injectable()
 // tslint:disable-next-line
 export class iDopeTorrentProvider extends BaseTorrentProvider {
 
-  endpoint = 'https://idope.se';
   provider = 'iDope';
-  api = axios.create({
-    baseURL: this.endpoint,
-    timeout: 2000,
-  });
+  api = 'https://idope.se';
 
-  private fetchMovies(query: string) {
-    return this.api.get(`torrent-list/${query}/`, {
+  private fetch(type: string, query: string): Observable<ITorrent[]> {
+    return this.http.get(
+      `${this.api}/torrent-list/${query}/`, {
       params: {
-        c: 1,
+        c: String(type === 'movies' ? 1 : 3),
       },
-    }).then(res => this.cheerio(res.data))
-      .catch(() => []);
-  }
-
-  private fetchShows(query: string) {
-    return this.api.get(`torrent-list/${query}/`, {
-      params: {
-        c: 3,
-      },
-    }).then(res => this.cheerio(res.data))
-      .catch(() => []);
+    }).pipe(
+      switchMap(res => this.cheerio(res)),
+      catchError(() => of([])),
+    );
   }
 
   create() {
-    return Utils.promise.didResolve(async () => this.api.get(''));
+    return Utils.promise.didResolve(() => {
+      return this.http.get(this.api).toPromise();
+    });
   }
 
   cheerio(html: string) {
@@ -57,18 +52,18 @@ export class iDopeTorrentProvider extends BaseTorrentProvider {
     }).get() as any[];
   }
 
-  async provide(search: string, type: string, { season, episode }: ExtendedDetails) {
+  provide(search: string, type: string, extendedDetails: ExtendedDetails): Observable<ITorrent[]> {
     switch (type) {
       case 'movies':
-        return this.fetchMovies(search);
+        return this.fetch(type, search);
 
       case 'shows':
-        return this.fetchShows(
-          `${search} ${ProviderUtils.formatSeasonEpisodeToString(season, episode)}`
+        return this.fetch(type,
+          `${search} ${ProviderUtils.formatSeasonEpisodeToString(extendedDetails)}`
         );
 
       default:
-        return [];
+        return of([]);
     }
   }
 

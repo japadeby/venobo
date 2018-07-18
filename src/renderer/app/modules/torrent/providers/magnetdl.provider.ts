@@ -1,20 +1,24 @@
-import {AxiosInstance} from 'axios';
+import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { switchMap, catchError } from 'rxjs/operators';
 
 import { ExtendedDetails, ITorrent } from '../interfaces';
 import { Utils } from '../../../../../common';
 import { ProviderUtils } from '../provider-utils';
 import { BaseTorrentProvider } from './base-torrent.provider';
 
+@Injectable()
 export class MagnetDlTorrentProvider extends BaseTorrentProvider {
 
   endpoints = ['http://www.magnetdl.com', 'https://magnetdl.unblocked.vet'];
   provider = 'MagnetDl';
-  api!: AxiosInstance;
 
-  private fetch(query: string) {
-    return this.api.get(`${query.substring(0, 1)}/${query}`)
-      .then(res => this.cheerio(res.data))
-      .catch(() => []);
+  private fetch(query: string): Observable<ITorrent[]> {
+    return this.http.get(`${this.api}/${query.substring(0, 1)}/${query}`)
+      .pipe(
+        switchMap(res => this.cheerio(res)),
+        catchError(() => of([])),
+      );
   }
 
   cheerio(html: string) {
@@ -37,22 +41,22 @@ export class MagnetDlTorrentProvider extends BaseTorrentProvider {
 
   create() {
     return Utils.promise.didResolve(async () => {
-      this.api = await this.createReliableEndpointApi(this.endpoints);
+      this.api = await this.createReliableEndpoint(this.endpoints);
     });
   }
 
-  async provide(search: string, type: string, { season, episode }: ExtendedDetails) {
+  provide(search: string, type: string, extendedDetails: ExtendedDetails): Observable<ITorrent[]> {
     switch (type) {
       case 'movies':
         return this.fetch(search);
 
       case 'shows':
         return this.fetch(
-          `${search} ${ProviderUtils.formatSeasonEpisodeToString(season, episode)}`
+          `${search} ${ProviderUtils.formatSeasonEpisodeToString(extendedDetails)}`
         );
 
       default:
-        return [];
+        return of([]);
     }
   }
 

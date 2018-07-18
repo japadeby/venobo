@@ -1,7 +1,6 @@
-import axios from 'axios';
-
 import { Utils } from '../../../../common';
 import {
+  ExtendedDetails,
   ITorrent,
   TorrentHealth,
   TorrentVideoQuality
@@ -145,7 +144,7 @@ export abstract class ProviderUtils {
     });
   }
 
-  public static formatSeasonEpisodeToString(season: number | string, episode: number | string) {
+  public static formatSeasonEpisodeToString({ season, episode }: ExtendedDetails) {
     return (
       ('s' + (String(season).length === 1 ? '0' + season : season)) +
       ('e' + (String(episode).length === 1 ? '0' + episode : episode))

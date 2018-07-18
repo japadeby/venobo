@@ -1,6 +1,8 @@
 import { Injectable, Inject } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { mergeAll, mergeMap, switchMap } from 'rxjs/operators';
 
-import { USE_TORRENT_PROVIDERS } from './tokens';
+import { TORRENT_PROVIDERS } from './tokens';
 import { ExtendedDetails, ITorrent } from './interfaces';
 import { ProviderUtils } from './provider-utils';
 import { BaseTorrentProvider } from './providers';
@@ -9,12 +11,14 @@ import { Utils } from '../../../../common';
 @Injectable()
 export class TorrentService {
 
-  private availableProviders: BaseTorrentProvider[];
+  private availableProviders: Observable<BaseTorrentProvider[]>;
 
   constructor(
-    @Inject(USE_TORRENT_PROVIDERS)
+    @Inject(TORRENT_PROVIDERS)
     private readonly allProviders: BaseTorrentProvider[],
-  ) {}
+  ) {
+    console.log(allProviders);
+  }
 
   async create() {
     const providerStatuses = this.allProviders
@@ -22,13 +26,15 @@ export class TorrentService {
 
     const resolvedProviderStatuses = await Promise.all(providerStatuses);
 
-    this.availableProviders = Utils.promise.filterResolved<BaseTorrentProvider>(
-      this.allProviders,
-      resolvedProviderStatuses
+    this.availableProviders = of(
+      ...Utils.promise.filterResolved<BaseTorrentProvider>(
+        this.allProviders,
+        resolvedProviderStatuses
+      )
     );
   }
 
-  private async selectTorrents(torrents: ITorrent[]) {
+  private selectTorrents(torrents: ITorrent[]) {
     return ProviderUtils.sortTorrentsBySeeders(
       torrents.filter(
         torrent => !!torrent.quality// && torrent.quality !== 'n/a'
@@ -36,8 +42,8 @@ export class TorrentService {
     );
   }
 
-  private appendAttributes(providerResults: ITorrent[][], method: 'movies' | 'shows') {
-    return Utils.merge(providerResults).map(result => ({
+  private appendAttributes(providerResults: ITorrent[], method: 'movies' | 'shows') {
+    return providerResults.map(result => ({
       ...result,
       method,
       cached: Date.now(),
@@ -48,39 +54,42 @@ export class TorrentService {
     }));
   }
 
-  private filterShows(show: ITorrent, { season, episode }: ExtendedDetails) {
+  private filterShows(show: ITorrent, extendedDetails: ExtendedDetails) {
     return (
       show.metadata.toLowerCase().includes(
-        ProviderUtils.formatSeasonEpisodeToString(season, episode)
+        ProviderUtils.formatSeasonEpisodeToString(extendedDetails)
       ) && show.seeders > 0
     );
   }
 
-  public async search(query: string, type: string, extendedDetails: ExtendedDetails = {}) {
+  public search(query: string, type: string, extendedDetails: ExtendedDetails = {}): Observable<ITorrent[]> {
     if (!this.availableProviders) throw new Error('You need to call TorrentService.create() first');
 
-    const torrentPromises = this.availableProviders.map(
-      provider => provider.provide(query, type, extendedDetails)
+    return this.availableProviders.pipe(
+      mergeMap(provider => {
+        return provider.provide(query, type, extendedDetails);
+      }),
+      mergeAll(),
+      switchMap((results: ITorrent[]) => {
+        switch (type) {
+          case 'movies':
+            return of(this.selectTorrents(
+              this.appendAttributes(results, type)
+            ));
+
+          case 'shows':
+            return of(this.selectTorrents(
+              this.appendAttributes(results, type)
+                .filter(show => !!show.metadata)
+                .filter(show => this.filterShows(show, extendedDetails))
+            ));
+
+          default:
+            return of([]);
+        }
+      }),
+      // mergeAll(),
     );
-
-    const providerResults = await Promise.all(torrentPromises);
-
-    switch (type) {
-      case 'movies':
-        return this.selectTorrents(
-          this.appendAttributes(providerResults, type)
-        );
-
-      case 'shows':
-        return this.selectTorrents(
-          this.appendAttributes(providerResults, type)
-            .filter(show => !!show.metadata)
-            .filter(show => this.filterShows(show, extendedDetails))
-        );
-
-      default:
-        return [];
-    }
   }
 
 }

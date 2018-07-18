@@ -1,4 +1,5 @@
-import axios, { AxiosInstance } from 'axios';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 import { Utils } from '../../../../../common';
 import {
@@ -11,36 +12,20 @@ export abstract class BaseTorrentProvider {
   /**
    * Endpoint domains for torrent provider
    */
-  readonly domains?: string[];
+  protected readonly domains?: string[];
 
   /**
    * Endpoint for torrent domain
    */
-  readonly endpoint?: string;
+  protected readonly endpoint?: string;
   /**
    * Torrent provider
    */
-  readonly provider: string;
-  /**
-   * HTTP module
-   */
-  abstract api: AxiosInstance;
+  protected readonly provider: string;
 
-  // fetch?(query: string): Promise<ITorrent[]>;
+  protected api!: string;
 
-  /**
-   * Fetch all torrent movies related to query
-   * @param {string} query
-   * @returns {Promise<ITorrent[]>}
-   */
-  // fetchMovies?(query: string): Promise<ITorrent[]>;
-
-  /**
-   * Fetch all torrent shows related to query
-   * @param {string} query
-   * @returns {Promise<ITorrent[]>}
-   */
-  // fetchShows?(query: string): Promise<ITorrent[]>;
+  constructor(protected readonly http: HttpClient) {}
 
   /**
    * Get status of torrent endpoint
@@ -55,7 +40,7 @@ export abstract class BaseTorrentProvider {
    * @param {ExtendedDetails} extendedDetails
    * @returns {Promise<ITorrent[]>}
    */
-  abstract async provide(search: string, type: string, extendedDetails: ExtendedDetails): Promise<ITorrent[]>;
+  abstract provide(search: string, type: string, extendedDetails: ExtendedDetails): Observable<ITorrent[]>;
 
   /**
    * Transform html into a torrent list
@@ -64,7 +49,7 @@ export abstract class BaseTorrentProvider {
    */
   cheerio?(html: string): any[]; // ITorrent[];
 
-  private createApi(baseURL: string) {
+  /*private createApi(baseURL: string) {
     return axios.create({
       timeout: 5000,
       baseURL,
@@ -81,6 +66,16 @@ export abstract class BaseTorrentProvider {
     const endpoint = await Utils.promise.raceResolve<string>(requests);
 
     return this.createApi(endpoint);
+  }*/
+
+  protected async createReliableEndpoint(endpoints: string[], timeout: number = 3000): Promise<string> {
+    const requests = endpoints.map(async (endpoint) => {
+      await this.http.get(endpoint).toPromise();
+
+      return endpoint;
+    });
+
+    return await Utils.promise.raceResolve<string>(requests);
   }
 
 }

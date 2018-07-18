@@ -1,0 +1,21 @@
+<ng-container *ngIf="loading; else loader">
+  <ng-content></ng-content>
+</ng-container>
+<ng-template #loader>
+  <div class="search-spinner load-spinner no-query" [class]="spinner">
+    <div class="spinner-container" [class]="container">
+      <div class="spinner-line line01"></div>
+      <div class="spinner-line line02"></div>
+      <div class="spinner-line line03"></div>
+      <div class="spinner-line line04"></div>
+      <div class="spinner-line line05"></div>
+      <div class="spinner-line line06"></div>
+      <div class="spinner-line line07"></div>
+      <div class="spinner-line line08"></div>
+      <div class="spinner-line line09"></div>
+      <div class="spinner-line line10"></div>
+      <div class="spinner-line line11"></div>
+      <div class="spinner-line line12"></div>
+    </div>
+  </div>
+</ng-template>

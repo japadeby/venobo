@@ -1,4 +1,6 @@
-import { AxiosInstance } from 'axios';
+import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
 import * as cheerio from 'cheerio';
 
 import { Utils } from '../../../../../common';
@@ -6,20 +8,22 @@ import { ProviderUtils } from '../provider-utils';
 import { BaseTorrentProvider } from './base-torrent.provider';
 import { ExtendedDetails, ITorrent } from '../interfaces';
 
+@Injectable()
 export class KickassTorrentProvider extends BaseTorrentProvider {
 
   endpoints = ['https://kickassto.org', 'https://kat.unblocked.vet/'];
   provider = 'Kickass';
-  api!: AxiosInstance;
 
-  private fetch(query: string) {
-    return this.api.get(`usearch/${query}/`, {
+  private fetch(query: string): Observable<ITorrent[]> {
+    return this.http.get(`${this.api}/usearch/${query}/`, {
       params: {
         field: 'seeders',
         sorder: 'desc',
-      }
-    }).then(res => this.cheerio(res.data))
-      .catch(() => []);
+      },
+    }).pipe(
+      switchMap(res => this.cheerio(res)),
+      catchError(() => of([])),
+    );
   }
 
   cheerio(html: string) {
@@ -42,18 +46,18 @@ export class KickassTorrentProvider extends BaseTorrentProvider {
 
   create() {
     return Utils.promise.didResolve(async () => {
-      this.api = await this.createReliableEndpointApi(this.endpoints);
+      this.api = await this.createReliableEndpoint(this.endpoints);
     });
   }
 
-  async provide(search: string, type: string, { season, episode }: ExtendedDetails) {
+  provide(search: string, type: string, extendedDetails: ExtendedDetails): Observable<ITorrent[]> {
     switch (type) {
       case 'movies':
         return this.fetch(search);
 
       case 'shows':
         return this.fetch(
-          `${search} ${ProviderUtils.formatSeasonEpisodeToString(season, episode)}`
+          `${search} ${ProviderUtils.formatSeasonEpisodeToString(extendedDetails)}`
         );
 
       default:

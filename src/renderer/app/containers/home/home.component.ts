@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -7,9 +8,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
 
-  constructor() { }
+  data!: any;
+
+  constructor(private readonly route: ActivatedRoute) {}
 
   ngOnInit() {
+    this.data = this.route.snapshot.data.data;
+    console.log(this.data);
   }
 
 }

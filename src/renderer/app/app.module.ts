@@ -7,6 +7,7 @@ import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { ElectronService } from './providers';
+import { ContainersModule } from './containers';
 import { ComponentsModule } from './components';
 import { AppComponent } from './app.component';
 
@@ -33,11 +34,11 @@ export function HttpLoaderFactory(http: HttpClient) {
   ],
   imports: [
     TorrentModule.forRoot([
-      new YtsTorrentProvider(),
-      new ThePirateBayTorrentProvider(),
-      new KickassTorrentProvider(),
-      new MagnetDlTorrentProvider(),
-      new iDopeTorrentProvider(),
+      YtsTorrentProvider,
+      ThePirateBayTorrentProvider,
+      KickassTorrentProvider,
+      MagnetDlTorrentProvider,
+      iDopeTorrentProvider,
     ]),
     MetadataModule.forRoot({
       config: AppConfig.tmdb,
@@ -52,6 +53,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     }),
     SharedModule,
     ComponentsModule,
+    ContainersModule,
   ],
   providers: [ElectronService],
   bootstrap: [AppComponent],

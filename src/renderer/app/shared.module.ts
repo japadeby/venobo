@@ -12,17 +12,17 @@ import { AppStoreModule } from './app-store.module';
 
 @NgModule({
   exports: [
+    BrowserModule,
     TranslateModule,
     RouterModule,
     HttpClientModule,
     FormsModule,
     MetadataModule,
     TorrentModule,
-    BrowserModule,
   ],
   imports: [
-    AppStoreModule,
     BrowserModule,
+    AppStoreModule,
     FormsModule,
     HttpClientModule,
     AppRoutingModule,

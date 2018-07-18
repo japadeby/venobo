@@ -1,4 +1,4 @@
-import { Component, Input, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, Input, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 
 export class CarouselComponentState {
   navPrevDisabled!: boolean;
@@ -18,9 +18,9 @@ export class CarouselComponentState {
 })
 export class CarouselComponent extends CarouselComponentState implements AfterViewInit {
 
-  @ViewChild('poster') poster: HTMLElement;
+  @ViewChild('poster') poster: ElementRef;
 
-  @ViewChild('wrapper') wrapper: HTMLElement;
+  @ViewChild('wrapper') wrapper: ElementRef;
 
   @Input() readonly items: any[];
 
@@ -33,9 +33,9 @@ export class CarouselComponent extends CarouselComponentState implements AfterVi
   }
 
   updateCarousel() {
-    const posterItems = this.poster.querySelectorAll('.react-item');
-    const startPoint = this.poster.style.marginLeft;
-    const maxw = this.wrapper.offsetWidth;
+    const posterItems = this.poster.nativeElement.querySelectorAll('.react-item');
+    const startPoint = this.poster.nativeElement.style.marginLeft;
+    const maxw = this.wrapper.nativeElement.offsetWidth;
 
     const itemsFitSlide = Array.from(posterItems).filter((item: HTMLElement) => {
       const rect = item.getBoundingClientRect();
@@ -47,7 +47,7 @@ export class CarouselComponent extends CarouselComponentState implements AfterVi
     this.innerWidth = -startPoint;
     this.startPoint = -startPoint;
     this.itemsShownTotal = itemsFitSlide;
-    this.itemWidth = this.poster.offsetWidth;
+    this.itemWidth = this.poster.nativeElement.offsetWidth;
     this.navNextDisabled = itemsFitSlide === posterItems.length;
     this.itemsLength = posterItems.length;
     this.itemsFitSlide = itemsFitSlide;
