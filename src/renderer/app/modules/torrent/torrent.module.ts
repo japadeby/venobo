@@ -16,14 +16,13 @@ export class TorrentModule {
     return {
       ngModule: TorrentModule,
       providers: [
-        providers,
-        ProviderUtils,
         TorrentService,
+        ProviderUtils,
+        providers,
         {
-          provide: TORRENT_PROVIDERS,
-          // multi: true,
-          deps: providers,
           useFactory: createSourceInstances,
+          provide: TORRENT_PROVIDERS,
+          deps: providers,
         },
       ],
     };

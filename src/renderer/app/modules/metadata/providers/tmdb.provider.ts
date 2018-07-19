@@ -1,18 +1,12 @@
-import { Injectable } from '@angular/core';
-import axios, { AxiosInstance } from 'axios';
-// import { ConfigState } from '../../../renderer/stores/config.store';
+import { Observable } from 'rxjs';
 
-// import tmdb from '../../../../config/tmdb.config.json';
-import { AppConfig } from '../../../../environments';
 import { BaseMetadataProvider } from './base-metadata.provider';
+import { AppConfig } from '../../../../environments';
 import { TMDbMovieResponse, TMDbResponse, TMDbShowResponse } from '../interfaces';
 
-@Injectable()
 export class TMDbProvider extends BaseMetadataProvider {
 
-  private readonly api: AxiosInstance;
-
-  constructor(/*private readonly config: ConfigState*/) {
+  /*constructor() {
     super();
 
     this.api = axios.create();
@@ -27,16 +21,17 @@ export class TMDbProvider extends BaseMetadataProvider {
         append_to_response: AppConfig.tmdb.appendToResponse,
       },
     }));
-  }
+  }*/
 
-  private convertType(type: string) {
-    return type === 'shows' ? 'tv' : 'movie';
-  }
-
-  private async getData<R extends TMDbResponse>(url: string, params?: any): Promise<R> {
-    const { data } = await this.api.get(url, { params });
-
-    return data;
+  private fetch<R extends TMDbResponse>(url: string, params = {}) {
+    return this.http.get<R>(`${AppConfig.tmdb.api}/${url}`, {
+      params: {
+        api_key: AppConfig.tmdb.key,
+        // language: this.config.user.prefs.ietf,
+        append_to_response: AppConfig.tmdb.appendToResponse,
+        ...params,
+      },
+    });
   }
 
   public formatEpisodePoster(path: string) {
@@ -52,43 +47,43 @@ export class TMDbProvider extends BaseMetadataProvider {
   }
 
   public getSimilar(type: string, tmdbId: number) {
-    return this.getData(`${this.convertType(type)}/${tmdbId}/similar`);
+    return this.fetch(`${this.convertType(type)}/${tmdbId}/similar`);
   }
 
   public getRecommendations(type: string, tmdbId: number) {
-    return this.getData(`${this.convertType(type)}/${tmdbId}/recommendations`);
+    return this.fetch(`${this.convertType(type)}/${tmdbId}/recommendations`);
   }
 
   public getPopular(type: string, page: number = 1) {
-    return this.getData(`${this.convertType(type)}/popular`, { page });
+    return this.fetch(`${this.convertType(type)}/popular`, { page });
   }
 
   public getTopRated(type: string, page: number = 1) {
-    return this.getData(`${this.convertType(type)}/top_rated`, { page });
+    return this.fetch(`${this.convertType(type)}/top_rated`, { page });
   }
 
   public get(type: string, tmdbId: number)  {
-    return this.getData/*<TMDbMovieResponse & TMDbShowResponse>*/(`${this.convertType(type)}/${tmdbId}`);
+    return this.fetch(`${this.convertType(type)}/${tmdbId}`);
   }
 
   public getShowSeason(tmdbId: number, season: number) {
-    return this.getData(`tv/${tmdbId}/season/${season}`);
+    return this.fetch(`tv/${tmdbId}/season/${season}`);
   }
 
   public getShowSeasonEpisode(tmdbId: number, season: number, episode: number) {
-    return this.getData(`tv/${tmdbId}/season/${season}/episode/${episode}`);
+    return this.fetch(`tv/${tmdbId}/season/${season}/episode/${episode}`);
+  }
+
+  public discover(type: string, params?: any) {
+    return this.fetch(`discover/${this.convertType(type)}`, params);
   }
 
   public searchAll(query: string, page: number = 1) {
-    return this.getData('search/multi', {
+    return this.fetch('search/multi', {
       include_adult: true,
       page,
       query,
     });
-  }
-
-  public discover(type: string, params?: any) {
-    return this.getData(`discover/${this.convertType(type)}`, params);
   }
 
 }

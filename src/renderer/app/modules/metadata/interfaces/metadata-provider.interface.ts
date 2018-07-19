@@ -1,7 +1,5 @@
-import { AxiosInstance } from 'axios';
+import { Provider } from '@angular/core';
 
-export interface IMetadataProvider {
+import { BaseMetadataProvider } from '../providers';
 
-    api: AxiosInstance;
-
-}
+export type MetadataProvider = (BaseMetadataProvider & Provider);

@@ -1,20 +1,8 @@
-import { NgModule, ModuleWithProviders, Provider } from '@angular/core';
+import { NgModule, ModuleWithProviders } from '@angular/core';
+
 import { MetadataService } from './metadata.service';
 import { USE_METADATA_CONFIG } from './tokens';
-import { BaseMetadataProvider } from './providers';
-
-export interface MetadataModuleOptions {
-  providers: (BaseMetadataProvider & Provider)[];
-  config: {
-    key: string;
-    api: string;
-    backdrop: string;
-    still: string;
-    poster: string;
-    appendToResponse?: string;
-    locale?: string;
-  };
-}
+import { MetadataModuleOptions } from './interfaces';
 
 @NgModule()
 export class MetadataModule {
@@ -23,7 +11,7 @@ export class MetadataModule {
     return {
       ngModule: MetadataModule,
       providers: [
-        ...options.providers,
+        options.providers,
         MetadataService,
         { provide: USE_METADATA_CONFIG, useValue: options.config },
       ],
