@@ -5,13 +5,15 @@ import * as cheerio from 'cheerio';
 import { UnknownTorrentProviderApiException } from '../../../exceptions';
 import { BaseTorrentProvider } from './base-torrent.provider';
 import { ExtendedDetails, ITorrent } from '../interfaces';
-import { ProviderUtils } from '../provider-utils';
-import { Utils } from '../../../../../common';
 
 export class ThePirateBayTorrentProvider extends BaseTorrentProvider {
 
-  endpoints = ['https://thepiratebay.org', 'https://tpbship.org'];
   provider = 'ThePirateBay';
+  endpoints = [
+    'https://thepiratebay.org',
+    'https://tpbship.org',
+  ];
+  api!: string;
 
   private fetch(query: string): Observable<ITorrent[]> {
     if (!this.api) {
@@ -24,7 +26,7 @@ export class ThePirateBayTorrentProvider extends BaseTorrentProvider {
       responseType: 'text',
     })
       .pipe(
-        switchMap(res => this.cheerio(res)),
+        switchMap(res => of(this.cheerio(res))),
         catchError(() => of([])),
       );
   }
@@ -49,10 +51,8 @@ export class ThePirateBayTorrentProvider extends BaseTorrentProvider {
   }
 
   create() {
-    return Utils.promise.didResolve(async () => {
-      this.api = await this.createReliableEndpoint(this.endpoints, {
-        responseType: 'text',
-      });
+    return this.promiseUtils.didResolve(async () => {
+      this.api = await this.createReliableEndpoint(this.endpoints);
     });
   }
 
@@ -63,7 +63,7 @@ export class ThePirateBayTorrentProvider extends BaseTorrentProvider {
 
       case 'shows':
         return this.fetch(
-          `${search} ${ProviderUtils.formatSeasonEpisodeToString(extendedDetails)}`
+          `${search} ${this.providerUtils.formatSeasonEpisodeToString(extendedDetails)}`
         );
 
       default:

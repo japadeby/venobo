@@ -1,10 +1,8 @@
-import { Observable, of } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { Observable, of, from } from 'rxjs';
+import { switchMap, mergeMap, combineAll } from 'rxjs/operators';
 
 import { UnknownTorrentProviderApiException } from '../../../exceptions';
 import { BaseTorrentProvider } from './base-torrent.provider';
-import { ProviderUtils } from '../provider-utils';
-import { Utils } from '../../../../../common';
 import {
   ExtendedDetails,
   YtsMovieTorrent,
@@ -16,6 +14,7 @@ export class YtsTorrentProvider extends BaseTorrentProvider {
 
   domains = ['yts.am', 'yts.unblocked.vet'];
   provider = 'Yts';
+  api!: string;
 
   private createEndpoint = (domain: string) => `https://${domain}/api/v2/list_movies.json`;
 
@@ -38,7 +37,7 @@ export class YtsTorrentProvider extends BaseTorrentProvider {
 
   private formatTorrent = (torrent: YtsMovieTorrent): ITorrent => ({
     metadata: String((torrent.url + torrent.hash) || torrent.hash),
-    magnet: ProviderUtils.constructMagnet(torrent.hash),
+    magnet: this.providerUtils.constructMagnet(torrent.hash),
     size: torrent.size,
     quality: torrent.quality,
     seeders: torrent.seeds,
@@ -48,9 +47,12 @@ export class YtsTorrentProvider extends BaseTorrentProvider {
   });
 
   create() {
-    return Utils.promise.didResolve(async () => {
+    return this.promiseUtils.didResolve(async () => {
       this.api = await this.createReliableEndpoint(
-        this.domains.map(domain => this.createEndpoint(domain))
+        this.domains.map(
+          domain => this.createEndpoint(domain)
+        ),
+        { responseType: 'json' },
       );
     });
   }
@@ -62,14 +64,21 @@ export class YtsTorrentProvider extends BaseTorrentProvider {
           .pipe(switchMap(({ data }) => {
             if (data.movie_count === 0) return [];
 
-            return of(Utils.merge<ITorrent>(
+            return from(data.movies)
+              .pipe(
+                mergeMap(({ torrents }) => torrents.map(
+                  (torrent) => this.formatTorrent(torrent)
+                )),
+              );
+
+            /*return of(this.utils.merge<ITorrent>(
               data.movies.map(
                 ({ torrents }) => torrents.map(
                   (torrent) => this.formatTorrent(torrent)
                 )
               )
-            ));
-          }));
+            ));*/
+          }), combineAll());
 
       default:
           return of([]);

@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/timeout';
 import '../polyfills';
-import { NgModule } from '@angular/core';
+import { forwardRef, NgModule } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -35,7 +35,7 @@ export function HttpLoaderFactory(http: HttpClient) {
   declarations: [AppComponent],
   bootstrap: [AppComponent],
   imports: [
-    ServicesModule,
+    forwardRef(() => ServicesModule),
     ResolversModule,
     SharedModule,
     TorrentModule.forRoot([

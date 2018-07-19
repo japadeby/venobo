@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Resolve } from '@angular/router';
 
-import { TorrentService } from '../modules/torrent/index';
+import { TorrentService } from '../modules/torrent';
 
 @Injectable()
 export class AppResolver implements Resolve<Promise<void>> {
@@ -10,8 +10,6 @@ export class AppResolver implements Resolve<Promise<void>> {
   async resolve() {
     if (this.torrentService.availableProviders) return;
 
-    await this.torrentService.create();
-    console.error('AppResolver');
-    console.log(this.torrentService.availableProviders);
+    return this.torrentService.create();
   }
 }

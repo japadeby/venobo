@@ -30,14 +30,14 @@ export class AppService {
   }
 
   private navigationInterceptor(event: RouterEvent) {
-    console.log(event);
+    // console.log(event);
 
     if (event instanceof NavigationStart) {
       this.canActivate = new Promise(p => this.activate = p);
     }
 
     if (event instanceof NavigationCancel) {
-      console.log('NavigationCancel', event);
+      // console.log('NavigationCancel', event);
     }
 
     if (event instanceof NavigationEnd) {
@@ -45,7 +45,7 @@ export class AppService {
     }
 
     if (event instanceof ResolveEnd) {
-      console.log('ResolveEnd');
+      // console.log('ResolveEnd');
     }
   }
 

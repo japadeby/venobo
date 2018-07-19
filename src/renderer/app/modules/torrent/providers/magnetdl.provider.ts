@@ -4,13 +4,12 @@ import { switchMap, catchError } from 'rxjs/operators';
 import { UnknownTorrentProviderApiException } from '../../../exceptions';
 import { BaseTorrentProvider } from './base-torrent.provider';
 import { ExtendedDetails, ITorrent } from '../interfaces';
-import { ProviderUtils } from '../provider-utils';
-import { Utils } from '../../../../../common';
 
 export class MagnetDlTorrentProvider extends BaseTorrentProvider {
 
   endpoints = ['http://www.magnetdl.com', 'https://magnetdl.unblocked.vet'];
   provider = 'MagnetDl';
+  api!: string;
 
   private fetch(query: string): Observable<ITorrent[]> {
     if (!this.api) {
@@ -23,7 +22,7 @@ export class MagnetDlTorrentProvider extends BaseTorrentProvider {
       responseType: 'text',
     })
       .pipe(
-        switchMap(res => this.cheerio(res)),
+        switchMap(res => of(this.cheerio(res))),
         catchError(() => of([])),
       );
   }
@@ -47,10 +46,8 @@ export class MagnetDlTorrentProvider extends BaseTorrentProvider {
   }
 
   create() {
-    return Utils.promise.didResolve(async () => {
-      this.api = await this.createReliableEndpoint(this.endpoints, {
-        responseType: 'text',
-      });
+    return this.promiseUtils.didResolve(async () => {
+      this.api = await this.createReliableEndpoint(this.endpoints);
     });
   }
 
@@ -61,7 +58,7 @@ export class MagnetDlTorrentProvider extends BaseTorrentProvider {
 
       case 'shows':
         return this.fetch(
-          `${search} ${ProviderUtils.formatSeasonEpisodeToString(extendedDetails)}`
+          `${search} ${this.providerUtils.formatSeasonEpisodeToString(extendedDetails)}`
         );
 
       default:

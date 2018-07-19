@@ -1,21 +1,24 @@
 import { Injectable, Inject } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, from } from 'rxjs';
 import { mergeAll, mergeMap, switchMap } from 'rxjs/operators';
 
 import { TORRENT_PROVIDERS } from './tokens';
 import { ExtendedDetails, ITorrent } from './interfaces';
-import { ProviderUtils } from './provider-utils';
+import { PromiseUtils } from '../../services';
 import { BaseTorrentProvider } from './providers';
-import { Utils } from '../../../../common';
+import { ProviderUtils } from './provider.utils.service';
 
 @Injectable()
 export class TorrentService {
 
-  public availableProviders: Observable<BaseTorrentProvider>;
+  public availableProviders: BaseTorrentProvider[];
 
   constructor(
     @Inject(TORRENT_PROVIDERS)
     private readonly allProviders: BaseTorrentProvider[],
+    private readonly promiseUtils: PromiseUtils,
+    private readonly providerUtils: ProviderUtils,
+    // private readonly observableUtils: PromiseUtils,
   ) {}
 
   async create() {
@@ -24,16 +27,14 @@ export class TorrentService {
 
     const resolvedProviderStatuses = await Promise.all(providerStatuses);
 
-    this.availableProviders = of(
-      ...Utils.promise.filterResolved<BaseTorrentProvider>(
-        this.allProviders,
-        resolvedProviderStatuses
-      )
+    this.availableProviders = this.promiseUtils.filterResolved<BaseTorrentProvider>(
+      this.allProviders,
+      resolvedProviderStatuses
     );
   }
 
   private selectTorrents(torrents: ITorrent[]) {
-    return ProviderUtils.sortTorrentsBySeeders(
+    return this.providerUtils.sortTorrentsBySeeders(
       torrents.filter(
         torrent => !!torrent.quality// && torrent.quality !== 'n/a'
       )
@@ -45,17 +46,17 @@ export class TorrentService {
       ...result,
       method,
       cached: Date.now(),
-      health: ProviderUtils.getHealth(result.seeders || 0, result.leechers || 0),
+      health: this.providerUtils.getHealth(result.seeders || 0, result.leechers || 0),
       quality: !!result.quality
         ? result.quality
-        : ProviderUtils.determineQuality(result.metadata, result.magnet),
+        : this.providerUtils.determineQuality(result.metadata, result.magnet),
     }));
   }
 
   private filterShows(show: ITorrent, extendedDetails: ExtendedDetails) {
     return (
       show.metadata.toLowerCase().includes(
-        ProviderUtils.formatSeasonEpisodeToString(extendedDetails)
+        this.providerUtils.formatSeasonEpisodeToString(extendedDetails)
       ) && show.seeders > 0
     );
   }
@@ -63,11 +64,11 @@ export class TorrentService {
   public search(query: string, type: string, extendedDetails: ExtendedDetails = {}): Observable<ITorrent[]> {
     if (!this.availableProviders) throw new Error('You need to call TorrentService.create() first');
 
-    return this.availableProviders.pipe(
+    return from(this.availableProviders).pipe(
       mergeMap(provider =>
         provider.provide(query, type, extendedDetails),
       ),
-      mergeAll(),
+      // mergeAll(),
       switchMap((results: ITorrent[]) => {
         switch (type) {
           case 'movies':

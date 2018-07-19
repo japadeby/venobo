@@ -1,4 +1,6 @@
-import { Utils } from '../../../../common';
+import { Injectable } from '@angular/core';
+
+import { Utils } from '../../services';
 import {
   ExtendedDetails,
   ITorrent,
@@ -6,21 +8,24 @@ import {
   TorrentVideoQuality
 } from './interfaces';
 
-export abstract class ProviderUtils {
+@Injectable()
+export class ProviderUtils {
+
+  constructor(private readonly utils: Utils) {}
 
   /**
    * Construct magnet link from torrent hash
    * @param {string} hash
    * @returns {string}
    */
-  public static constructMagnet = (hash: string) => `magnet:?xt=urn:btih:${hash}`;
+  public constructMagnet = (hash: string) => `magnet:?xt=urn:btih:${hash}`;
 
   /**
    * Check if torrent file name includes hardcoded subs
    * @param {string} metadata
    * @returns {boolean}
    */
-  private static hasHardcodedSubtitles(metadata: string) {
+  private hasHardcodedSubtitles(metadata: string) {
     return metadata.includes('hc') || metadata.includes('korsub');
   }
 
@@ -29,8 +34,8 @@ export abstract class ProviderUtils {
    * @param {string} metadata
    * @returns {boolean}
    */
-  private static isCamRecorded(metadata: string) {
-    return Utils.includes(metadata, [
+  private isCamRecorded(metadata: string) {
+    return this.utils.includes(metadata, [
       'cam',
       'tc',
       'dvdscr',
@@ -44,8 +49,8 @@ export abstract class ProviderUtils {
    * @param {string} metadata
    * @returns {boolean}
    */
-  private static hasNonEnglishLanguage(metadata: string) {
-    return Utils.includes(metadata, [
+  private hasNonEnglishLanguage(metadata: string) {
+    return this.utils.includes(metadata, [
       'french',
       'german',
       'greek',
@@ -67,7 +72,7 @@ export abstract class ProviderUtils {
    * @param {string} metadata
    * @returns {boolean}
    */
-  private static hasSubtitles(metadata: string) {
+  private hasSubtitles(metadata: string) {
     return metadata.includes('sub');
   }
 
@@ -84,7 +89,7 @@ export abstract class ProviderUtils {
    * @param {string} magnet
    * @returns {null}
    */
-  public static determineQuality(metadata: string, magnet: string): TorrentVideoQuality {
+  public determineQuality(metadata: string, magnet: string): TorrentVideoQuality {
     const fileName = (metadata || magnet).toLowerCase();
 
     // Filter videos recorded with a camera
@@ -100,14 +105,14 @@ export abstract class ProviderUtils {
     if (this.hasSubtitles(fileName)) return null;
 
     // Guess the quality 4k
-    if (Utils.includes(fileName, [
+    if (this.utils.includes(fileName, [
       '4k',
       'uhd',
       'qhd',
     ])) return '4k';
 
     // Guess the quality 720p
-    if (Utils.includes(fileName, [
+    if (this.utils.includes(fileName, [
       '720',
       'rip',
       'mp4',
@@ -117,7 +122,7 @@ export abstract class ProviderUtils {
     ])) return '720p';
 
     // Guess the quality 1080p
-    if (Utils.includes(fileName, [
+    if (this.utils.includes(fileName, [
       '1080',
       'bluray',
       'blu-ray',
@@ -125,7 +130,7 @@ export abstract class ProviderUtils {
     ])) return '1080p';
 
     // Guess the quality 480p
-    if (Utils.includes(fileName, [
+    if (this.utils.includes(fileName, [
       '480',
       'xvid',
       'dvd',
@@ -134,7 +139,7 @@ export abstract class ProviderUtils {
     return null;
   }
 
-  public static sortTorrentsBySeeders(torrents: ITorrent[]) {
+  public sortTorrentsBySeeders(torrents: ITorrent[]) {
     return torrents.sort((prev, next) => {
       if (prev.seeders === next.seeders) return 0;
 
@@ -144,14 +149,14 @@ export abstract class ProviderUtils {
     });
   }
 
-  public static formatSeasonEpisodeToString({ season, episode }: ExtendedDetails) {
+  public formatSeasonEpisodeToString({ season, episode }: ExtendedDetails) {
     return (
       ('s' + (String(season).length === 1 ? '0' + season : season)) +
       ('e' + (String(episode).length === 1 ? '0' + episode : episode))
     );
   }
 
-  public static getHealth(seeders: number, leechers: number = 0): TorrentHealth {
+  public getHealth(seeders: number, leechers: number = 0): TorrentHealth {
     const ratio = (seeders && !!leechers)
       ? (seeders / leechers)
       : seeders;

@@ -1,8 +1,9 @@
+import { Injectable, Injector } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { Utils } from '../../../../../common';
+import { Utils, ObservableUtils, PromiseUtils } from '../../../services';
+import { ProviderUtils } from '../provider.utils.service';
 import {
   ITorrent,
   ExtendedDetails,
@@ -26,13 +27,23 @@ export abstract class BaseTorrentProvider {
    */
   protected readonly endpoint?: string;
   /**
-   * Torrent provider
+   * Torrent providerty
    */
-  protected abstract readonly provider: string;
+  // protected abstract readonly provider: string;
 
-  protected api!: string;
+  // protected api!: string;
 
-  constructor(protected readonly http: HttpClient) {}
+  protected readonly observableUtils: ObservableUtils;
+
+  constructor(
+    protected readonly providerUtils: ProviderUtils,
+    protected readonly promiseUtils: PromiseUtils,
+    protected readonly http: HttpClient,
+    protected readonly utils: Utils,
+    injector: Injector,
+  ) {
+    this.observableUtils = injector.get<ObservableUtils>(ObservableUtils);
+  }
 
   /**
    * Get status of torrent endpoint
@@ -59,9 +70,12 @@ export abstract class BaseTorrentProvider {
    */
   protected async createReliableEndpoint(
     endpoints: string[],
-    { timeout = 3000,
-      responseType = 'json',
-    }?: EndpointOptions,
+    { timeout,
+      responseType,
+    }: EndpointOptions = {
+      timeout: 3000,
+      responseType: 'text',
+    },
   ): Promise<string> {
     const requests = endpoints.map(async (endpoint) => {
       await (this.http.get(endpoint, {
@@ -71,7 +85,37 @@ export abstract class BaseTorrentProvider {
       return endpoint;
     });
 
-    return await Utils.promise.raceResolve<string>(requests);
+    return await this.promiseUtils.raceResolve<string>(requests);
   }
+
+  /**
+   * Create endpoint url by requesting the different domains and picking
+   * the first one that is succesfully resolved
+   * @param {string[]} endpoints
+   * @param {3000} timeout
+   * @param {"json"} responseType
+   * @returns {Promise<string>}
+   */
+  /*protected async getReliableEndpoint(
+    endpoints: Observable<string>,
+    { timeout = 3000,
+      responseType = 'json',
+    }?: EndpointOptions,
+  ): Observable<string> {
+    const requests = endpoints.pipe(
+      mergeMap(endpoint =>
+        this.http.get(endpoint, {
+          responseType,
+        }).pipe(
+          timeoutPipe(timeout),
+          mapTo(endpoint),
+          // catchError(() => empty()),
+        ),
+      ),
+      filter(endpoint => !!endpoint),
+    );
+
+    race(requests).subscribe(endpoint => console.log(endpoint));
+  }*/
 
 }

@@ -1,3 +1,4 @@
+import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import * as cheerio from 'cheerio';
@@ -5,9 +6,8 @@ import * as cheerio from 'cheerio';
 import { UnknownTorrentProviderApiException } from '../../../exceptions';
 import { BaseTorrentProvider } from './base-torrent.provider';
 import { ITorrent, ExtendedDetails} from '../interfaces';
-import { ProviderUtils } from '../provider-utils';
-import { Utils } from '../../../../../common';
 
+@Injectable()
 // tslint:disable-next-line
 export class iDopeTorrentProvider extends BaseTorrentProvider {
 
@@ -36,11 +36,11 @@ export class iDopeTorrentProvider extends BaseTorrentProvider {
   }
 
   create() {
-    return Utils.promise.didResolve(() => {
-      return this.http.get(this.api, {
+    return this.promiseUtils.didObservableResolve(
+      this.http.get(this.api, {
         responseType: 'text',
-      }).toPromise();
-    });
+      }),
+    );
   }
 
   cheerio(html: string) {
@@ -56,7 +56,7 @@ export class iDopeTorrentProvider extends BaseTorrentProvider {
         seeders: Number($(this).find('.resultdivbotton .resultdivbottonseed').text()),
         // leechers: null,
         // sadly fetching the magnet this way doesnt work lol
-        magnet: ProviderUtils.constructMagnet($(this).find('.resultdivbotton .hideinfohash').first().text()),
+        magnet: this.providerUtils.constructMagnet($(this).find('.resultdivbotton .hideinfohash').first().text()),
         provider,
       };
     }).get() as any[];
@@ -69,7 +69,7 @@ export class iDopeTorrentProvider extends BaseTorrentProvider {
 
       case 'shows':
         return this.fetch(type,
-          `${search} ${ProviderUtils.formatSeasonEpisodeToString(extendedDetails)}`
+          `${search} ${this.providerUtils.formatSeasonEpisodeToString(extendedDetails)}`
         );
 
       default:

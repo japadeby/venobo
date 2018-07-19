@@ -5,13 +5,12 @@ import * as cheerio from 'cheerio';
 import { UnknownTorrentProviderApiException } from '../../../exceptions';
 import { BaseTorrentProvider } from './base-torrent.provider';
 import { ExtendedDetails, ITorrent } from '../interfaces';
-import { ProviderUtils } from '../provider-utils';
-import { Utils } from '../../../../../common';
 
 export class KickassTorrentProvider extends BaseTorrentProvider {
 
   endpoints = ['https://kickassto.org', 'https://kat.unblocked.vet/'];
   provider = 'Kickass';
+  api!: string;
 
   private fetch(query: string): Observable<ITorrent[]> {
     if (!this.api) {
@@ -27,7 +26,7 @@ export class KickassTorrentProvider extends BaseTorrentProvider {
         sorder: 'desc',
       },
     }).pipe(
-      switchMap(res => this.cheerio(res)),
+      switchMap(res => of(this.cheerio(res))),
       catchError(() => of([])),
     );
   }
@@ -51,10 +50,8 @@ export class KickassTorrentProvider extends BaseTorrentProvider {
   }
 
   create() {
-    return Utils.promise.didResolve(async () => {
-      this.api = await this.createReliableEndpoint(this.endpoints, {
-        responseType: 'text',
-      });
+    return this.promiseUtils.didResolve(async () => {
+      this.api = await this.createReliableEndpoint(this.endpoints);
     });
   }
 
@@ -65,7 +62,7 @@ export class KickassTorrentProvider extends BaseTorrentProvider {
 
       case 'shows':
         return this.fetch(
-          `${search} ${ProviderUtils.formatSeasonEpisodeToString(extendedDetails)}`
+          `${search} ${this.providerUtils.formatSeasonEpisodeToString(extendedDetails)}`
         );
 
       default:
