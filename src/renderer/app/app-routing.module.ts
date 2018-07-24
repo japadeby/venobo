@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { AppResolver } from './resolvers';
 import {
   ViewComponent,
   HomeComponent,
@@ -11,20 +10,10 @@ import {
 const routes: Routes = [
   {
     path: '',
+    component: HomeComponent,
     resolve: {
-      root: AppResolver,
+      home: HomeResolver,
     },
-    children: [{
-      path: '',
-      component: ViewComponent,
-      children: [{
-        path: '',
-        component: HomeComponent,
-        resolve: {
-          home: HomeResolver,
-        },
-      }],
-    }],
   },
 ];
 

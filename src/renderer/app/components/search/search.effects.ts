@@ -17,7 +17,6 @@ export class SearchEffects {
     mergeMap(() => [
       new SearchDismiss(),
     ]),
-    tap(action => console.log(action)),
   );
 
 }

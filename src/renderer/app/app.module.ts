@@ -4,17 +4,17 @@ import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/timeout';
 import '../polyfills';
 import { forwardRef, NgModule } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { BrowserModule } from '@angular/platform-browser';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { ServicesModule } from './services';
-import { ResolversModule } from './resolvers';
 import { ContainersModule } from './containers';
 import { ComponentsModule } from './components';
 import { SharedModule } from './shared.module';
 
-import { MetadataModule, TMDbProvider } from './modules/metadata';
+import { MetadataModule, TMDbProvider } from '../metadata';
 import { AppConfig } from '../environments';
 import { AppComponent } from './app.component';
 import {
@@ -24,7 +24,7 @@ import {
   MagnetDlTorrentProvider,
   ThePirateBayTorrentProvider,
   iDopeTorrentProvider,
-} from './modules/torrent';
+} from '../torrent';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient) {
@@ -35,9 +35,17 @@ export function HttpLoaderFactory(http: HttpClient) {
   declarations: [AppComponent],
   bootstrap: [AppComponent],
   imports: [
-    forwardRef(() => ServicesModule),
-    ResolversModule,
+    BrowserModule,
+    HttpClientModule,
+    ServicesModule.forRoot(),
     SharedModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient],
+      },
+    }),
     TorrentModule.forRoot([
       YtsTorrentProvider,
       ThePirateBayTorrentProvider,
@@ -47,14 +55,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     ]),
     MetadataModule.forRoot({
       config: AppConfig.tmdb,
-      providers: [TMDbProvider],
-    }),
-    TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: HttpLoaderFactory,
-        deps: [HttpClient],
-      },
+      provider: TMDbProvider,
     }),
     ComponentsModule,
     ContainersModule,

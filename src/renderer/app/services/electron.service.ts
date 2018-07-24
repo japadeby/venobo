@@ -27,7 +27,7 @@ export class ElectronService {
     }
   }
 
-  isElectron = () => {
+  public isElectron() {
     return window && window.process && window.process.type;
   }
 
