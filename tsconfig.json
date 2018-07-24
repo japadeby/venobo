@@ -3,6 +3,7 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "outDir": "./dist/out-tsc",
+    "module": "commonjs",
     "sourceMap": true,
     "declaration": false,
     "moduleResolution": "node",

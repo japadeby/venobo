@@ -1,6 +1,6 @@
 export type TorrentHealth = 'poor' | 'decent' | 'healthy';
 
-export type TorrentVideoQuality = '4k' | '1080p' | '720p' | '480p' | null;
+export type TorrentVideoQuality = '4k' | '1440p' | '1080p' | '720p' | '480p' | null;
 
 export interface ExtendedDetails {
   imdbId?: string;

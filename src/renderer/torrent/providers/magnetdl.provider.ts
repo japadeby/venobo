@@ -1,9 +1,8 @@
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import * as cheerio from 'cheerio';
-import slugify from 'slugify';
 
-import { PromiseUtils } from '../../globals';
+import { PromiseUtils, Utils } from '../../globals';
 import { UnknownTorrentProviderApiException } from '../exceptions';
 import { BaseTorrentProvider } from './base-torrent.provider';
 import { ExtendedDetails, ITorrent } from '../interfaces';
@@ -15,7 +14,7 @@ export class MagnetDlTorrentProvider extends BaseTorrentProvider {
   api!: string;
 
   private fetch(query: string): Observable<ITorrent[]> {
-    query = query.toLowerCase();
+    query = Utils.slugify(query.toLowerCase());
 
     if (!this.api) {
       throw new UnknownTorrentProviderApiException(
@@ -23,7 +22,7 @@ export class MagnetDlTorrentProvider extends BaseTorrentProvider {
       );
     }
 
-    return this.http.get(`${this.api}/${query.substring(0, 1)}/${slugify(query)}`, {
+    return this.http.get(`${this.api}/${query.substring(0, 1)}/${query}`, {
       responseType: 'text',
     })
       .pipe(

@@ -5,6 +5,10 @@
   [items]="data.movies.popular"
 ></app-carousel>-->
 <app-view>
-  <div>Hello!</div>
+  <app-carousel
+    title="Most popular movies"
+    route="/discover/movies/all/popularity.desc"
+    [items]="data"
+  ></app-carousel>
 </app-view>
 <!--</app-loader>-->

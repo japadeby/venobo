@@ -1,28 +1,27 @@
-import { ITorrent } from '../../torrent/index';
+import { ITorrent } from '../../torrent';
 
 export interface Metadata {
-  ietf?: string;
+  // ietf?: string;
   title: string;
   originalTitle: string;
-  tmdb: number;
-  genres: string[];
-  type: 'movie' | 'show';
-  summary: string;
-  popularity: string;
-  voted: number;
-  votes: number;
-  released: string | false;
-  year: number | string;
   poster: string;
   backdrop: string;
+  genres: string[];
+  type: string;
+  summary: string;
+  popularity: string;
+  tmdb: number;
+  year: number | string;
+  voted: number;
+  votes: number;
 }
 
 export interface MovieMetadata extends Metadata {
   imdb: string;
   runtime: string;
-  // released: boolean;
+  released: string;
   cached: number;
-  torrents?: ITorrent[];
+  torrents: ITorrent[];
 }
 
 export interface ShowMetadata extends Metadata {

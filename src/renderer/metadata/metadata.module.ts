@@ -1,8 +1,11 @@
 import { NgModule, ModuleWithProviders } from '@angular/core';
 
 import { MetadataService } from './metadata.service';
-import { USE_METADATA_CONFIG } from './tokens';
 import { MetadataModuleOptions } from './interfaces';
+import {
+  USE_METADATA_CONFIG,
+  USE_METADATA_PROVIDER
+} from './tokens';
 
 @NgModule()
 export class MetadataModule {
@@ -13,6 +16,7 @@ export class MetadataModule {
       providers: [
         options.provider,
         MetadataService,
+        { provide: USE_METADATA_PROVIDER, useExisting: options.provider },
         { provide: USE_METADATA_CONFIG, useValue: options.config },
       ],
     };

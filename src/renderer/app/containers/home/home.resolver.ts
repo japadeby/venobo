@@ -1,20 +1,17 @@
 import { Injectable } from '@angular/core';
 import { Resolve } from '@angular/router';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 
-import { ITorrent, TorrentService, MagnetDlTorrentProvider } from '../../../torrent';
+import { MetadataService } from '../../../metadata';
+import { ITorrent, TorrentService } from '../../../torrent';
 
 @Injectable()
 export class HomeResolver implements Resolve<Observable<ITorrent[]>> {
   constructor(
-    private readonly torrentAdapter: TorrentService,
+    private readonly metadata: MetadataService,
   ) {}
 
   resolve() {
-    console.log('[Venobo] - Home Resolver: Initializing...');
-    const torrents$ = this.torrentAdapter.search('Rampage 2018', 'movies');
-    torrents$.subscribe(torrents => console.log('[Venobo] - Home Resolver: ', torrents));
-
-    return torrents$;
+    return this.metadata.getTopRated('movies');
   }
 }

@@ -3,7 +3,7 @@
     <div class="front" (mouseenter)="showTooltip($event)" (mouseleave)="dismissTooltipDelay($event)">
       <a routerLink="/media/{{item.type}}/{{item.tmdb}}">
         <ng-container *ngIf="!!item.poster">
-          <div class="front-image" [style.background-image]="url(item.poster)">
+          <div class="front-image" [style.background-image]="'url(' + item.poster + ')'">
             <div class="backdrop medium">
               <div class="react-play-button fill">
                 <figure class="icon-content"></figure>

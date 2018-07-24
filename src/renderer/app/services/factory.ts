@@ -8,5 +8,7 @@ export function createServiceFactory(
   return async () => {
     await configService.load();
     await appService.create();
+
+    console.log('[Venobo] - Config: ', configService.get());
   };
 }

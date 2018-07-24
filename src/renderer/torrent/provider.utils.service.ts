@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 
+import { ConfigService } from '../app/services';
 import { Utils } from '../globals';
 import {
   ExtendedDetails,
@@ -10,6 +11,8 @@ import {
 
 @Injectable()
 export abstract class ProviderUtils {
+
+  constructor(private readonly config: ConfigService) {}
 
   /**
    * Construct magnet link from torrent hash
@@ -24,7 +27,9 @@ export abstract class ProviderUtils {
    * @returns {boolean}
    */
   private hasHardcodedSubtitles(metadata: string) {
-    return metadata.includes('hc') || metadata.includes('korsub');
+    return this.config.get('torrent.exclude.hcSubs') &&
+      metadata.includes('hc') ||
+      metadata.includes('korsub');
   }
 
   /**
@@ -33,7 +38,8 @@ export abstract class ProviderUtils {
    * @returns {boolean}
    */
   private isCamRecorded(metadata: string) {
-    return Utils.includes(metadata, [
+    return this.config.get('torrent.exclude.cam') &&
+      Utils.includes(metadata, [
       'cam',
       'tc',
       'dvdscr',
@@ -48,7 +54,8 @@ export abstract class ProviderUtils {
    * @returns {boolean}
    */
   private hasNonEnglishLanguage(metadata: string) {
-    return Utils.includes(metadata, [
+    return this.config.get('torrent.exclude.nonEng') &&
+      Utils.includes(metadata, [
       'french',
       'german',
       'greek',
@@ -71,7 +78,8 @@ export abstract class ProviderUtils {
    * @returns {boolean}
    */
   private hasSubtitles(metadata: string) {
-    return metadata.includes('sub');
+    return this.config.get('torrent.exclude.withSubs') &&
+      metadata.includes('sub');
   }
 
   /*private static hasNonNativeCodec(metadata: string)  {
@@ -81,8 +89,13 @@ export abstract class ProviderUtils {
       );
   }*/
 
+  public determine3d(metadata: string, magnet: string) {
+    return (metadata || magnet).toLowerCase().includes('3d');
+  }
+
   /**
    * Determine video quality of torrent
+   * Filters torrent if it doesn't explicitly tell us quality
    * @param {string} metadata
    * @param {string} magnet
    * @returns {null}
@@ -102,6 +115,9 @@ export abstract class ProviderUtils {
     // Filter videos with 'rendered' subtitles
     if (this.hasSubtitles(fileName)) return null;
 
+    // Guess the quality 1440p
+    if (fileName.includes('1440p')) return '1440p';
+
     // Guess the quality 4k
     if (Utils.includes(fileName, [
       '4k',
@@ -111,17 +127,17 @@ export abstract class ProviderUtils {
 
     // Guess the quality 720p
     if (Utils.includes(fileName, [
-      '720',
-      'rip',
-      'mp4',
-      'web',
+      '720p',
+      // 'rip',
+      // 'mp4',
+      // 'web',
       'hdtv',
       'eng',
     ])) return '720p';
 
     // Guess the quality 1080p
     if (Utils.includes(fileName, [
-      '1080',
+      '1080p',
       'bluray',
       'blu-ray',
       'mkv',
@@ -129,10 +145,15 @@ export abstract class ProviderUtils {
 
     // Guess the quality 480p
     if (Utils.includes(fileName, [
-      '480',
-      'xvid',
-      'dvd',
+      '480p',
+      // 'xvid',
+      // 'dvd',
     ])) return '480p';
+
+    if (Utils.includes(fileName, [
+      'brrip',
+      'webrip',
+    ])) return '720p';
 
     return null;
   }

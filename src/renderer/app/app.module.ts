@@ -20,7 +20,7 @@ import { AppComponent } from './app.component';
 import {
   TorrentModule,
   YtsTorrentProvider,
-  KickassTorrentProvider,
+  // KickassTorrentProvider,
   MagnetDlTorrentProvider,
   ThePirateBayTorrentProvider,
   iDopeTorrentProvider,
@@ -47,9 +47,9 @@ export function HttpLoaderFactory(http: HttpClient) {
       },
     }),
     TorrentModule.forRoot([
-      YtsTorrentProvider,
+      // YtsTorrentProvider,
       ThePirateBayTorrentProvider,
-      KickassTorrentProvider,
+      // KickassTorrentProvider,
       MagnetDlTorrentProvider,
       iDopeTorrentProvider,
     ]),

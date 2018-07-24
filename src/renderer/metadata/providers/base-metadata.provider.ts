@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+import { ConfigService } from '../../app/services';
 import { USE_METADATA_CONFIG } from '../tokens';
 import { MetadataConfig } from '../interfaces';
 
@@ -11,6 +12,7 @@ export abstract class BaseMetadataProvider {
   constructor(
     @Inject(USE_METADATA_CONFIG)
     protected readonly config: MetadataConfig,
+    protected readonly configService: ConfigService,
     protected readonly http: HttpClient
   ) {}
 
@@ -20,7 +22,7 @@ export abstract class BaseMetadataProvider {
 
   public abstract getPopular<R>(type: string, page: number): Observable<R>;
 
-  public abstract getTopRated<R>(type: string, page: number): Observable<R>;
+  public abstract getTopRated<R>(type: string, page: number = 1): Observable<R>;
 
   public abstract get<R>(type: string, tmdbId: number): Observable<R>;
 
@@ -30,7 +32,7 @@ export abstract class BaseMetadataProvider {
 
   public abstract discover<R>(type: string, params?: any): Observable<R>;
 
-  public abstract searchAll<R>(query: string, page: number): Observable<R>;
+  public abstract searchAll<R>(query: string, page: number = 1): Observable<R>;
 
   public abstract formatEpisodePoster(path: string): string;
 

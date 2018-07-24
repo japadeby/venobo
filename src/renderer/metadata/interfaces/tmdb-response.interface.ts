@@ -7,10 +7,10 @@ export interface TMDbMetadata {
   id: number;
   vote_average: number;
   vote_count: number;
-  runtime: number;
+  runtime: number | undefined;
   status: string;
   genres: {
-    [key: number]: string;
+    id: number;
     name: string;
   }[];
   origin_country?: string[];
@@ -25,6 +25,13 @@ export interface TMDbResponse {
 }
 
 export interface TMDbMovieResponse extends TMDbMetadata {
+  belongs_to_collection?: {
+    id: number;
+    name: string;
+    poster_path: string;
+    backdrop_path: string;
+  };
+  tagline: string;
   title: string;
   original_title: string;
   release_date: string;

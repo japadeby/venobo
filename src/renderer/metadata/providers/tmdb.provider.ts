@@ -1,3 +1,6 @@
+import { of } from 'rxjs';
+import { catchError, take } from 'rxjs/operators';
+
 import { BaseMetadataProvider } from './base-metadata.provider';
 import { TMDbMovieResponse, TMDbResponse, TMDbShowResponse } from '../interfaces';
 
@@ -7,11 +10,14 @@ export class TMDbProvider extends BaseMetadataProvider {
     return this.http.get<TMDbResponse>(`${this.config.api}/${url}`, {
       params: {
         api_key: this.config.key,
-        // language: this.config.user.prefs.ietf,
+        language: this.configService.get('prefs.ietf'),
         append_to_response: this.config.appendToResponse,
         ...params,
       },
-    });
+    }).pipe(
+      take(1),
+      catchError(() => of({})),
+    );
   }
 
   public formatEpisodePoster(path: string) {

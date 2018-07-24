@@ -2,6 +2,7 @@ import { NgModule, ModuleWithProviders, APP_INITIALIZER } from '@angular/core';
 
 import { ProviderUtils } from './provider.utils.service';
 import { TorrentService } from './torrent.service';
+import { JackettService } from './jackett.service';
 import { BaseTorrentProvider } from './providers';
 import { TORRENT_PROVIDERS } from './tokens';
 
@@ -14,6 +15,7 @@ export class TorrentModule {
     return {
       ngModule: TorrentModule,
       providers: [
+        JackettService,
         TorrentService,
         ProviderUtils,
         providers,

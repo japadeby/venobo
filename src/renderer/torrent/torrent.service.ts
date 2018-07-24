@@ -1,10 +1,10 @@
 import { Injectable, Inject } from '@angular/core';
-import { Observable, from, merge } from 'rxjs';
+import { Observable, from, zip } from 'rxjs';
 import { map, mergeMap, switchMap } from 'rxjs/operators';
 
 import { TORRENT_PROVIDERS } from './tokens';
 import { ExtendedDetails, ITorrent } from './interfaces';
-import { PromiseUtils } from '../globals';
+import { PromiseUtils, Utils } from '../globals';
 import { BaseTorrentProvider } from './providers';
 import { ProviderUtils } from './provider.utils.service';
 
@@ -43,15 +43,18 @@ export class TorrentService {
     );
   }
 
-  private appendAttributes(providerResults: ITorrent[], method: 'movies' | 'shows') {
-    return providerResults.map(result => ({
-      ...result,
-      method,
-      cached: Date.now(),
-      health: this.providerUtils.getHealth(result.seeders || 0, result.leechers || 0),
-      quality: !!result.quality
-        ? result.quality
-        : this.providerUtils.determineQuality(result.metadata, result.magnet),
+  private appendAttributes(providerResults: ITorrent[], method: 'movies' | 'shows'): ITorrent[] {
+    return providerResults // Utils.merge(providerResults)
+      .filter(result => !!result.metadata)
+      .map(result => ({
+        ...result,
+        method,
+        cached: Date.now(),
+        health: this.providerUtils.getHealth(result.seeders || 0, result.leechers || 0),
+        // '3d': this.providerUtils.determine3d(result.metadata, result.magnet),
+        quality: !result.quality
+          ? this.providerUtils.determineQuality(result.metadata, result.magnet)
+          : result.quality,
     }));
   }
 
@@ -64,7 +67,7 @@ export class TorrentService {
   }
 
   /**
-   * @TODO: Fix this up
+   * @TODO: Clean this up
    * @param {string} query
    * @param {string} type
    * @param {ExtendedDetails} extendedDetails
@@ -73,13 +76,12 @@ export class TorrentService {
   public search(query: string, type: string, extendedDetails: ExtendedDetails = {}): Observable<ITorrent[]> {
     if (!this.availableProviders) throw new Error('You need to call TorrentService.create() first');
 
-    return merge(
-      this.availableProviders.map(provider =>
+    return zip(
+      ...this.availableProviders.map(provider =>
         provider.provide(query, type, extendedDetails)
       ),
     ).pipe(
       map((results: ITorrent[]) => {
-        console.log(results);
         switch (type) {
           case 'movies':
             return this.selectTorrents(

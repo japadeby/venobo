@@ -61,7 +61,7 @@ export class YtsTorrentProvider extends BaseTorrentProvider {
     switch (type) {
       case 'movies':
         return this.fetch(<string>imdbId || search)
-          .pipe(map(({ data }) => {
+          .pipe(mergeMap(({ data }) => {
             if (data.movie_count === 0) return [];
 
             return from(data.movies)
@@ -70,7 +70,7 @@ export class YtsTorrentProvider extends BaseTorrentProvider {
                   (torrent) => this.formatTorrent(torrent)
                 )),
               );
-          }), combineAll());
+          }));
 
       default:
           return of([]);
