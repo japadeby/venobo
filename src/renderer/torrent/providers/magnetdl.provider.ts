@@ -9,9 +9,9 @@ import { ExtendedDetails, ITorrent } from '../interfaces';
 
 export class MagnetDlTorrentProvider extends BaseTorrentProvider {
 
-  endpoints = ['http://www.magnetdl.com', 'https://magnetdl.unblocked.vet'];
-  provider = 'MagnetDl';
-  api!: string;
+  static provider = 'MagnetDl';
+
+  domains = ['http://www.magnetdl.com', 'https://magnetdl.unblocked.vet'];
 
   private fetch(query: string): Observable<ITorrent[]> {
     query = Utils.slugify(query.toLowerCase());
@@ -22,18 +22,17 @@ export class MagnetDlTorrentProvider extends BaseTorrentProvider {
       );
     }
 
-    return this.http.get(`${this.api}/${query.substring(0, 1)}/${query}`, {
-      responseType: 'text',
-    })
-      .pipe(
-        map(res => this.cheerio(res)),
-        catchError(() => of([])),
-      );
+    return this.timeoutError(
+      this.http.get(`${this.endpoint}/${query.substring(0, 1)}/${query}`, {
+        responseType: 'text',
+      })
+    ).pipe(
+      map(res => this.cheerio(res)),
+    );
   }
 
   cheerio(html: string) {
     const $ = cheerio.load(html);
-    const { provider } = this;
 
     return $('.download tbody tr:nth-child(2n+1)')/*.slice(0, 10)*/.map(function() {
       const $td = $(this).find('td');
@@ -44,14 +43,14 @@ export class MagnetDlTorrentProvider extends BaseTorrentProvider {
         size: $td.eq(5).text(),
         seeders: parseInt($td.eq(6).text(), 10),
         leechers: parseInt($td.eq(7).text(), 10),
-        provider,
+        provider: MagnetDlTorrentProvider.provider,
       } as ITorrent;
     }).get() as any[];
   }
 
   create() {
     return PromiseUtils.didResolve(async () => {
-      this.api = await this.createReliableEndpoint(this.endpoints);
+      this.endpoint = await this.createReliableEndpoint(this.domains);
     });
   }
 

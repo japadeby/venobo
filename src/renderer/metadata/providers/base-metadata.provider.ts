@@ -20,7 +20,7 @@ export abstract class BaseMetadataProvider {
 
   public abstract getRecommendations<R>(type: string, tmdbId: number): Observable<R>;
 
-  public abstract getPopular<R>(type: string, page: number): Observable<R>;
+  public abstract getPopular<R>(type: string, page: number = 1): Observable<R>;
 
   public abstract getTopRated<R>(type: string, page: number = 1): Observable<R>;
 

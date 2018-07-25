@@ -8,7 +8,12 @@
   <app-carousel
     title="Most popular movies"
     route="/discover/movies/all/popularity.desc"
-    [items]="data"
+    [items]="data.popularMovies"
+  ></app-carousel>
+  <app-carousel
+    title="Top rated movies"
+    route="/discover/movies/all/top_rated.desc"
+    [items]="data.topRatedMovies"
   ></app-carousel>
 </app-view>
 <!--</app-loader>-->

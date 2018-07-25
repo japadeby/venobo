@@ -1,12 +1,9 @@
 import { Injectable } from '@angular/core';
 import { get, set } from 'lodash';
-import * as path from 'path';
 import * as fse from 'fs-extra';
 import * as os from 'os';
-// import pckg from '../../../../package.json';
 
-const appConfigPath = require('application-config-path');
-const isDevMode = require('electron-is-dev');
+import { AppConfig } from '../../environments';
 
 export interface Settings {
   version: string;
@@ -45,28 +42,12 @@ export class ConfigService {
 
   private config: Settings;
 
-  public getTempPath() {
-    return process.platform === 'win32'
-      ? 'C:\\Windows\\Temp'
-      : '/tmp';
-  }
-
-  public getConfigPath(): string {
-    return isDevMode
-      ? path.join(this.getTempPath(), 'Venobo Dev')
-      : appConfigPath('Venobo');
-  }
-
-  public getConfigFilePath(): string {
-    return path.join(this.getConfigPath(), 'config.json');
-  }
-
   public async truncate() {
-    return fse.rmdir(this.getConfigPath());
+    return fse.rmdir(AppConfig.getPath());
   }
 
   public async load(): Promise<Settings> {
-    const configPath = this.getConfigFilePath();
+    const configPath = AppConfig.getSettingsPath();
     console.log('[Venobo] - Config Path: ', configPath);
 
     await fse.ensureFile(configPath);
@@ -103,7 +84,7 @@ export class ConfigService {
   }
 
   public async set(path: string, value: any) {
-    const configPath = this.getConfigFilePath();
+    const configPath = AppConfig.getSettingsPath();
     this.config = set(this.config, path, value);
 
     await fse.writeJson(configPath, this.config);

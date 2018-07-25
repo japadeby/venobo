@@ -1,5 +1,5 @@
 import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, timeout } from 'rxjs/operators';
 import * as cheerio from 'cheerio';
 
 import { PromiseUtils } from '../../globals';
@@ -10,27 +10,20 @@ import { ITorrent, ExtendedDetails} from '../interfaces';
 // tslint:disable-next-line
 export class iDopeTorrentProvider extends BaseTorrentProvider {
 
-  provider = 'iDope';
-  api = 'https://idope.se';
+  static provider = 'iDope';
+  endpoint = 'https://idope.se';
 
   private fetch(type: string, query: string): Observable<ITorrent[]> {
-    if (!this.api) {
-      throw new UnknownTorrentProviderApiException(
-        iDopeTorrentProvider,
-      );
-    }
-
-    return this.http.get(
-      `${this.api}/torrent-list/${query}/`,
+    return this.timeoutError(this.http.get(
+      `${this.endpoint}/torrent-list/${query}/`,
       {
         responseType: 'text',
         params: {
           c: String(type === 'movies' ? 1 : 3),
         },
       }
-    ).pipe(
+    )).pipe(
       map(res => this.cheerio(res)),
-      catchError(() => of([])),
     );
   }
 
@@ -38,13 +31,12 @@ export class iDopeTorrentProvider extends BaseTorrentProvider {
     return PromiseUtils.didObservableResolve(
       this.http.get(this.api, {
         responseType: 'text',
-      }),
+      }).timeout(3000),
     );
   }
 
   cheerio(html: string) {
     const $ = cheerio.load(html);
-    const { provider } = this;
 
     // Get the ten first results and create a list
     return $('.resultdiv')/*.slice(0, 10)*/.map(function() {
@@ -56,7 +48,7 @@ export class iDopeTorrentProvider extends BaseTorrentProvider {
         // leechers: null,
         // sadly fetching the magnet this way doesnt work lol
         magnet: this.providerUtils.constructMagnet($(this).find('.resultdivbotton .hideinfohash').first().text()),
-        provider,
+        provider: iDopeTorrentProvider.provider,
       };
     }).get() as any[];
   }

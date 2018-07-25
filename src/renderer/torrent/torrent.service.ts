@@ -25,6 +25,8 @@ export class TorrentService {
     const providerStatuses = this.allProviders
       .map(provider => provider.create());
 
+    console.log('[Venobo] - Creating torrent providers');
+
     const resolvedProviderStatuses = await Promise.all(providerStatuses);
 
     this.availableProviders = PromiseUtils.filterResolved<BaseTorrentProvider>(
@@ -49,7 +51,7 @@ export class TorrentService {
       .map(result => ({
         ...result,
         method,
-        cached: Date.now(),
+        // cached: Date.now(),
         health: this.providerUtils.getHealth(result.seeders || 0, result.leechers || 0),
         // '3d': this.providerUtils.determine3d(result.metadata, result.magnet),
         quality: !result.quality

@@ -9,27 +9,26 @@ import { ExtendedDetails, ITorrent } from '../interfaces';
 
 export class ThePirateBayTorrentProvider extends BaseTorrentProvider {
 
-  provider = 'ThePirateBay';
-  endpoints = [
+  static provider = 'ThePirateBay';
+  domains = [
     'https://thepiratebay.org',
     'https://tpbship.org',
   ];
-  api!: string;
 
   private fetch(query: string): Observable<ITorrent[]> {
-    if (!this.api) {
+    if (!this.endpoint) {
       throw new UnknownTorrentProviderApiException(
         ThePirateBayTorrentProvider
       );
     }
 
-    return this.http.get(`${this.api}/search/${query}/0/99/200`, {
-      responseType: 'text',
-    })
-      .pipe(
-        map(res => this.cheerio(res)),
-        catchError(() => of([])),
-      );
+    return this.timeoutError(
+      this.http.get(`${this.endpoint}/search/${query}/0/99/200`, {
+        responseType: 'text',
+      })
+    ).pipe(
+      map(res => this.cheerio(res)),
+    );
   }
 
   cheerio(html: string) {
@@ -46,14 +45,14 @@ export class ThePirateBayTorrentProvider extends BaseTorrentProvider {
        seeders: parseInt($td.eq(2).text(), 10),
        leechers: parseInt($td.eq(3).text(), 10),
        verified: !!$td.eq(1).find('img[src="https://tpbship.org/static/img/vip.gif"]').length,
-       provider: provider,
+       provider: ThePirateBayTorrentProvider.provider,
      } as ITorrent;
     }).get() as any[];
   }
 
   create() {
     return PromiseUtils.didResolve(async () => {
-      this.api = await this.createReliableEndpoint(this.endpoints);
+      this.endpoint = await this.createReliableEndpoint(this.domains);
     });
   }
 

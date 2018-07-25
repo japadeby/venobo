@@ -2,9 +2,13 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import {
+  TopRatedMoviesResolver,
+  PopularMoviesResolver,
+} from './resolvers';
+
+import {
   ViewComponent,
   HomeComponent,
-  HomeResolver
 } from './containers';
 
 const routes: Routes = [
@@ -12,7 +16,8 @@ const routes: Routes = [
     path: '',
     component: HomeComponent,
     resolve: {
-      home: HomeResolver,
+      topRatedMovies: TopRatedMoviesResolver,
+      popularMovies: PopularMoviesResolver,
     },
   },
 ];

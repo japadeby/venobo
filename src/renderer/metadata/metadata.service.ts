@@ -1,11 +1,14 @@
 import { Injectable, Inject } from '@angular/core';
-import { from, zip } from 'rxjs';
-import { map, mergeMap, toArray } from 'rxjs/operators';
+import { Observable, from, zip } from 'rxjs';
+import { map, mergeMap, catchError, tap } from 'rxjs/operators';
 
 import { ITorrent, TorrentService } from '../torrent';
 import { BaseMetadataProvider } from './providers';
 import { USE_METADATA_PROVIDER } from './tokens';
+import { ConfigService } from '../app/services';
+import { StorageService } from '../storage';
 import {
+  Metadata,
   MovieMetadata,
   ShowMetadata,
   TMDbMovieResponse,
@@ -20,10 +23,22 @@ export class MetadataService {
     @Inject(USE_METADATA_PROVIDER)
     private readonly metadataProvider: BaseMetadataProvider,
     private readonly torrentAdapter: TorrentService,
+    private readonly storage: StorageService,
+    private readonly config: ConfigService,
   ) {}
 
   private formatReleaseYear(date: string) {
     return date ? date.substring(0, 4) : 'Unknown';
+  }
+
+  private createCacheId(key: string | number, type: string) {
+    return [key, type, this.config.get('prefs.ietf')].join('-');
+  }
+
+  private getMethod(type: string) {
+    return type === 'movies'
+      ? 'getMovieById'
+      : 'checkShow';
   }
 
   private formatMovieMetadata = (
@@ -49,6 +64,19 @@ export class MetadataService {
     torrents,
   });
 
+  private isNotExpiredThenRead<T>(key: string | number, type: string) {
+    const cacheId = this.createCacheId(key, type);
+
+    return (source$: Observable<T>): Observable<T> =>
+      from(this.storage.isNotExpiredThenRead(cacheId)).pipe(
+        catchError(() => source$.pipe(
+          tap(result =>
+            this.storage.write(cacheId, result),
+          ),
+        )),
+      );
+  }
+
   /*private formatShowMetadata = (
     data: TMDbShowResponse,
     torrents: ITorrent[],
@@ -73,26 +101,40 @@ export class MetadataService {
   });*/
 
   public getMovieById(id: number) {
-    return this.metadataProvider.get('movies', id).pipe(
-      mergeMap((metadata: TMDbMovieResponse) =>
-        this.torrentAdapter.search(metadata.original_title, 'movies', {
-          imdbId: metadata.imdb_id,
-        }).pipe(
-          map(torrents => this.formatMovieMetadata(metadata, torrents)),
+    return this.isNotExpiredThenRead<Metadata>(id, 'movies')(
+      this.metadataProvider.get('movies', id).pipe(
+        mergeMap((metadata: TMDbMovieResponse) =>
+          this.torrentAdapter.search(metadata.original_title, 'movies', {
+            imdbId: metadata.imdb_id,
+          }).pipe(
+            map(torrents => this.formatMovieMetadata(metadata, torrents)),
+          ),
         ),
+      )
+    );
+  }
+
+  public getPopular(type: string): Observable<Metadata[]> {
+    const method = this.getMethod(type);
+
+    return this.isNotExpiredThenRead<Metadata[]>('gp', type)(
+      this.metadataProvider.getPopular(type).pipe(
+        mergeMap(({ results }) => zip(
+          ...results.map(media => this[method](media.id))
+        ))
       ),
     );
   }
 
   public getTopRated(type: string) {
-    const method = type === 'shows'
-      ? 'checkShow'
-      : 'getMovieById';
+    const method = this.getMethod(type);
 
-    return this.metadataProvider.getTopRated(type).pipe(
-      mergeMap(({ results }) => zip(
-        ...results.map(media => this.getMovieById(media.id))
-      )),
+    return this.isNotExpiredThenRead<Metadata[]>('gtr', type)(
+      this.metadataProvider.getTopRated(type).pipe(
+        mergeMap(({ results }) => zip(
+          ...results.map(media => this[method](media.id))
+        ))
+      ),
     );
   }
 

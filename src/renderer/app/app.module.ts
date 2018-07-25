@@ -2,6 +2,7 @@ import 'zone.js/dist/zone-mix';
 import 'reflect-metadata';
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/timeout';
+import 'rxjs/add/operator/map';
 import '../polyfills';
 import { forwardRef, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -15,8 +16,10 @@ import { ComponentsModule } from './components';
 import { SharedModule } from './shared.module';
 
 import { MetadataModule, TMDbProvider } from '../metadata';
-import { AppConfig } from '../environments';
 import { AppComponent } from './app.component';
+import { ResolversModule } from './resolvers';
+import { AppConfig } from '../environments';
+import { StorageModule } from '../storage';
 import {
   TorrentModule,
   YtsTorrentProvider,
@@ -39,6 +42,15 @@ export function HttpLoaderFactory(http: HttpClient) {
     HttpClientModule,
     ServicesModule.forRoot(),
     SharedModule,
+    StorageModule.forRoot({
+      path: AppConfig.cachePath,
+      secret: AppConfig.tmdb.key,
+      encrypt: {
+        type: 'AES',
+        fileContent: true,
+        fileName: true,
+      },
+    }),
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -59,6 +71,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     }),
     ComponentsModule,
     ContainersModule,
+    ResolversModule,
   ],
 })
 export class AppModule {}

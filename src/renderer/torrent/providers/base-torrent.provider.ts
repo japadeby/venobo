@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 import { ProviderUtils } from '../provider.utils.service';
 import { PromiseUtils } from '../../globals';
@@ -18,6 +19,11 @@ export interface EndpointOptions {
 export abstract class BaseTorrentProvider {
 
   /**
+   * Torrent providerty
+   */
+  protected abstract static readonly provider: string;
+
+  /**
    * Endpoint domains for torrent provider
    */
   protected readonly domains?: string[];
@@ -25,12 +31,7 @@ export abstract class BaseTorrentProvider {
   /**
    * Endpoint for torrent domain
    */
-  protected readonly endpoint?: string;
-
-  /**
-   * Torrent providerty
-   */
-  protected abstract readonly provider: string;
+  protected endpoint?: string;
 
   /**
    * API endpoint
@@ -56,6 +57,18 @@ export abstract class BaseTorrentProvider {
    * @returns {Promise<ITorrent[]>}
    */
   abstract provide(search: string, type: string, extendedDetails: ExtendedDetails = {}): Observable<ITorrent[]>;
+
+  /**
+   * Timeout endpoint call
+   * @param {Observable<T>} source$
+   * @param {number} timeout
+   * @returns {Observable<any>}
+   */
+  protected timeoutError<T>(source$: Observable<T>, timeout: number = 3000) {
+    return source$.timeout(timeout).pipe(
+      catchError(() => of([])),
+    );
+  }
 
   /**
    * Create endpoint url by requesting the different domains and picking

@@ -9,9 +9,9 @@ import { ExtendedDetails, ITorrent } from '../interfaces';
 
 export class KickassTorrentProvider extends BaseTorrentProvider {
 
-  endpoints = ['https://kickassto.org', 'https://kat.unblocked.vet/'];
-  provider = 'Kickass';
-  api!: string;
+  static provider = 'Kickass Torrents';
+
+  domains = ['https://kickassto.org', 'https://kat.unblocked.vet/'];
 
   private fetch(query: string): Observable<ITorrent[]> {
     if (!this.api) {
@@ -20,22 +20,21 @@ export class KickassTorrentProvider extends BaseTorrentProvider {
       );
     }
 
-    return this.http.get(`${this.api}/usearch/${query}/`, {
-      responseType: 'text',
-      params: {
-        field: 'seeders',
-        sorder: 'desc',
-      },
-    }).pipe(
+    return this.timeoutError(
+      this.http.get(`${this.endpoint}/usearch/${query}/`, {
+        responseType: 'text',
+        params: {
+          field: 'seeders',
+          sorder: 'desc',
+        },
+      })
+    ).pipe(
       map(res => this.cheerio(res)),
-      catchError(() => of([])),
     );
   }
 
   cheerio(html: string) {
     const $ = cheerio.load(html);
-    const { provider } = this;
-
     // tslint:disable-next-line
     return $("table.data tr:not('.firstr')")/*.slice(0, 10)*/.map(function() {
       return {
@@ -45,14 +44,14 @@ export class KickassTorrentProvider extends BaseTorrentProvider {
         seeders: parseInt($(this).find('.green.center').text(), 10),
         leechers: parseInt($(this).find('.red.lasttd.center').text(), 10),
         verified: !!$(this).find('[title="Verified Torrent"]').length,
-        provider: provider
+        provider: KickassTorrentProvider.provider,
       } as ITorrent;
     }).get() as any[];
   }
 
   create() {
     return PromiseUtils.didResolve(async () => {
-      this.api = await this.createReliableEndpoint(this.endpoints);
+      this.endpoint = await this.createReliableEndpoint(this.domains);
     });
   }
 

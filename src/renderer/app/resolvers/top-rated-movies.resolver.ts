@@ -2,11 +2,10 @@ import { Injectable } from '@angular/core';
 import { Resolve } from '@angular/router';
 import { Observable } from 'rxjs';
 
-import { MetadataService } from '../../../metadata';
-import { ITorrent, TorrentService } from '../../../torrent';
+import { MetadataService, Metadata } from '../../metadata';
 
 @Injectable()
-export class HomeResolver implements Resolve<Observable<ITorrent[]>> {
+export class TopRatedMoviesResolver implements Resolve<Observable<Metadata[]>> {
   constructor(
     private readonly metadata: MetadataService,
   ) {}
