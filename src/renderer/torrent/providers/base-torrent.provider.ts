@@ -21,7 +21,7 @@ export abstract class BaseTorrentProvider {
   /**
    * Torrent providerty
    */
-  protected abstract static readonly provider: string;
+  protected abstract readonly provider: string;
 
   /**
    * Endpoint domains for torrent provider
@@ -31,23 +31,18 @@ export abstract class BaseTorrentProvider {
   /**
    * Endpoint for torrent domain
    */
-  protected endpoint?: string;
-
-  /**
-   * API endpoint
-   */
-  // protected api!: string;
+  protected abstract endpoint!: string;
 
   constructor(
-    protected readonly http: HttpClient,
     protected readonly providerUtils: ProviderUtils,
+    protected readonly http: HttpClient,
   ) {}
 
   /**
    * Get status of torrent endpoint
    * @returns {Promise<boolean>}
    */
-  abstract create(): Promise<boolean>;
+  protected abstract create(): Promise<boolean>;
 
   /**
    * Fetch movies / shows depending on IMDb ID
@@ -56,7 +51,7 @@ export abstract class BaseTorrentProvider {
    * @param {ExtendedDetails} extendedDetails
    * @returns {Promise<ITorrent[]>}
    */
-  abstract provide(search: string, type: string, extendedDetails: ExtendedDetails = {}): Observable<ITorrent[]>;
+  protected abstract provide(search: string, type: string, extendedDetails: ExtendedDetails = {}): Observable<ITorrent[]>;
 
   /**
    * Timeout endpoint call
@@ -64,7 +59,7 @@ export abstract class BaseTorrentProvider {
    * @param {number} timeout
    * @returns {Observable<any>}
    */
-  protected timeoutError<T>(source$: Observable<T>, timeout: number = 3000) {
+  protected timeoutError<T>(source$: Observable<T>, timeout: number = 3000): Observable<T> {
     return source$.timeout(timeout).pipe(
       catchError(() => of([])),
     );

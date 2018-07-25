@@ -9,12 +9,14 @@ import { ExtendedDetails, ITorrent } from '../interfaces';
 
 export class KickassTorrentProvider extends BaseTorrentProvider {
 
-  static provider = 'Kickass Torrents';
-
-  domains = ['https://kickassto.org', 'https://kat.unblocked.vet/'];
+  provider = 'Kickass Torrents';
+  domains = [
+    'https://kickassto.org',
+    'https://kat.unblocked.vet/',
+  ];
 
   private fetch(query: string): Observable<ITorrent[]> {
-    if (!this.api) {
+    if (!this.endpoint) {
       throw new UnknownTorrentProviderApiException(
         KickassTorrentProvider,
       );
@@ -35,8 +37,10 @@ export class KickassTorrentProvider extends BaseTorrentProvider {
 
   cheerio(html: string) {
     const $ = cheerio.load(html);
+    const { provider } = this;
+
     // tslint:disable-next-line
-    return $("table.data tr:not('.firstr')")/*.slice(0, 10)*/.map(function() {
+    return $("table.data tr:not('.firstr')").map(function() {
       return {
         metadata: $(this).find('a.cellMainLink').text(),
         magnet: $(this).find('[title="Torrent magnet link"]').attr('href'),
@@ -44,7 +48,7 @@ export class KickassTorrentProvider extends BaseTorrentProvider {
         seeders: parseInt($(this).find('.green.center').text(), 10),
         leechers: parseInt($(this).find('.red.lasttd.center').text(), 10),
         verified: !!$(this).find('[title="Verified Torrent"]').length,
-        provider: KickassTorrentProvider.provider,
+        provider,
       } as ITorrent;
     }).get() as any[];
   }

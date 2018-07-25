@@ -8,11 +8,9 @@ import { USE_METADATA_PROVIDER } from './tokens';
 import { ConfigService } from '../app/services';
 import { StorageService } from '../storage';
 import {
-  Metadata,
+  MetadataUnion,
   MovieMetadata,
-  ShowMetadata,
   TMDbMovieResponse,
-  TMDbShowResponse
 } from './interfaces';
 
 // @TODO: Add caching to all methods
@@ -78,6 +76,7 @@ export class MetadataService {
   }
 
   /*private formatShowMetadata = (
+
     data: TMDbShowResponse,
     torrents: ITorrent[],
   ): ShowMetadata => ({
@@ -100,8 +99,16 @@ export class MetadataService {
     seasonsCount: data.number_of_seasons
   });*/
 
+  public getById(id: number, type: string): Observable<MetadataUnion> {
+    const method = type === 'movie'
+      ? 'getMovieById'
+      : 'getShowById';
+
+    return this[method](id);
+  }
+
   public getMovieById(id: number) {
-    return this.isNotExpiredThenRead<Metadata>(id, 'movies')(
+    return this.isNotExpiredThenRead<MovieMetadata>(id, 'movies')(
       this.metadataProvider.get('movies', id).pipe(
         mergeMap((metadata: TMDbMovieResponse) =>
           this.torrentAdapter.search(metadata.original_title, 'movies', {
@@ -114,10 +121,10 @@ export class MetadataService {
     );
   }
 
-  public getPopular(type: string): Observable<Metadata[]> {
+  public getPopular(type: string) {
     const method = this.getMethod(type);
 
-    return this.isNotExpiredThenRead<Metadata[]>('gp', type)(
+    return this.isNotExpiredThenRead<MetadataUnion[]>('gp', type)(
       this.metadataProvider.getPopular(type).pipe(
         mergeMap(({ results }) => zip(
           ...results.map(media => this[method](media.id))
@@ -129,7 +136,7 @@ export class MetadataService {
   public getTopRated(type: string) {
     const method = this.getMethod(type);
 
-    return this.isNotExpiredThenRead<Metadata[]>('gtr', type)(
+    return this.isNotExpiredThenRead<MetadataUnion[]>('gtr', type)(
       this.metadataProvider.getTopRated(type).pipe(
         mergeMap(({ results }) => zip(
           ...results.map(media => this[method](media.id))

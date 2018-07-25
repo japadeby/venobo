@@ -1,0 +1,58 @@
+<div id="content" class="product">
+  <section id="movie-product">
+    <section class="hero">
+      <div class="scaffold">
+        <div class="hero-wrapper">
+          <img class="hero" [src]="media.backdrop" />
+          <div class="hero-backdrop"></div>
+          <div class="hero-vignette"></div>
+        </div>
+      </div>
+    </section>
+    <section class="block product movie">
+      <div class="scaffold">
+        <div class="metadata">
+          <div class="thumb portrait thumb-dk">
+            <img class="poster" [src]="media.poster" />
+          </div>
+          <h1 class="product-title">{{ media.title }}</h1>
+          <p class="summary">
+            <span class="genre divider">
+              <span class="genre-type" *ngFor="let genre of media.genres">{{ genre }}</span>
+            </span>
+            <span class="year divider">{{ media.year }}</span>
+            <span class="duration divider" *ngIf="media.type === 'movie'">
+              {{ media.runtime }}
+            </span>
+            <!--<div class="flags" *ngIf="media.type === 'movie'" *ngFor="let torrent of media.torrents">
+
+            </div>-->
+          </p>
+          <div class="interaction-block">
+            <div class="imdb-container">
+              <a class="imdb-link" href="#">
+                {{ media.voted }} <span class="imdb-votes">baseret på {{ media.votes }} brugere</span>
+              </a>
+            </div>
+            <!--<StarredIcon data={media} state={app} />-->
+            <div class="group">
+              <div class="group">
+                <div class="synopsis">
+                  {{ media.summary }}
+                </div>
+              </div>
+              <div class="group">
+                <div class="actors people-list">
+                  <h2>Actors: </h2>
+                </div>
+                <div class="directors people-list">
+                  <h2>Directors: </h2>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </section>
+</div>

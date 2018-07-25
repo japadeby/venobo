@@ -1,4 +1,4 @@
-import { NgModule, ModuleWithProviders, APP_INITIALIZER } from '@angular/core';
+import { NgModule, ModuleWithProviders, APP_INITIALIZER, Provider } from '@angular/core';
 
 import { ProviderUtils } from './provider.utils.service';
 import { TorrentService } from './torrent.service';
@@ -11,7 +11,7 @@ import { createSourceInstances, createTorrentFactory } from './factory';
 @NgModule()
 export class TorrentModule {
 
-  public static forRoot(providers: BaseTorrentProvider[]): ModuleWithProviders {
+  public static forRoot(providers: (BaseTorrentProvider & Provider)[]): ModuleWithProviders {
     return {
       ngModule: TorrentModule,
       providers: [

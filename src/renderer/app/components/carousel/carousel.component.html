@@ -4,7 +4,7 @@
     <i class="navigation next whiteframe" [class.disabled]="navNextDisabled" (click)="handleNext()"></i>
     <header class="collection-header">
       <ng-container *ngIf="route; else showTitle">
-        <a routerLink="{{ route }}">
+        <a [routerLink]="route">
           <div>
             <span class="see-all button">{{ 'show.more' | translate }}</span>
             <h2>{{ title }}</h2>

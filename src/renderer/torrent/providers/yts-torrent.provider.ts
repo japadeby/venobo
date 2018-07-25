@@ -13,15 +13,13 @@ import {
 
 export class YtsTorrentProvider extends BaseTorrentProvider {
 
-  static provider = 'Yify Torrents';
-
   domains = ['yts.am', 'yts.unblocked.vet'];
-  api!: string;
+  provider = 'Yify Torrents';
 
   private createEndpoint = (domain: string) => `https://${domain}/api/v2/list_movies.json`;
 
   private fetch(query: string): Observable<YtsResponse> {
-    if (!this.api) {
+    if (!this.endpoint) {
       throw new UnknownTorrentProviderApiException(
         YtsTorrentProvider,
       );
@@ -42,7 +40,7 @@ export class YtsTorrentProvider extends BaseTorrentProvider {
   private formatTorrent = (torrent: YtsMovieTorrent): ITorrent => ({
     metadata: String((torrent.url + torrent.hash) || torrent.hash),
     magnet: this.providerUtils.constructMagnet(torrent.hash),
-    provider: YtsTorrentProvider.provider,
+    provider: this.provider,
     size: torrent.size,
     quality: torrent.quality,
     seeders: torrent.seeds,
@@ -52,7 +50,7 @@ export class YtsTorrentProvider extends BaseTorrentProvider {
 
   create() {
     return PromiseUtils.didResolve(async () => {
-      this.api = await this.createReliableEndpoint(
+      this.endpoint = await this.createReliableEndpoint(
         this.domains.map(
           domain => this.createEndpoint(domain)
         ),

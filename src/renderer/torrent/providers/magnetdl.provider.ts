@@ -9,14 +9,13 @@ import { ExtendedDetails, ITorrent } from '../interfaces';
 
 export class MagnetDlTorrentProvider extends BaseTorrentProvider {
 
-  static provider = 'MagnetDl';
-
   domains = ['http://www.magnetdl.com', 'https://magnetdl.unblocked.vet'];
+  provider = 'MagnetDl';
 
   private fetch(query: string): Observable<ITorrent[]> {
     query = Utils.slugify(query.toLowerCase());
 
-    if (!this.api) {
+    if (!this.endpoint) {
       throw new UnknownTorrentProviderApiException(
         MagnetDlTorrentProvider,
       );
@@ -33,8 +32,9 @@ export class MagnetDlTorrentProvider extends BaseTorrentProvider {
 
   cheerio(html: string) {
     const $ = cheerio.load(html);
+    const { provider } = this;
 
-    return $('.download tbody tr:nth-child(2n+1)')/*.slice(0, 10)*/.map(function() {
+    return $('.download tbody tr:nth-child(2n+1)').map(function() {
       const $td = $(this).find('td');
 
       return {
@@ -43,7 +43,7 @@ export class MagnetDlTorrentProvider extends BaseTorrentProvider {
         size: $td.eq(5).text(),
         seeders: parseInt($td.eq(6).text(), 10),
         leechers: parseInt($td.eq(7).text(), 10),
-        provider: MagnetDlTorrentProvider.provider,
+        provider,
       } as ITorrent;
     }).get() as any[];
   }

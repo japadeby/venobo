@@ -7,17 +7,27 @@ import {
 } from './resolvers';
 
 import {
-  ViewComponent,
+  MediaComponent,
   HomeComponent,
+  MediaResolver,
 } from './containers';
 
 const routes: Routes = [
   {
     path: '',
+    pathMatch: 'full',
     component: HomeComponent,
     resolve: {
       topRatedMovies: TopRatedMoviesResolver,
       popularMovies: PopularMoviesResolver,
+    },
+  },
+  {
+    path: 'media/:type/:id',
+    component: MediaComponent,
+    runGuardsAndResolvers: 'paramsOrQueryParamsChange',
+    resolve: {
+      media: MediaResolver,
     },
   },
 ];

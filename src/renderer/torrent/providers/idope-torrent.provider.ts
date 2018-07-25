@@ -10,7 +10,7 @@ import { ITorrent, ExtendedDetails} from '../interfaces';
 // tslint:disable-next-line
 export class iDopeTorrentProvider extends BaseTorrentProvider {
 
-  static provider = 'iDope';
+  provider = 'iDope';
   endpoint = 'https://idope.se';
 
   private fetch(type: string, query: string): Observable<ITorrent[]> {
@@ -23,13 +23,13 @@ export class iDopeTorrentProvider extends BaseTorrentProvider {
         },
       }
     )).pipe(
-      map(res => this.cheerio(res)),
+      map(res => this.cheerio(res) as ITorrent[]),
     );
   }
 
   create() {
     return PromiseUtils.didObservableResolve(
-      this.http.get(this.api, {
+      this.http.get(this.endpoint, {
         responseType: 'text',
       }).timeout(3000),
     );
@@ -37,9 +37,9 @@ export class iDopeTorrentProvider extends BaseTorrentProvider {
 
   cheerio(html: string) {
     const $ = cheerio.load(html);
+    const { provider } = this;
 
-    // Get the ten first results and create a list
-    return $('.resultdiv')/*.slice(0, 10)*/.map(function() {
+    return $('.resultdiv').map(function() {
       // a elements are hidden
       return {
         metadata: String($(this).find('.resultdivtop .resultdivtopname').text()).trim(),
@@ -48,7 +48,7 @@ export class iDopeTorrentProvider extends BaseTorrentProvider {
         // leechers: null,
         // sadly fetching the magnet this way doesnt work lol
         magnet: this.providerUtils.constructMagnet($(this).find('.resultdivbotton .hideinfohash').first().text()),
-        provider: iDopeTorrentProvider.provider,
+        provider,
       };
     }).get() as any[];
   }

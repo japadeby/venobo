@@ -41,3 +41,5 @@ export interface ShowEpisodeMetadata extends Metadata {
   airDate: string;
   torrents: ITorrent[];
 }
+
+export type MetadataUnion = MovieMetadata & ShowMetadata;

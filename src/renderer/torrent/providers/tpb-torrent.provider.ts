@@ -9,7 +9,7 @@ import { ExtendedDetails, ITorrent } from '../interfaces';
 
 export class ThePirateBayTorrentProvider extends BaseTorrentProvider {
 
-  static provider = 'ThePirateBay';
+  provider = 'ThePirateBay';
   domains = [
     'https://thepiratebay.org',
     'https://tpbship.org',
@@ -33,9 +33,8 @@ export class ThePirateBayTorrentProvider extends BaseTorrentProvider {
 
   cheerio(html: string) {
     const $ = cheerio.load(html);
-    const { provider } = this;
 
-    return $('#main-content #searchResult tbody tr')/*.slice(0, 10)*/.map(function(this: any) {
+    return $('#main-content #searchResult tbody tr').map(function() {
      const $td = $(this).find('td');
 
      return {

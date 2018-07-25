@@ -1,4 +1,6 @@
-import { Component, Input, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, AfterViewInit, ViewChild, OnDestroy, ElementRef } from '@angular/core';
+import { Subscription, fromEvent } from 'rxjs';
+import { debounceTime, tap } from 'rxjs/operators';
 
 export class CarouselComponentState {
   navPrevDisabled!: boolean;
@@ -16,7 +18,7 @@ export class CarouselComponentState {
   templateUrl: './carousel.component.html',
   styleUrls: ['./carousel.component.css'],
 })
-export class CarouselComponent extends CarouselComponentState implements AfterViewInit {
+export class CarouselComponent extends CarouselComponentState implements AfterViewInit, OnDestroy {
 
   @ViewChild('poster') poster: ElementRef;
 
@@ -28,9 +30,19 @@ export class CarouselComponent extends CarouselComponentState implements AfterVi
 
   @Input() readonly title?: string;
 
+  private resizeEvent$: Subscription;
+
   ngAfterViewInit() {
     this.updateCarousel();
-    window.addEventListener('resize', () => this.updateCarousel(), false);
+
+    this.resizeEvent$ = fromEvent(window, 'resize').pipe(
+      debounceTime(500),
+      tap(() => this.updateCarousel())
+    ).subscribe();
+  }
+
+  ngOnDestroy() {
+    this.resizeEvent$.unsubscribe();
   }
 
   updateCarousel() {
@@ -55,9 +67,7 @@ export class CarouselComponent extends CarouselComponentState implements AfterVi
       this.navNextDisabled = itemsFitSlide === posterItems.length;
       this.itemsLength = posterItems.length;
       this.itemsFitSlide = itemsFitSlide;
-
-      console.log(this);
-    }, 7);
+    });
   }
 
   // @TODO: Fix itemWidth
