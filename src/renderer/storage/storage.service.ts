@@ -2,7 +2,6 @@ import { Inject, Injectable } from '@angular/core';
 
 import { AES, enc } from 'crypto-js';
 import * as md5 from 'crypto-js/md5';
-import * as moment from 'moment';
 import * as fse from 'fs-extra';
 import * as path from 'path';
 

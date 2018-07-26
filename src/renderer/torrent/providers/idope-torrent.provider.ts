@@ -37,17 +37,17 @@ export class iDopeTorrentProvider extends BaseTorrentProvider {
 
   cheerio(html: string) {
     const $ = cheerio.load(html);
-    const { provider } = this;
+    const { provider, providerUtils } = this;
 
     return $('.resultdiv').map(function() {
       // a elements are hidden
       return {
-        metadata: String($(this).find('.resultdivtop .resultdivtopname').text()).trim(),
+        metadata: $(this).find('.resultdivtop .resultdivtopname').text().trim(),
         size: $(this).find('.resultdivbotton .resultdivbottonlength').text(),
         seeders: Number($(this).find('.resultdivbotton .resultdivbottonseed').text()),
-        // leechers: null,
+        leechers: null,
         // sadly fetching the magnet this way doesnt work lol
-        magnet: this.providerUtils.constructMagnet($(this).find('.resultdivbotton .hideinfohash').first().text()),
+        magnet: providerUtils.constructMagnet($(this).find('.resultdivbotton .hideinfohash').first().text()),
         provider,
       };
     }).get() as any[];

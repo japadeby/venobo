@@ -1,6 +1,6 @@
 <ng-container *ngFor="let item of items">
   <div class="react-item movie">
-    <div class="front" (mouseenter)="showTooltip($event)" (mouseleave)="dismissTooltipDelay($event)">
+    <div class="front" (mouseenter)="tooltip.show($event, item)" (mouseleave)="tooltip.dismiss({ fromPoster: true })">
       <a [routerLink]="['/media', item.type, item.tmdb]">
         <ng-container *ngIf="!!item.poster">
           <div class="front-image" [style.background-image]="'url(' + item.poster + ')'">

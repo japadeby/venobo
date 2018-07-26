@@ -1,3 +1,5 @@
 import { InjectionToken } from '@angular/core';
 
-export const TORRENT_PROVIDERS = new InjectionToken<string>('TORRENT_PROVIDERS');
+import { BaseTorrentProvider } from './providers';
+
+export const TORRENT_PROVIDERS = new InjectionToken<BaseTorrentProvider[]>('TORRENT_PROVIDERS');

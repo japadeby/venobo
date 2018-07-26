@@ -1,0 +1,52 @@
+<div id="tooltip" *ngIf="(state$ | async ).active">
+  <section [ngClass]="'tooltip ' + (state$ | async).position" [ngStyle]="(state$ | async).stylePosition" (mouseenter)="tooltipService.hoveringTooltip = true" (mouseleave)="tooltipService.dismiss({ fromTooltip: true })">
+    <header>
+      <h1>
+        <a class="page-link" [routerLink]="(state$ | async).pageLink">
+          {{ (state$ | async).item.title }}
+        </a>
+      </h1>
+      <p class="time"></p>
+      <!--<p class="genres">
+        {{ (state$ | async).genres.join('/') }}
+      </p>-->
+      <p class="year divider">{{ (state$ | async).item.year }}</p>
+      <p class="duration divider">{{ (state$ | async).item.runtime }}</p>
+      <span class="flags">
+        <span class="flag">quality</span>
+      </span>
+    </header>
+    <div class="body">
+      <div class="interaction-block">
+        <div class="tmdb-container">
+          <a href="#" class="tmdb-link">
+            {{ (state$ | async).item.voted }}
+          </a>
+        </div>
+        <!--<StarredIcon type="button" key={data.tmdb} data={data} />-->
+      </div>
+      <p class="group synopsis">
+        <span>{{ (state$ | async).item.summary }}</span>
+        <a [routerLink]="(state$ | async).pageLink" class="page-link">
+          Læs mere
+        </a>
+      </p>
+      <div class="group people">
+        <div class="people-list actors">
+          <h2>Actors:</h2>
+        </div>
+        <div class="people-list directors">
+          <h2>Director:</h2>
+        </div>
+      </div>
+    </div>
+    <div class="gutter">
+      <div class="arrow" [style.top.px]="(state$ | async).arrow"></div>
+    </div>
+    <footer class="two-button">
+      <a [routerLink]="(state$ | async).pageLink" class="page-link read-more movies">
+        Mere info
+      </a>
+    </footer>
+  </section>
+</div>

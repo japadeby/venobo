@@ -244,9 +244,9 @@
   version "0.22.8"
   resolved "https://registry.yarnpkg.com/@types/cheerio/-/cheerio-0.22.8.tgz#5702f74f78b73e13f1eb1bd435c2c9de61a250d4"
 
-"@types/crypto-js@^3.1.42":
-  version "3.1.42"
-  resolved "https://registry.yarnpkg.com/@types/crypto-js/-/crypto-js-3.1.42.tgz#00f6b6a037693c2dc5e8dcf303e7e682751bb282"
+"@types/crypto-js@^3.1.43":
+  version "3.1.43"
+  resolved "https://registry.yarnpkg.com/@types/crypto-js/-/crypto-js-3.1.43.tgz#b859347d6289ba13e347c335a4c9efa63337a748"
 
 "@types/fs-extra@^5.0.4":
   version "5.0.4"

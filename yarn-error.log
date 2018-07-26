@@ -1,5 +1,5 @@
 Arguments: 
-  C:\Program Files\nodejs\node.exe C:\Users\esetm\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js start
+  C:\Program Files\nodejs\node.exe C:\Users\esetm\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add *
 
 PATH: 
   C:\Program Files (x86)\Razer Chroma SDK\bin;C:\Program Files\Razer Chroma SDK\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\system32\config\systemprofile\AppData\Local\Microsoft\WindowsApps;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Users\esetm\AppData\Local\Programs\Python\Python36\Scripts\;C:\Users\esetm\AppData\Local\Programs\Python\Python36\;C:\Users\esetm\AppData\Local\Microsoft\WindowsApps;C:\Users\esetm\AppData\Roaming\npm;C:\Program Files\Microsoft VS Code\bin;C:\Users\esetm\AppData\Local\hyper\app-2.0.0\resources\bin;
@@ -37,6 +37,7 @@ npm manifest:
       "postinstall:web": "node postinstall-web",
       "postinstall:electron": "node postinstall",
       "ng": "ng",
+      "start:dev": "npm run start --env=dev",
       "start": "npm run postinstall:electron && npm-run-all -p ng:serve electron:serve",
       "build": "npm run postinstall:electron && npm run electron:tsc && ng build",
       "build:dev": "npm run build -- -c dev",
@@ -56,8 +57,17 @@ npm manifest:
       "@ngrx/effects": "^6.0.1",
       "@ngrx/router-store": "^6.0.1",
       "@ngrx/store": "^6.0.1",
+      "application-config-path": "^0.1.0",
       "cheerio": "^1.0.0-rc.2",
-      "rxjs-compat": "^6.2.2"
+      "crypto-js": "^3.1.9-1",
+      "debug": "^3.1.0",
+      "electron-is-dev": "^0.3.0",
+      "fs-extra": "^7.0.0",
+      "lodash": "^4.17.10",
+      "moment": "^2.22.2",
+      "rxjs-compat": "^6.2.2",
+      "slugify": "^1.3.0",
+      "xml-js": "^1.6.7"
     },
     "devDependencies": {
       "@angular-devkit/build-angular": "0.6.3",
@@ -75,8 +85,12 @@ npm manifest:
       "@ngx-translate/core": "10.0.1",
       "@ngx-translate/http-loader": "3.0.1",
       "@types/cheerio": "^0.22.8",
+      "@types/crypto-js": "^3.1.43",
+      "@types/fs-extra": "^5.0.4",
       "@types/jasmine": "2.8.7",
       "@types/jasminewd2": "2.0.3",
+      "@types/lodash": "^4.14.113",
+      "@types/moment": "^2.13.0",
       "@types/node": "8.9.4",
       "codelyzer": "4.2.1",
       "core-js": "2.5.6",
@@ -353,6 +367,16 @@ Lockfile:
     version "0.22.8"
     resolved "https://registry.yarnpkg.com/@types/cheerio/-/cheerio-0.22.8.tgz#5702f74f78b73e13f1eb1bd435c2c9de61a250d4"
   
+  "@types/crypto-js@^3.1.43":
+    version "3.1.43"
+    resolved "https://registry.yarnpkg.com/@types/crypto-js/-/crypto-js-3.1.43.tgz#b859347d6289ba13e347c335a4c9efa63337a748"
+  
+  "@types/fs-extra@^5.0.4":
+    version "5.0.4"
+    resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-5.0.4.tgz#b971134d162cc0497d221adde3dbb67502225599"
+    dependencies:
+      "@types/node" "*"
+  
   "@types/jasmine@*":
     version "2.8.8"
     resolved "https://registry.yarnpkg.com/@types/jasmine/-/jasmine-2.8.8.tgz#bf53a7d193ea8b03867a38bfdb4fbb0e0bf066c9"
@@ -366,6 +390,16 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/@types/jasminewd2/-/jasminewd2-2.0.3.tgz#0d2886b0cbdae4c0eeba55e30792f584bf040a95"
     dependencies:
       "@types/jasmine" "*"
+  
+  "@types/lodash@^4.14.113":
+    version "4.14.113"
+    resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.113.tgz#1d1cb063f17fec4cc46f1a90d978ebf441113061"
+  
+  "@types/moment@^2.13.0":
+    version "2.13.0"
+    resolved "https://registry.yarnpkg.com/@types/moment/-/moment-2.13.0.tgz#604ebd189bc3bc34a1548689404e61a2a4aac896"
+    dependencies:
+      moment "*"
   
   "@types/node@*":
     version "10.5.2"
@@ -705,6 +739,10 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/append-transform/-/append-transform-1.0.0.tgz#046a52ae582a228bd72f58acfbe2967c678759ab"
     dependencies:
       default-require-extensions "^2.0.0"
+  
+  application-config-path@^0.1.0:
+    version "0.1.0"
+    resolved "https://registry.yarnpkg.com/application-config-path/-/application-config-path-0.1.0.tgz#193c5f0a86541a4c66fba1e2dc38583362ea5e8f"
   
   aproba@^1.0.3, aproba@^1.1.1:
     version "1.2.0"
@@ -2013,6 +2051,10 @@ Lockfile:
       randombytes "^2.0.0"
       randomfill "^1.0.3"
   
+  crypto-js@^3.1.9-1:
+    version "3.1.9-1"
+    resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-3.1.9-1.tgz#fda19e761fc077e01ffbfdc6e9fdfc59e8806cd8"
+  
   crypto-random-string@^1.0.0:
     version "1.0.0"
     resolved "https://registry.yarnpkg.com/crypto-random-string/-/crypto-random-string-1.0.0.tgz#a230f64f568310e1498009940790ec99545bca7e"
@@ -2499,6 +2541,10 @@ Lockfile:
       rc "^1.1.2"
       semver "^5.3.0"
       sumchecker "^1.2.0"
+  
+  electron-is-dev@^0.3.0:
+    version "0.3.0"
+    resolved "https://registry.yarnpkg.com/electron-is-dev/-/electron-is-dev-0.3.0.tgz#14e6fda5c68e9e4ecbeff9ccf037cbd7c05c5afe"
   
   electron-osx-sign@0.4.10:
     version "0.4.10"
@@ -3215,6 +3261,14 @@ Lockfile:
   fs-extra@^6.0.1:
     version "6.0.1"
     resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-6.0.1.tgz#8abc128f7946e310135ddc93b98bddb410e7a34b"
+    dependencies:
+      graceful-fs "^4.1.2"
+      jsonfile "^4.0.0"
+      universalify "^0.1.0"
+  
+  fs-extra@^7.0.0:
+    version "7.0.0"
+    resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-7.0.0.tgz#8cc3f47ce07ef7b3593a11b9fb245f7e34c041d6"
     dependencies:
       graceful-fs "^4.1.2"
       jsonfile "^4.0.0"
@@ -5169,7 +5223,7 @@ Lockfile:
     dependencies:
       minimist "0.0.8"
   
-  moment@2.x.x:
+  moment@*, moment@2.x.x, moment@^2.22.2:
     version "2.22.2"
     resolved "https://registry.yarnpkg.com/moment/-/moment-2.22.2.tgz#3c257f9839fc0e93ff53149632239eb90783ff66"
   
@@ -7220,6 +7274,10 @@ Lockfile:
     version "1.1.6"
     resolved "https://registry.yarnpkg.com/slide/-/slide-1.1.6.tgz#56eb027d65b4d2dce6cb2e2d32c4d4afc9e1d707"
   
+  slugify@^1.3.0:
+    version "1.3.0"
+    resolved "https://registry.yarnpkg.com/slugify/-/slugify-1.3.0.tgz#787919259d28c825fbcae6da2e01c77a109793f6"
+  
   smart-buffer@^1.0.13, smart-buffer@^1.0.4:
     version "1.1.15"
     resolved "https://registry.yarnpkg.com/smart-buffer/-/smart-buffer-1.1.15.tgz#7f114b5b65fab3e2a35aa775bb12f0d1c649bf16"
@@ -8660,6 +8718,12 @@ Lockfile:
     version "3.0.0"
     resolved "https://registry.yarnpkg.com/xdg-basedir/-/xdg-basedir-3.0.0.tgz#496b2cc109eca8dbacfe2dc72b603c17c5870ad4"
   
+  xml-js@^1.6.7:
+    version "1.6.7"
+    resolved "https://registry.yarnpkg.com/xml-js/-/xml-js-1.6.7.tgz#a99b40c18a16d3e06537b3ae026a27bd60ffe8ab"
+    dependencies:
+      sax "^1.2.4"
+  
   xml2js@0.4.4:
     version "0.4.4"
     resolved "https://registry.yarnpkg.com/xml2js/-/xml2js-0.4.4.tgz#3111010003008ae19240eba17497b57c729c555d"
@@ -8828,16 +8892,14 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/zone.js/-/zone.js-0.8.26.tgz#7bdd72f7668c5a7ad6b118148b4ea39c59d08d2d"
 
 Trace: 
-  Error: Command failed.
-  Exit code: 1
-  Command: C:\WINDOWS\system32\cmd.exe
-  Arguments: /d /s /c npm run postinstall:electron && npm-run-all -p ng:serve electron:serve
-  Directory: E:\Git\venobo
-  Output:
-  
-      at ProcessTermError.MessageError (C:\Users\esetm\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:186:110)
-      at new ProcessTermError (C:\Users\esetm\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:226:113)
-      at ChildProcess.<anonymous> (C:\Users\esetm\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:30281:17)
-      at ChildProcess.emit (events.js:180:13)
-      at maybeClose (internal/child_process.js:936:16)
-      at Process.ChildProcess._handle.onexit (internal/child_process.js:220:5)
+  Error: https://registry.yarnpkg.com/*: Not found
+      at Request.params.callback [as _callback] (C:\Users\esetm\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:65019:18)
+      at Request.self.callback (C:\Users\esetm\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:132430:22)
+      at Request.emit (events.js:180:13)
+      at Request.<anonymous> (C:\Users\esetm\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:133413:10)
+      at Request.emit (events.js:180:13)
+      at IncomingMessage.<anonymous> (C:\Users\esetm\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:133333:12)
+      at Object.onceWrapper (events.js:272:13)
+      at IncomingMessage.emit (events.js:185:15)
+      at endReadableNT (_stream_readable.js:1106:12)
+      at process._tickCallback (internal/process/next_tick.js:178:19)

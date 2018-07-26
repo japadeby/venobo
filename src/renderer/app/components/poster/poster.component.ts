@@ -1,5 +1,7 @@
 import { Component, Input } from '@angular/core';
 
+import { TooltipService } from '../tooltip';
+
 @Component({
   selector: 'app-poster',
   templateUrl: './poster.component.html',
@@ -9,8 +11,6 @@ export class PosterComponent {
 
   @Input() readonly items: any[];
 
-  showTooltip() {}
-
-  dismissTooltipDelay() {}
+  constructor(protected readonly tooltip: TooltipService) {}
 
 }

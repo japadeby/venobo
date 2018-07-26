@@ -17,13 +17,6 @@ export interface TMDbMetadata {
   genre_ids?: number[];
 }
 
-export interface TMDbResponse {
-  page: number;
-  total_results: number;
-  total_pages: number;
-  results: (TMDbMetadata | TMDbMovieResponse | TMDbShowResponse)[];
-}
-
 export interface TMDbMovieResponse extends TMDbMetadata {
   belongs_to_collection?: {
     id: number;
@@ -43,4 +36,13 @@ export interface TMDbShowResponse extends TMDbMetadata {
   first_air_date: string;
   number_of_seasons: number;
   original_name: string;
+}
+
+export type TMDbResponseUnion = TMDbMovieResponse & TMDbShowResponse;
+
+export interface TMDbResponse {
+  page: number;
+  total_results: number;
+  total_pages: number;
+  results: TMDbResponseUnion[];
 }

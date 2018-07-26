@@ -2,12 +2,12 @@ import { of } from 'rxjs';
 import { catchError, take } from 'rxjs/operators';
 
 import { BaseMetadataProvider } from './base-metadata.provider';
-import { TMDbMovieResponse, TMDbResponse, TMDbShowResponse } from '../interfaces';
+import { TMDbResponseUnion } from '../interfaces';
 
 export class TMDbProvider extends BaseMetadataProvider {
 
   private fetch(url: string, params = {}) {
-    return this.http.get<TMDbResponse>(`${this.config.api}/${url}`, {
+    return this.http.get<TMDbResponseUnion>(`${this.config.api}/${url}`, {
       params: {
         api_key: this.config.key,
         language: this.configService.get('prefs.ietf'),

@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
 import {
   StoreRouterConnectingModule,
   RouterReducerState,
@@ -7,11 +8,13 @@ import {
 } from '@ngrx/router-store';
 import {
   searchReducer,
-  SearchState
-} from './components/search';
-import { EffectsModule } from '@ngrx/effects';
+  SearchState,
+  tooltipReducer,
+  TooltipState,
+} from './components';
 
 export interface AppState {
+  tooltip: TooltipState;
   search: SearchState;
   router: RouterReducerState;
 }
@@ -24,6 +27,7 @@ export interface AppState {
   ],
   imports: [
     StoreModule.forRoot({
+      tooltip: tooltipReducer,
       router: routerReducer,
       search: searchReducer,
     }),

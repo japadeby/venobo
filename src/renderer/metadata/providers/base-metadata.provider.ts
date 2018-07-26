@@ -16,23 +16,23 @@ export abstract class BaseMetadataProvider {
     protected readonly http: HttpClient
   ) {}
 
-  public abstract getSimilar<R>(type: string, tmdbId: number): Observable<R>;
+  public abstract getSimilar(type: string, tmdbId: number): Observable<Object>;
 
-  public abstract getRecommendations<R>(type: string, tmdbId: number): Observable<R>;
+  public abstract getRecommendations(type: string, tmdbId: number): Observable<Object>;
 
-  public abstract getPopular<R>(type: string, page: number = 1): Observable<R>;
+  public abstract getPopular(type: string, page: number = 1): Observable<Object>;
 
-  public abstract getTopRated<R>(type: string, page: number = 1): Observable<R>;
+  public abstract getTopRated(type: string, page: number = 1): Observable<Object>;
 
-  public abstract get<R>(type: string, tmdbId: number): Observable<R>;
+  public abstract get(type: string, tmdbId: number): Observable<Object>;
 
-  public abstract getShowSeason<R>(tmdbId: number, season: number): Observable<R>;
+  public abstract getShowSeason(tmdbId: number, season: number): Observable<Object>;
 
-  public abstract getShowSeasonEpisode<R>(tmdbId: number, season: number, episode: number): Observable<R>;
+  public abstract getShowSeasonEpisode(tmdbId: number, season: number, episode: number): Observable<Object>;
 
-  public abstract discover<R>(type: string, params?: any): Observable<R>;
+  public abstract discover(type: string, params?: any): Observable<Object>;
 
-  public abstract searchAll<R>(query: string, page: number = 1): Observable<R>;
+  public abstract searchAll(query: string, page: number = 1): Observable<Object>;
 
   public abstract formatEpisodePoster(path: string): string;
 

@@ -5,21 +5,16 @@ import { PosterModule } from './poster';
 import { CarouselModule } from './carousel';
 import { SearchModule } from './search';
 import { HeaderModule } from './header';
-
-// import { SharedModule } from '../shared.module';
+import { TooltipModule } from './tooltip';
 
 @NgModule({
   exports: [
     LoaderModule,
+    TooltipModule,
     PosterModule,
     CarouselModule,
     SearchModule,
     HeaderModule,
-    // PosterModule,
-    // CarouselModule,
-    // SearchModule,
-    // HeaderModule,
-    // ViewComponent,
   ],
 })
 export class ComponentsModule {}
