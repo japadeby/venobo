@@ -31,7 +31,7 @@ export abstract class BaseTorrentProvider {
   /**
    * Endpoint for torrent domain
    */
-  protected abstract endpoint!: string;
+  protected abstract endpoint?: string;
 
   constructor(
     protected readonly providerUtils: ProviderUtils,

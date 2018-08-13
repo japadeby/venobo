@@ -59,11 +59,11 @@ export function HttpLoaderFactory(http: HttpClient) {
       },
     }),
     TorrentModule.forRoot([
-      // YtsTorrentProvider,
-      // ThePirateBayTorrentProvider,
-      // KickassTorrentProvider,
+      YtsTorrentProvider,
+      ThePirateBayTorrentProvider,
+      KickassTorrentProvider,
       MagnetDlTorrentProvider,
-      // iDopeTorrentProvider,
+      iDopeTorrentProvider,
     ]),
     MetadataModule.forRoot({
       config: AppConfig.tmdb,

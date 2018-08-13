@@ -11,9 +11,18 @@ import { ITorrent, ExtendedDetails} from '../interfaces';
 export class iDopeTorrentProvider extends BaseTorrentProvider {
 
   provider = 'iDope';
-  endpoint = 'https://idope.se';
+  domains = [
+    'https://idope.se',
+    'https://idope.unblocked.vet',
+  ];
 
   private fetch(type: string, query: string): Observable<ITorrent[]> {
+    if (!this.endpoint) {
+      throw new UnknownTorrentProviderApiException(
+        iDopeTorrentProvider,
+      );
+    }
+
     return this.timeoutError(this.http.get(
       `${this.endpoint}/torrent-list/${query}/`,
       {
@@ -23,16 +32,14 @@ export class iDopeTorrentProvider extends BaseTorrentProvider {
         },
       }
     )).pipe(
-      map(res => this.cheerio(res) as ITorrent[]),
+      map(res => this.cheerio(res)),
     );
   }
 
   create() {
-    return PromiseUtils.didObservableResolve(
-      this.http.get(this.endpoint, {
-        responseType: 'text',
-      }).timeout(3000),
-    );
+    return PromiseUtils.didResolve(async () => {
+      this.endpoint = await this.createReliableEndpoint(this.domains);
+    });
   }
 
   cheerio(html: string) {

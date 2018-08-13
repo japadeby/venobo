@@ -28,7 +28,7 @@ export abstract class PromiseUtils {
    * @returns {Promise<T>}
    */
   public static raceResolve<T>(promises: Promise<any>[]): Promise<T> {
-    return <T>Promise.all(promises.map(promise => {
+    return <any>Promise.all(promises.map(promise => {
       return promise.then(
         val => Promise.reject(val),
         err => Promise.resolve(err),

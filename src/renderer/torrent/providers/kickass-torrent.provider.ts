@@ -12,7 +12,7 @@ export class KickassTorrentProvider extends BaseTorrentProvider {
   provider = 'Kickass Torrents';
   domains = [
     'https://kickassto.org',
-    'https://kat.unblocked.vet/',
+    'https://kat.unblocked.vet',
   ];
 
   private fetch(query: string): Observable<ITorrent[]> {

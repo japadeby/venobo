@@ -30,7 +30,7 @@ export function tooltipReducer(
       return {
         ...state,
         ...action.payload,
-      };
+      } as TooltipState;
 
     case TooltipActionTypes.DISMISS:
       return {
