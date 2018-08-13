@@ -5,8 +5,6 @@ import {
   map,
   skipWhile,
   pluck,
-  shareReplay,
-  tap,
 } from 'rxjs/operators';
 
 import { TooltipService } from './tooltip.service';

@@ -18,8 +18,8 @@
   "private": true,
   "scripts": {
     "postinstall": "npm run postinstall:electron && npx electron-builder install-app-deps",
-    "postinstall:web": "node postinstall-web",
-    "postinstall:electron": "node postinstall",
+    "postinstall:web": "cross-env TARGET=web node postinstall",
+    "postinstall:electron": "cross-env TARGET=electron-renderer node postinstall",
     "ng": "ng",
     "start:dev": "npm run start --env=dev",
     "start": "npm run postinstall:electron && npm-run-all -p ng:serve electron:serve",
@@ -78,6 +78,7 @@
     "@types/node": "8.9.4",
     "codelyzer": "4.2.1",
     "core-js": "2.5.6",
+    "cross-env": "^5.2.0",
     "electron": "2.0.3",
     "electron-builder": "20.14.7",
     "electron-reload": "1.2.2",

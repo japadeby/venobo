@@ -29,10 +29,11 @@ export class TorrentService {
 
     const resolvedProviderStatuses = await Promise.all(providerStatuses);
 
-    this.availableProviders = PromiseUtils.filterResolved<BaseTorrentProvider>(
-      this.allProviders,
-      resolvedProviderStatuses
-    );
+    this.availableProviders = PromiseUtils
+      .filterResolved<BaseTorrentProvider>(
+        this.allProviders,
+        resolvedProviderStatuses
+      );
 
     console.log('[Venobo] - Available Torrent Providers: ', this.availableProviders);
   }
@@ -46,7 +47,7 @@ export class TorrentService {
   }
 
   private appendAttributes(providerResults: ITorrent[], method: 'movies' | 'shows'): ITorrent[] {
-    return providerResults // Utils.merge(providerResults)
+    return providerResults
       .filter(result => !!result.metadata)
       .map(result => ({
         ...result,
@@ -93,8 +94,9 @@ export class TorrentService {
           case 'shows':
             return this.selectTorrents(
               this.appendAttributes(results, type)
-                .filter(show => !!show.metadata)
-                .filter(show => this.filterShows(show, extendedDetails))
+                .filter(show =>
+                  this.filterShows(show, extendedDetails),
+                ),
             );
 
           default:

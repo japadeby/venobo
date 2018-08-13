@@ -3,7 +3,7 @@ import * as path from 'path';
 const appConfigPath = require('application-config-path');
 const isDevMode = require('electron-is-dev');
 
-export abstract class BaseEnvironment {
+export class BaseEnvironment {
   public static tmdb = {
     api: 'https://api.themoviedb.org/3',
     key: '56dc6f8e86f739bbce37281a8ad47641',

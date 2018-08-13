@@ -1,5 +1,4 @@
-import { APP_INITIALIZER, ModuleWithProviders, NgModule, forwardRef } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { APP_INITIALIZER, ModuleWithProviders, NgModule } from '@angular/core';
 
 import { AppService } from './app.service';
 import { ElectronService } from './electron.service';
@@ -10,7 +9,7 @@ import { createServiceFactory } from './factory';
 @NgModule()
 export class ServicesModule {
 
-  public static async forRoot(): ModuleWithProviders {
+  public static forRoot(): ModuleWithProviders {
     return {
       ngModule: ServicesModule,
       providers: [

@@ -20,6 +20,7 @@ import { AppComponent } from './app.component';
 import { ResolversModule } from './resolvers';
 import { AppConfig } from '../environments';
 import { StorageModule } from '../storage';
+import { AppRouting } from './app.routing';
 import {
   TorrentModule,
   YtsTorrentProvider,
@@ -41,7 +42,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     BrowserModule,
     HttpClientModule,
     ServicesModule.forRoot(),
-    SharedModule,
     StorageModule.forRoot({
       path: AppConfig.cachePath,
       secret: AppConfig.tmdb.key,
@@ -59,11 +59,11 @@ export function HttpLoaderFactory(http: HttpClient) {
       },
     }),
     TorrentModule.forRoot([
-      YtsTorrentProvider,
-      ThePirateBayTorrentProvider,
-      KickassTorrentProvider,
+      // YtsTorrentProvider,
+      // ThePirateBayTorrentProvider,
+      // KickassTorrentProvider,
       MagnetDlTorrentProvider,
-      iDopeTorrentProvider,
+      // iDopeTorrentProvider,
     ]),
     MetadataModule.forRoot({
       config: AppConfig.tmdb,
@@ -72,6 +72,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     ComponentsModule,
     ContainersModule,
     ResolversModule,
+    SharedModule,
+    AppRouting,
   ],
 })
 export class AppModule {}

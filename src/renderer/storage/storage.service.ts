@@ -19,6 +19,7 @@ export class StorageService {
   ) {
     // Set default options
     this.options = {
+      path: null,
       encoding: 'utf8',
       encrypt: {
         type: 'MD5',

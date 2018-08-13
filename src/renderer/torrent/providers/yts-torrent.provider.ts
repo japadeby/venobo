@@ -26,7 +26,7 @@ export class YtsTorrentProvider extends BaseTorrentProvider {
     }
 
     return this.timeoutError(
-      this.http.get<YtsResponse>(this.api, {
+      this.http.get<YtsResponse>(this.endpoint, {
         params: {
           query_term: query,
           order_by: 'desc',

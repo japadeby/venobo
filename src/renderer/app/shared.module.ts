@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
 
-import { AppRoutingModule } from './app-routing.module';
 import { AppStoreModule } from './app-store.module';
 
 @NgModule({
@@ -11,11 +11,8 @@ import { AppStoreModule } from './app-store.module';
     AppStoreModule,
     CommonModule,
     TranslateModule,
-    AppRoutingModule,
+    RouterModule,
     FormsModule,
   ],
-  /*imports: [
-    AppRoutingModule,
-  ],*/
 })
 export class SharedModule {}

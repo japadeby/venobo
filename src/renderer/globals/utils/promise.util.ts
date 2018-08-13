@@ -1,36 +1,24 @@
-// import { forwardRef, Inject, Injectable, Injector } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { ObservableUtils } from './observable.util';
 
-export interface IDefferedPromise {
-  fakePromise: Promise<any>;
-  fakeResolve?: () => any;
-  fakeReject?: () => any;
+export interface IDeferredPromise {
+  promise?: Promise<any>;
+  resolve?: () => any;
+  reject?: () => any;
 }
 
-// @Injectable()
 export abstract class PromiseUtils {
 
-  /*constructor(
-    @Inject(forwardRef(() => ObservableUtils))
-    private readonly observableUtils: ObservableUtils,
-  ) {}*/
+  public static deferred() {
+    const deferred: IDeferredPromise = {};
 
-  public static deferred(): IDefferedPromise {
-    let fakeResolve;
-    let fakeReject;
-
-    const fakePromise = new Promise((resolve, reject) => {
-      fakeResolve = resolve;
-      fakeReject = reject;
+    deferred.promise = new Promise((resolve, reject) => {
+      deferred.resolve = resolve;
+      deferred.reject = reject;
     });
 
-    return {
-      fakePromise,
-      fakeResolve,
-      fakeReject
-    };
+    return deferred;
   }
 
   /**
@@ -40,7 +28,7 @@ export abstract class PromiseUtils {
    * @returns {Promise<T>}
    */
   public static raceResolve<T>(promises: Promise<any>[]): Promise<T> {
-    return <any>Promise.all(promises.map(promise => {
+    return <T>Promise.all(promises.map(promise => {
       return promise.then(
         val => Promise.reject(val),
         err => Promise.resolve(err),
@@ -68,7 +56,7 @@ export abstract class PromiseUtils {
     }
   }
 
-  public static didObservableResolve(source$: Observable<any>): Promise<boolean> {
+  public static didObservableResolve(source$: Observable<any>) {
     return ObservableUtils.didComplete(source$).toPromise();
   }
 

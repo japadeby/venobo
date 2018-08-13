@@ -5,9 +5,14 @@ import { ComponentsModule } from '../../components';
 
 import { MediaComponent } from './media.component';
 import { MediaResolver } from './media.resolver';
+import { MediaRouting } from './media.routing';
 
 @NgModule({
-  imports: [SharedModule, ComponentsModule],
+  imports: [
+    SharedModule,
+    ComponentsModule,
+    MediaRouting,
+  ],
   declarations: [MediaComponent],
   providers: [MediaResolver],
   exports: [MediaComponent],

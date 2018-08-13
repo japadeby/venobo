@@ -42,7 +42,7 @@ export abstract class BaseTorrentProvider {
    * Get status of torrent endpoint
    * @returns {Promise<boolean>}
    */
-  protected abstract create(): Promise<boolean>;
+  public abstract create(): Promise<boolean>;
 
   /**
    * Fetch movies / shows depending on IMDb ID
@@ -51,7 +51,7 @@ export abstract class BaseTorrentProvider {
    * @param {ExtendedDetails} extendedDetails
    * @returns {Promise<ITorrent[]>}
    */
-  protected abstract provide(search: string, type: string, extendedDetails: ExtendedDetails = {}): Observable<ITorrent[]>;
+  public abstract provide(search: string, type: string, extendedDetails: ExtendedDetails = {}): Observable<ITorrent[]>;
 
   /**
    * Timeout endpoint call

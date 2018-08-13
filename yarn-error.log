@@ -1,5 +1,5 @@
 Arguments: 
-  C:\Program Files\nodejs\node.exe C:\Users\esetm\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add *
+  C:\Program Files\nodejs\node.exe C:\Users\esetm\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js start:dev
 
 PATH: 
   C:\Program Files (x86)\Razer Chroma SDK\bin;C:\Program Files\Razer Chroma SDK\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\system32\config\systemprofile\AppData\Local\Microsoft\WindowsApps;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Users\esetm\AppData\Local\Programs\Python\Python36\Scripts\;C:\Users\esetm\AppData\Local\Programs\Python\Python36\;C:\Users\esetm\AppData\Local\Microsoft\WindowsApps;C:\Users\esetm\AppData\Roaming\npm;C:\Program Files\Microsoft VS Code\bin;C:\Users\esetm\AppData\Local\hyper\app-2.0.0\resources\bin;
@@ -8892,14 +8892,16 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/zone.js/-/zone.js-0.8.26.tgz#7bdd72f7668c5a7ad6b118148b4ea39c59d08d2d"
 
 Trace: 
-  Error: https://registry.yarnpkg.com/*: Not found
-      at Request.params.callback [as _callback] (C:\Users\esetm\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:65019:18)
-      at Request.self.callback (C:\Users\esetm\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:132430:22)
-      at Request.emit (events.js:180:13)
-      at Request.<anonymous> (C:\Users\esetm\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:133413:10)
-      at Request.emit (events.js:180:13)
-      at IncomingMessage.<anonymous> (C:\Users\esetm\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:133333:12)
-      at Object.onceWrapper (events.js:272:13)
-      at IncomingMessage.emit (events.js:185:15)
-      at endReadableNT (_stream_readable.js:1106:12)
-      at process._tickCallback (internal/process/next_tick.js:178:19)
+  Error: Command failed.
+  Exit code: 1073807364
+  Command: C:\WINDOWS\system32\cmd.exe
+  Arguments: /d /s /c npm run start --env=dev
+  Directory: E:\Git\venobo
+  Output:
+  
+      at ProcessTermError.MessageError (C:\Users\esetm\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:186:110)
+      at new ProcessTermError (C:\Users\esetm\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:226:113)
+      at ChildProcess.<anonymous> (C:\Users\esetm\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:30281:17)
+      at ChildProcess.emit (events.js:180:13)
+      at maybeClose (internal/child_process.js:936:16)
+      at Process.ChildProcess._handle.onexit (internal/child_process.js:220:5)

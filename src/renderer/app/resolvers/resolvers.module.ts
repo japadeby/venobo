@@ -6,7 +6,7 @@ import { TopRatedMoviesResolver } from './top-rated-movies.resolver';
 @NgModule({
   providers: [
     PopularMoviesResolver,
-    TopRatedMoviesResolver
+    TopRatedMoviesResolver,
   ],
 })
 export class ResolversModule {}

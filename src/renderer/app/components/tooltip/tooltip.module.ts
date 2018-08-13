@@ -1,8 +1,7 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { EffectsModule } from '@ngrx/effects';
 
-import { AppRoutingModule } from '../../app-routing.module';
+import { SharedModule } from '../../shared.module';
 import { TooltipComponent } from './tooltip.component';
 import { TooltipEffects } from './tooltip.effects';
 import { TooltipService } from './tooltip.service';
@@ -11,8 +10,7 @@ import { TooltipService } from './tooltip.service';
   declarations: [TooltipComponent],
   providers: [TooltipService],
   imports: [
-    CommonModule,
-    AppRoutingModule,
+    SharedModule,
     EffectsModule.forFeature([TooltipEffects]),
   ],
   exports: [TooltipComponent],

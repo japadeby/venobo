@@ -9,8 +9,8 @@ import { Metadata } from '../../../metadata';
 })
 export class HomeComponent implements OnInit {
 
-  data!: {
-    topRatedMovies:  Metadata[];
+  protected data: {
+    topRatedMovies: Metadata[];
     popularMovies: Metadata[];
   };
 
