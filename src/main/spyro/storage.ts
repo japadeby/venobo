@@ -1,20 +1,36 @@
-import { Type, WindowMetadata } from './interfaces';
+import { EventMetadata, Type, WindowMetadata } from './interfaces';
+import { BrowserWindowContainer } from './browser-window-container';
 
 export class MetadataStorage {
 
-  public static readonly window = new Set<WindowMetadata>();
+  public static readonly browserWindows = new BrowserWindowContainer();
+  public static readonly windows = new Set<WindowMetadata>();
+  public static readonly events = new Set<EventMetadata>();
 
-  private static getByTarget(
+  private static findByTarget(
     metadata: Set<any>,
-    ctor: Function,
+    ctor: Type<any> | Function,
   ): any {
     return Array.from(metadata).find(
       value => value.target === ctor,
     );
   }
 
-  public static getWindowByType(target: Type<any>): WindowMetadata {
-    return this.getByTarget(MetadataStorage.window, target.constructor);
+  private static filterByTarget(
+    metadata: Set<any>,
+    ctor: Type<any> | Function,
+  ): any[] {
+    return Array.from(metadata).filter(
+      value => value.target === ctor,
+    );
+  }
+
+  public static getWindowByType(target: Type<any> | Function): WindowMetadata {
+    return this.findByTarget(MetadataStorage.windows, target);
+  }
+
+  public static getEventsByType(target: Type<any> | Function): EventMetadata[] {
+    return this.filterByTarget(MetadataStorage.events, target);
   }
 
 }

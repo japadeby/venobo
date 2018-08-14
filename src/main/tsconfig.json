@@ -1,6 +1,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "rootDir": ".",
     "allowSyntheticDefaultImports": true,
     "module": "commonjs",
     "sourceMap": true,

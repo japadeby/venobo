@@ -2,13 +2,12 @@ import { app, BrowserWindow } from 'electron';
 import { Container } from 'inversify';
 
 import { BrowserWindowContainer } from './browser-window-container';
-import { Type, FactoryOptions, OnBound } from './interfaces';
+import { Module, FactoryOptions } from './interfaces';
 import { MetadataStorage } from './storage';
 import { SERVE, WindowRef } from './tokens';
+import { EventManager } from './managers';
 
 export class Factory {
-
-  private readonly browserWindowContainer = new BrowserWindowContainer();
 
   private readonly container = new Container({
     autoBindInjectable: true,
@@ -16,7 +15,7 @@ export class Factory {
   });
 
   constructor(
-    private readonly windows: Type<any>[],
+    private readonly module: Module,
     private readonly options: FactoryOptions,
   ) {}
 
@@ -30,7 +29,7 @@ export class Factory {
     app.on('activate', async () => {
       // On OS X it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.
-      if (this.browserWindowContainer.size !== this.windows.length) {
+      if (this.browserWindowContainer.size !== this.module.windows.length) {
         await this.createWindows();
       }
     });
@@ -46,21 +45,21 @@ export class Factory {
 
   private async createWindows() {
     await Promise.all(
-      this.windows.map(async (window) => {
-        const metadata = MetadataStorage.getWindowByType(window);
+      this.module.windows.map(async (window) => {
+        const metadata = MetadataStorage.getWindowByType(window.constructor);
         const browserWindow = new BrowserWindow(metadata);
 
         this.container.bind(WindowRef)
           .toConstantValue(browserWindow)
           .whenInjectedInto(<any>window);
 
-        this.browserWindowContainer.set(
+        MetadataStorage.browserWindows.set(
           window.constructor,
           browserWindow,
         );
 
-        const instance = this.container.get(window);
-        if (instance.onBound) await (instance as OnBound).onBound();
+        const eventManager = new EventManager(this.container, window);
+        await eventManager.start();
       })
     );
   }

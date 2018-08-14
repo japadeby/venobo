@@ -1,5 +1,5 @@
 import { BrowserWindow } from 'electron';
-import { Inject, Window, WindowRef, OnBound, SERVE } from '../spyro';
+import { Event, Inject, Window, WindowRef, OnBound, SERVE } from '../spyro';
 import * as path from 'path';
 import * as url from 'url';
 
@@ -21,6 +21,11 @@ export class MainWindow implements OnBound {
 
   @Inject(SERVE)
   private readonly serve: boolean;
+
+  @Event('minimize')
+  onMinimize() {
+    console.log(this.constructor.name + ' has been minimized!');
+  }
 
   onBound() {
     if (this.serve) {
