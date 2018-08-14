@@ -55,9 +55,9 @@ npm install -g @angular/cli
 
 Voila! You can use your Angular + Electron app in a local development environment with hot reload !
 
-The application code is managed by `main.ts`. In this sample, the app runs with a simple Angular App (http://localhost:4200) and an Electron window.  
+The application code is managed by `spyro.ts`. In this sample, the app runs with a simple Angular App (http://localhost:4200) and an Electron window.  
 The Angular component contains an example of Electron and NodeJS native lib import.  
-You can desactivate "Developer Tools" by commenting `win.webContents.openDevTools();` in `main.ts`.
+You can desactivate "Developer Tools" by commenting `win.webContents.openDevTools();` in `spyro.ts`.
 
 ## Included Commands
 
